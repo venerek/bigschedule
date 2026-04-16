@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staffing Model 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0f0f;--ink2:#3a3a3a;--ink3:#777;--ink4:#aaa;
+  --paper:#faf9f6;--surface:#f3f1ec;--surface2:#eae7e0;
+  --accent:#1a3a4a;--accent2:#c8401a;--accent3:#2d6a4f;
+  --rule:rgba(0,0,0,0.1);
+  --mono:'DM Mono',monospace;--serif:'Instrument Serif',serif;--sans:'DM Sans',sans-serif;
+}
+html{font-size:16px;background:var(--paper);color:var(--ink)}
+body{font-family:var(--sans);font-weight:300;min-height:100vh}
+
+/* LAYOUT */
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.nav{background:var(--accent);padding:2rem 0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.nav-logo{padding:0 1.5rem 2rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:1.5rem}
+.nav-logo-title{font-family:var(--serif);font-size:1.25rem;color:#fff;line-height:1.2;font-style:italic}
+.nav-logo-sub{font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-top:.25rem}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.6rem 1.5rem;color:rgba(255,255,255,.5);font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;border-left:2px solid transparent;transition:all .2s}
+.nav-item:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.05)}
+.nav-item.active{color:#fff;border-left-color:var(--accent2);background:rgba(255,255,255,.07)}
+.nav-item .nav-num{font-size:.6rem;color:rgba(255,255,255,.25);min-width:1.2rem}
+.nav-footer{margin-top:auto;padding:1.5rem;font-family:var(--mono);font-size:.6rem;color:rgba(255,255,255,.2);line-height:1.6}
+
+.main{overflow-y:auto}
+.section{display:none;padding:3rem 3.5rem;min-height:100vh;animation:fadeIn .3s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* TYPOGRAPHY */
+.page-eyebrow{font-family:var(--mono);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);margin-bottom:.75rem}
+.page-title{font-family:var(--serif);font-size:3rem;line-height:1.1;color:var(--ink);font-style:italic;margin-bottom:.5rem}
+.page-title em{font-style:normal;color:var(--accent)}
+.page-sub{font-size:.95rem;color:var(--ink3);line-height:1.7;max-width:560px;margin-bottom:2.5rem;font-weight:300}
+h2{font-family:var(--serif);font-size:1.5rem;color:var(--ink);margin-bottom:1rem;font-style:italic}
+h3{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
+p{font-size:.9rem;color:var(--ink2);line-height:1.75;margin-bottom:1rem;font-weight:300}
+
+/* CARDS */
+.card{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:1.5rem;margin-bottom:1.25rem}
+.card-grid{display:grid;gap:1rem}
+.card-grid-2{grid-template-columns:1fr 1fr}
+.card-grid-3{grid-template-columns:1fr 1fr 1fr}
+.card-grid-4{grid-template-columns:repeat(4,1fr)}
+
+/* STAT BOXES */
+.stat-box{background:var(--surface);border:1px solid var(--surface2);border-radius:2px;padding:1.25rem 1.5rem}
+.stat-num{font-family:var(--serif);font-size:2.5rem;color:var(--ink);line-height:1;font-style:italic}
+.stat-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:.4rem}
+.stat-sub{font-size:.75rem;color:var(--ink4);margin-top:.2rem;font-weight:300}
+
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;font-size:.82rem}
+.tbl th{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:.6rem .9rem;text-align:left;font-weight:400}
+.tbl td{padding:.65rem .9rem;border-bottom:1px solid var(--rule);color:var(--ink2);font-weight:300;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--surface)}
+.tbl .total td{background:var(--surface);font-weight:500;color:var(--ink)}
+.tbl .highlight td{background:#fff8f0}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:1px;font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;font-weight:500}
+.badge-sat{background:#e8f0fe;color:#1a56c4}
+.badge-sun{background:#e8f5e9;color:#2d6a4f}
+.badge-rot{background:#fef3e2;color:#8b5e00}
+.badge-pt{background:#f5eef8;color:#6b21a8}
+.badge-good{background:#e8f5e9;color:#2d6a4f}
+.badge-warn{background:#fff3cd;color:#856404}
+.badge-risk{background:#fde8e8;color:#9b1c1c}
+
+/* DAY PILLS */
+.day-row{display:flex;gap:6px;flex-wrap:wrap}
+.day-pill{width:36px;height:28px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.6rem;border-radius:1px;font-weight:500}
+.pill-on{background:var(--accent);color:#fff}
+.pill-off{background:var(--surface);color:var(--ink4)}
+.pill-wknd{background:var(--accent2);color:#fff}
+
+/* COVERAGE GRID */
+.coverage-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:1.5rem 0}
+.cov-cell{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:1rem .5rem;text-align:center}
+.cov-day{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:.5rem}
+.cov-num{font-family:var(--serif);font-size:1.8rem;font-style:italic;line-height:1}
+.cov-target{font-family:var(--mono);font-size:.55rem;color:var(--ink4);margin-top:.3rem}
+.cov-bar{height:3px;border-radius:1px;background:var(--surface2);margin-top:.5rem;overflow:hidden}
+.cov-fill{height:100%;border-radius:1px;background:var(--accent3)}
+.cov-fill.warn{background:#e67e22}
+.cov-num.ok{color:var(--accent3)}.cov-num.tight{color:#e67e22}.cov-num.at{color:var(--ink)}
+
+/* NOTE BOX */
+.note{border-left:3px solid var(--accent2);background:#fff8f5;padding:1rem 1.25rem;margin:1.25rem 0;font-size:.82rem;color:var(--ink2);line-height:1.7;font-weight:300}
+.note strong{font-weight:500;color:var(--accent2)}
+
+/* TOGGLE TABS */
+.tabs{display:flex;gap:2px;margin-bottom:1.5rem;background:var(--surface);padding:3px;border-radius:2px;width:fit-content}
+.tab-btn{padding:.4rem 1rem;font-family:var(--mono);font-size:.65rem;letter-spacing:.05em;text-transform:uppercase;border:none;background:transparent;color:var(--ink3);cursor:pointer;border-radius:1px;transition:all .15s}
+.tab-btn.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* METER */
+.meter-row{display:grid;grid-template-columns:180px 1fr 60px;gap:1rem;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--rule)}
+.meter-row:last-child{border-bottom:none}
+.meter-label{font-size:.8rem;color:var(--ink2);font-weight:300}
+.meter-track{height:6px;background:var(--surface2);border-radius:1px;overflow:hidden}
+.meter-fill{height:100%;border-radius:1px}
+.m-green{background:var(--accent3)}.m-amber{background:#e67e22}.m-blue{background:#2563eb}
+.meter-val{font-family:var(--mono);font-size:.7rem;color:var(--ink3);text-align:right}
+
+/* ROTATION CALENDAR */
+.cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.cal-card{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:1.25rem}
+.cal-title{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
+.cal-title.sat{color:#1a56c4}.cal-title.sun{color:#2d6a4f}
+.week-row{display:flex;align-items:center;gap:.75rem;padding:.4rem 0;border-bottom:1px solid var(--rule);font-size:.8rem}
+.week-row:last-child{border-bottom:none}
+.week-num{font-family:var(--mono);font-size:.6rem;color:var(--ink4);min-width:48px}
+.group-chip{padding:2px 10px;border-radius:1px;font-family:var(--mono);font-size:.65rem;font-weight:500}
+.chip-sa{background:#e8f0fe;color:#1a56c4}
+.chip-sb{background:#c7d8fc;color:#1240a0}
+.chip-ua{background:#e8f5e9;color:#2d6a4f}
+.chip-ub{background:#c3e6cb;color:#1a5c38}
+.week-detail{font-size:.75rem;color:var(--ink4);font-weight:300}
+
+/* ABSENCE CHART */
+.abs-chart{display:flex;align-items:flex-end;gap:12px;height:160px;margin:1.5rem 0;position:relative}
+.abs-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;height:100%}
+.abs-bar-inner{width:100%;display:flex;align-items:flex-end;height:120px}
+.abs-bar{width:100%;border-radius:1px 1px 0 0;transition:height .4s ease}
+.abs-label{font-family:var(--mono);font-size:.6rem;color:var(--ink4);letter-spacing:.05em;text-transform:uppercase}
+.abs-val{font-family:var(--mono);font-size:.65rem;color:var(--ink3)}
+.abs-line{position:absolute;left:0;right:0;height:1px;pointer-events:none}
+.abs-line-label{position:absolute;right:0;font-family:var(--mono);font-size:.6rem;white-space:nowrap;transform:translateY(-50%)}
+
+/* SCENARIO COMPARE */
+.scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.scenario-card{border:1px solid var(--rule);border-radius:2px;padding:1.25rem;background:#fff}
+.scenario-card.rec{border:2px solid var(--accent);background:#fafbff}
+.rec-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.scenario-name{font-family:var(--serif);font-size:1.2rem;font-style:italic;color:var(--ink);margin-bottom:.25rem}
+.scenario-desc{font-size:.75rem;color:var(--ink3);margin-bottom:1rem;font-weight:300}
+.s-stat{display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid var(--rule);font-size:.78rem}
+.s-stat:last-child{border-bottom:none}
+.s-stat-label{color:var(--ink3);font-weight:300}
+.s-stat-val{font-weight:500;color:var(--ink);font-family:var(--mono);font-size:.75rem}
+.score-row{margin-top:1rem}
+.score-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);margin-bottom:.3rem;display:flex;justify-content:space-between}
+.score-track{height:4px;background:var(--surface2);border-radius:1px;overflow:hidden;margin-bottom:.5rem}
+.score-fill{height:100%;border-radius:1px;background:var(--accent3)}
+.score-fill.amber{background:#e67e22}
+
+
+/* CALCULATORS */
+.calc-shell{display:grid;grid-template-columns:1fr 280px;gap:1.5rem;align-items:start}
+.calc-inputs{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:1.5rem}
+.calc-result{background:var(--accent);border-radius:2px;padding:2rem 1.5rem;text-align:center;color:#fff;position:sticky;top:2rem}
+.input-group{margin-bottom:1.25rem}
+.input-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:.5rem}
+.input-hint{font-weight:300;text-transform:none;letter-spacing:0;color:var(--ink4)}
+.seg-group{display:flex;gap:2px;flex-wrap:wrap}
+.seg{padding:.35rem .75rem;font-family:var(--mono);font-size:.65rem;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--rule);background:#fff;color:var(--ink3);cursor:pointer;border-radius:1px;transition:all .15s}
+.seg.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.num-row{display:flex;align-items:center;gap:.75rem}
+.num-btn{width:32px;height:32px;border:1px solid var(--rule);background:#fff;border-radius:1px;font-size:1.1rem;cursor:pointer;color:var(--ink2);display:flex;align-items:center;justify-content:center;transition:background .1s}
+.num-btn:hover{background:var(--surface)}
+.num-val{font-family:var(--serif);font-size:1.6rem;font-style:italic;min-width:2rem;text-align:center;color:var(--ink)}
+.result-day{font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.75rem}
+.result-num{font-family:var(--serif);font-size:4rem;font-style:italic;line-height:1;color:#fff}
+.result-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.25rem}
+.result-target{font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.5rem;font-weight:300}
+.result-badge{margin-top:1rem}
+.result-breakdown{font-size:.75rem;color:rgba(255,255,255,.5);margin-top:1rem;line-height:1.8;font-weight:300;text-align:left;border-top:1px solid rgba(255,255,255,.1);padding-top:.75rem}
+.result-ok{color:#6ee7b7}.result-warn{color:#fcd34d}.result-risk{color:#fca5a5}
+
+/* PTO checker */
+.pto-icon-ok{color:#6ee7b7;font-size:3rem}
+.pto-icon-warn{color:#fcd34d;font-size:3rem}
+.pto-icon-risk{color:#fca5a5;font-size:3rem}
+
+/* Weekend simulator */
+.wknd-shell{display:grid;grid-template-columns:1fr 1fr 240px;gap:1.25rem;align-items:start}
+.wknd-col{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:1.25rem}
+.toggle-group{}
+.tog-row{display:flex;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--rule)}
+.tog-row:last-of-type{border-bottom:none}
+.tog-label{display:flex;align-items:center;gap:.75rem;cursor:pointer;width:100%;font-size:.82rem;color:var(--ink2);font-weight:300}
+.tog-label input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.tog-text{flex:1}
+.tog-count{font-family:var(--mono);font-size:.7rem;color:var(--ink3)}
+.wknd-results{position:sticky;top:2rem}
+.wknd-result-card{background:var(--accent);border-radius:2px;padding:1.5rem;text-align:center;color:#fff}
+.wknd-day{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.5rem}
+.wknd-big{font-family:var(--serif);font-size:3.5rem;font-style:italic;line-height:1;color:#fff}
+.wknd-target{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.25rem;font-weight:300}
+.wknd-breakdown{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.75rem;line-height:1.8;border-top:1px solid rgba(255,255,255,.1);padding-top:.75rem;text-align:left;font-weight:300}
+
+
+/* ROSTER */
+.name-chip{display:inline-block;padding:3px 10px;border-radius:1px;font-size:.75rem;background:var(--surface);border:1px solid var(--rule);color:var(--ink2);font-weight:300}
+.type-pill{display:inline-block;padding:2px 8px;border-radius:1px;font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;font-weight:500}
+.tp-A{background:#e8f5e9;color:#2d6a4f}
+.tp-B{background:#e8f0fe;color:#1a56c4}
+.tp-D{background:#fff3cd;color:#856404}
+.tp-D2{background:#fef3e2;color:#8b5e00}
+.tp-E{background:#fde8e8;color:#9b1c1c}
+.tp-FSat{background:#e8f0fe;color:#1a56c4}
+.tp-FSun{background:#e8f5e9;color:#2d6a4f}
+.tp-G{background:#f5eef8;color:#6b21a8}
+.tp-BSat{background:#e8f0fe;color:#1a56c4}
+.tp-CSun{background:#e8f5e9;color:#2d6a4f}
+.tp-PT{background:#f5eef8;color:#6b21a8}
+.sched-block{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:1.25rem;margin-bottom:1rem}
+.sched-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--rule)}
+.sched-count{font-family:var(--serif);font-size:1.8rem;font-style:italic;color:var(--ink);line-height:1}
+.sched-info{flex:1}
+.sched-name{font-weight:500;font-size:.9rem;color:var(--ink);margin-bottom:.2rem}
+.sched-days-str{font-family:var(--mono);font-size:.65rem;color:var(--ink3)}
+.staff-list{display:flex;flex-wrap:wrap;gap:6px}
+tr.row-selected td{background:#fef9f0!important}
+
+/* PRINT */
+@media print{.nav{display:none}.shell{grid-template-columns:1fr}.section{display:block!important;page-break-after:always}}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-title">Staffing<br>Model</div>
+    <div class="nav-logo-sub">April 2026</div>
+  </div>
+  <div class="nav-item active" onclick="go(0,this)"><span class="nav-num">01</span>Overview</div>
+  <div class="nav-item" onclick="go(1,this)"><span class="nav-num">02</span>Targets</div>
+  <div class="nav-item" onclick="go(2,this)"><span class="nav-num">03</span>Schedules</div>
+  <div class="nav-item" onclick="go(3,this)"><span class="nav-num">04</span>Weekend split</div>
+  <div class="nav-item" onclick="go(4,this)"><span class="nav-num">05</span>Rotation</div>
+  <div class="nav-item" onclick="go(5,this)"><span class="nav-num">06</span>Coverage</div>
+  <div class="nav-item" onclick="go(6,this)"><span class="nav-num">07</span>PTO policy</div>
+  <div class="nav-item" onclick="go(7,this)"><span class="nav-num">08</span>Absences</div>
+  <div class="nav-item" onclick="go(8,this)"><span class="nav-num">09</span>vs. current</div>
+  <div style="padding:0 1.5rem;margin:1rem 0 .5rem;font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.2)">Staff roster</div>
+  <div class="nav-item" onclick="go(12,this)"><span class="nav-num">R1</span>Full roster</div>
+  <div class="nav-item" onclick="go(13,this)"><span class="nav-num">R2</span>By schedule</div>
+  <div class="nav-item" onclick="go(14,this)"><span class="nav-num">R3</span>Rotation groups</div>
+  <div style="padding:0 1.5rem;margin:1rem 0 .5rem;font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.2)">Calculators</div>
+  <div class="nav-item" onclick="go(9,this)"><span class="nav-num">C1</span>Daily coverage</div>
+  <div class="nav-item" onclick="go(10,this)"><span class="nav-num">C2</span>PTO checker</div>
+  <div class="nav-item" onclick="go(11,this)"><span class="nav-num">C3</span>Weekend sim</div>
+  <div class="nav-item" onclick="go(15,this)"><span class="nav-num">C4</span>Comp planner</div>
+  <div class="nav-footer">Internal use only<br>Confidential</div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- 01 OVERVIEW -->
+<section class="section active" id="s0">
+  <div class="page-eyebrow">Staffing Model 2026</div>
+  <div class="page-title">Seven days,<br><em>one framework</em></div>
+  <div class="page-sub">A streamlined schedule architecture that ensures adequate daily coverage across all seven days while maximizing staff satisfaction and operational resilience.</div>
+
+  <div class="card-grid card-grid-4" style="margin-bottom:2rem">
+    <div class="stat-box"><div class="stat-num">37.2</div><div class="stat-label">Total FTE</div></div>
+    <div class="stat-box"><div class="stat-num">8</div><div class="stat-label">Schedule types</div><div class="stat-sub">Down from 20+, excl. PT</div></div>
+    <div class="stat-box"><div class="stat-num">2</div><div class="stat-label">Max weekend days</div><div class="stat-sub">Per person / month</div></div>
+    <div class="stat-box"><div class="stat-num">0.69</div><div class="stat-label">Avg daily absences</div><div class="stat-sub">Q1 2026 baseline</div></div>
+  </div>
+
+  <h2>What changed</h2>
+  <div class="card">
+    <table class="tbl">
+      <tr><th>Area</th><th>Before</th><th>After</th></tr>
+      <tr><td>Schedule types</td><td>20+ with weekly permutations</td><td>8 fixed types, no permutations</td></tr>
+      <tr><td>Weekend days / person</td><td>Variable, up to 3+/month</td><td>Max 2/month (rotating), 1 fixed day (fixed staff)</td></tr>
+      <tr><td>Fixed weekend staff on 5-day</td><td>All 14</td><td>8 — remainder converted to 4-day</td></tr>
+      <tr><td>4-day fixed weekend schedules</td><td>None</td><td>6 staff on Wed–Sat or Mon–Thurs</td></tr>
+      <tr><td>Weekend PTO eligibility</td><td>All staff</td><td>Fixed weekend staff only</td></tr>
+    </table>
+  </div>
+
+  <div class="note"><strong>Recommended model:</strong> Option B — balanced satisfaction and resilience. Q1 absence data (peak 0.89/day) confirms the model's +1.4 daily buffer is comfortably sufficient.</div>
+</section>
+
+<!-- 02 TARGETS -->
+<section class="section" id="s1">
+  <div class="page-eyebrow">Section 02</div>
+  <div class="page-title">Daily coverage<br><em>targets</em></div>
+  <div class="page-sub">Scheduled headcount before PTO and unplanned absences. Sunday revised from 13 to 12 — met at full strength under the new model.</div>
+
+  <div class="coverage-grid">
+    <div class="cov-cell"><div class="cov-day">Sun</div><div class="cov-num at">12</div><div class="cov-target">target 12</div><div class="cov-bar"><div class="cov-fill" style="width:92%"></div></div></div>
+    <div class="cov-cell"><div class="cov-day">Mon</div><div class="cov-num ok">25</div><div class="cov-target">target 24</div><div class="cov-bar"><div class="cov-fill" style="width:100%"></div></div></div>
+    <div class="cov-cell"><div class="cov-day">Tue</div><div class="cov-num ok">27</div><div class="cov-target">target 25</div><div class="cov-bar"><div class="cov-fill" style="width:100%"></div></div></div>
+    <div class="cov-cell"><div class="cov-day">Wed</div><div class="cov-num ok">27</div><div class="cov-target">target 25</div><div class="cov-bar"><div class="cov-fill" style="width:100%"></div></div></div>
+    <div class="cov-cell"><div class="cov-day">Thu</div><div class="cov-num ok">26</div><div class="cov-target">target 26</div><div class="cov-bar"><div class="cov-fill" style="width:100%"></div></div></div>
+    <div class="cov-cell"><div class="cov-day">Fri</div><div class="cov-num at">25</div><div class="cov-target">target 25</div><div class="cov-bar"><div class="cov-fill" style="width:100%"></div></div></div>
+    <div class="cov-cell"><div class="cov-day">Sat</div><div class="cov-num ok">13</div><div class="cov-target">target 13</div><div class="cov-bar"><div class="cov-fill" style="width:100%"></div></div></div>
+  </div>
+
+  <div class="card">
+    <table class="tbl">
+      <tr><th>Day</th><th>Target</th><th>Scheduled (Option B)</th><th>Buffer</th><th>Status</th></tr>
+      <tr><td>Sunday</td><td>12</td><td>12</td><td>0</td><td><span class="badge badge-warn">At target</span></td></tr>
+      <tr><td>Monday</td><td>24</td><td>25</td><td>+1</td><td><span class="badge badge-good">Met</span></td></tr>
+      <tr><td>Tuesday</td><td>25</td><td>27</td><td>+2</td><td><span class="badge badge-good">Met</span></td></tr>
+      <tr><td>Wednesday</td><td>25</td><td>27</td><td>+2</td><td><span class="badge badge-good">Met</span></td></tr>
+      <tr><td>Thursday</td><td>26</td><td>26</td><td>0</td><td><span class="badge badge-warn">At target</span></td></tr>
+      <tr><td>Friday</td><td>25</td><td>25</td><td>0</td><td><span class="badge badge-warn">At target</span></td></tr>
+      <tr><td>Saturday</td><td>13</td><td>13</td><td>0</td><td><span class="badge badge-warn">At target</span></td></tr>
+    </table>
+  </div>
+  <div class="note"><strong>Thursday and Friday</strong> have zero buffer above target and are most sensitive to PTO stacking. These days warrant extra manager attention when approving leave requests.</div>
+</section>
+
+<!-- 03 SCHEDULES -->
+<section class="section" id="s2">
+  <div class="page-eyebrow">Section 03</div>
+  <div class="page-title">Eight schedule<br><em>types</em></div>
+  <div class="page-sub">Every fixed weekend staff member works one weekend day only — consistent with current shifted schedule practice. Four-day schedules are offered as compensation for the fixed weekend requirement.</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('5day','tab5',this)">5-day schedules</button>
+    <button class="tab-btn" onclick="showTab('4day','tab5',this)">4-day schedules</button>
+    <button class="tab-btn" onclick="showTab('ptday','tab5',this)">Part-time</button>
+  </div>
+
+  <div id="5day">
+    <div class="card">
+      <table class="tbl">
+        <tr><th>Type</th><th>Days worked</th><th>Schedule</th><th>Weekend</th><th>Staff count</th></tr>
+        <tr>
+          <td><strong>A</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-on">M</div><div class="day-pill pill-on">T</div><div class="day-pill pill-on">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-on">F</div><div class="day-pill pill-off">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Mon – Fri</td><td><span class="badge badge-rot">1 full weekend/month</span></td><td>~10</td>
+        </tr>
+        <tr>
+          <td><strong>B-Sat</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-off">M</div><div class="day-pill pill-on">T</div><div class="day-pill pill-on">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-on">F</div><div class="day-pill pill-wknd">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Tues – Sat</td><td><span class="badge badge-sat">Every Sat</span></td><td>1</td>
+        </tr>
+        <tr>
+          <td><strong>C-Sun</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-wknd">Su</div><div class="day-pill pill-on">M</div><div class="day-pill pill-on">T</div><div class="day-pill pill-on">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-off">F</div><div class="day-pill pill-off">Sa</div></div></td>
+          <td>Sun – Thurs</td><td><span class="badge badge-sun">Every Sun</span></td><td>4</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="4day" style="display:none">
+    <div class="card">
+      <table class="tbl">
+        <tr><th>Type</th><th>Days worked</th><th>Schedule</th><th>Weekend</th><th>Staff count</th></tr>
+        <tr>
+          <td><strong>D</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-on">M</div><div class="day-pill pill-on">T</div><div class="day-pill pill-on">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-off">F</div><div class="day-pill pill-off">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Mon – Thurs</td><td><span class="badge badge-rot">1 full weekend/month</span></td><td>~5</td>
+        </tr>
+        <tr>
+          <td><strong>E</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-off">M</div><div class="day-pill pill-on">T</div><div class="day-pill pill-on">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-on">F</div><div class="day-pill pill-off">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Tues – Fri</td><td><span class="badge badge-rot">1 full weekend/month</span></td><td>~4</td>
+        </tr>
+        <tr>
+          <td><strong>F-Sat</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-off">M</div><div class="day-pill pill-off">T</div><div class="day-pill pill-on">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-on">F</div><div class="day-pill pill-wknd">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Wed – Sat</td><td><span class="badge badge-sat">Every Sat</span></td><td>3</td>
+        </tr>
+        <tr>
+          <td><strong>F-Sun</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-wknd">Su</div><div class="day-pill pill-on">M</div><div class="day-pill pill-on">T</div><div class="day-pill pill-on">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-off">F</div><div class="day-pill pill-off">Sa</div></div></td>
+          <td>Sun, Mon–Thu</td><td><span class="badge badge-sun">Every Sun</span></td><td>3</td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="note"><strong>F-Sat (Wed–Sat)</strong> is positioned to directly cover Friday, the weakest weekday. <strong>F-Sun (Sun, Mon–Thu)</strong> anchors Sunday and covers Monday, the other weak day. This pairing is intentional and should be preserved when assigning staff.</div>
+  </div>
+
+  <div id="ptday" style="display:none">
+    <div class="card">
+      <table class="tbl">
+        <tr><th>Name</th><th>Days worked</th><th>Schedule</th><th>Weekend</th><th>FTE</th></tr>
+        <tr>
+          <td><strong>Milko</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-off">M</div><div class="day-pill pill-off">T</div><div class="day-pill pill-off">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-on">F</div><div class="day-pill pill-off">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Thu, Fri</td><td><span class="badge badge-pt">1 full weekend/month</span></td><td>0.4</td>
+        </tr>
+        <tr>
+          <td><strong>Hwang</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-on">M</div><div class="day-pill pill-off">T</div><div class="day-pill pill-off">W</div><div class="day-pill pill-off">Th</div><div class="day-pill pill-on">F</div><div class="day-pill pill-off">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Mon, Fri</td><td><span class="badge badge-pt">1 full weekend/month</span></td><td>0.5</td>
+        </tr>
+        <tr>
+          <td><strong>Woods</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-off">M</div><div class="day-pill pill-on">T</div><div class="day-pill pill-off">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-off">F</div><div class="day-pill pill-off">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Tue, Thu</td><td><span class="badge badge-pt">1 full weekend/month</span></td><td>0.5</td>
+        </tr>
+        <tr>
+          <td><strong>O'Hara</strong></td>
+          <td><div class="day-row"><div class="day-pill pill-off">M</div><div class="day-pill pill-off">T</div><div class="day-pill pill-off">W</div><div class="day-pill pill-on">Th</div><div class="day-pill pill-off">F</div><div class="day-pill pill-off">Sa</div><div class="day-pill pill-off">Su</div></div></td>
+          <td>Thu only</td><td><span class="badge badge-pt">1 full weekend/month</span></td><td>0.2</td>
+        </tr>
+      </table>
+    </div>
+    <div class="note">Part-time staff keep their existing individual day arrangements. Their weekend month is one paired Sat+Sun, not two separate days. <strong>Hwang (Mon, Fri)</strong> is particularly valuable — the only part-timer covering both zero-buffer weekdays.</div>
+  </div>
+</section>
+
+<!-- 04 WEEKEND SPLIT -->
+<section class="section" id="s3">
+  <div class="page-eyebrow">Section 04</div>
+  <div class="page-title">Fixed vs. rotating<br><em>weekend split</em></div>
+  <div class="page-sub">14 fixed weekend staff anchor daily coverage. 19 rotating full-timers and 4 part-timers fill the remainder on a bi-weekly rotation.</div>
+
+  <div class="card">
+    <table class="tbl">
+      <tr><th>Group</th><th>Schedule type</th><th>Weekend day</th><th>Count</th></tr>
+      <tr><td>Fixed Saturday — 5-day</td><td>Tues–Sat (Type B-Sat)</td><td><span class="badge badge-sat">Every Saturday</span></td><td>4</td></tr>
+      <tr><td>Fixed Saturday — 4-day</td><td>Wed–Sat (Type F-Sat)</td><td><span class="badge badge-sat">Every Saturday</span></td><td>3</td></tr>
+      <tr><td>Fixed Sunday — 5-day</td><td>Sun–Thurs (Type C-Sun)</td><td><span class="badge badge-sun">Every Sunday</span></td><td>4</td></tr>
+      <tr><td>Fixed Sunday — 4-day</td><td>Sun, Mon–Thu (Type F-Sun)</td><td><span class="badge badge-sun">Every Sunday</span></td><td>3</td></tr>
+      <tr><td>Rotating full-time</td><td>Types A, D, E</td><td><span class="badge badge-rot">1 full weekend/month</span></td><td>19</td></tr>
+      <tr class="total"><td>Part-time</td><td>Individual fixed days</td><td><span class="badge badge-pt">1 full weekend/month</span></td><td>4</td></tr>
+    </table>
+  </div>
+
+  <div class="card-grid card-grid-2" style="margin-top:1.5rem">
+    <div class="card">
+      <h3>Saturday coverage breakdown</h3>
+      <div class="meter-row"><div class="meter-label">Fixed (Types B + F-Sat)</div><div class="meter-track"><div class="meter-fill m-blue" style="width:54%"></div></div><div class="meter-val">7</div></div>
+      <div class="meter-row"><div class="meter-label">Rotating full-time</div><div class="meter-track"><div class="meter-fill m-amber" style="width:46%"></div></div><div class="meter-val">~5.5</div></div>
+      <div class="meter-row"><div class="meter-label">Part-time (avg)</div><div class="meter-track"><div class="meter-fill m-green" style="width:4%"></div></div><div class="meter-val">~0.5</div></div>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--rule);font-family:var(--mono);font-size:.7rem;display:flex;justify-content:space-between"><span style="color:var(--ink3)">Total</span><span style="color:var(--accent3);font-weight:500">~13 ✓</span></div>
+    </div>
+    <div class="card">
+      <h3>Sunday coverage breakdown</h3>
+      <div class="meter-row"><div class="meter-label">Fixed (Types C + F-Sun)</div><div class="meter-track"><div class="meter-fill m-blue" style="width:58%"></div></div><div class="meter-val">7</div></div>
+      <div class="meter-row"><div class="meter-label">Rotating full-time</div><div class="meter-track"><div class="meter-fill m-amber" style="width:37%"></div></div><div class="meter-val">~4.5</div></div>
+      <div class="meter-row"><div class="meter-label">Part-time (avg)</div><div class="meter-track"><div class="meter-fill m-green" style="width:4%"></div></div><div class="meter-val">~0.5</div></div>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--rule);font-family:var(--mono);font-size:.7rem;display:flex;justify-content:space-between"><span style="color:var(--ink3)">Total</span><span style="color:var(--accent3);font-weight:500">~12 ✓</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ROTATION -->
+<section class="section" id="s4">
+  <div class="page-eyebrow">Section 05</div>
+  <div class="page-title">Weekend rotation<br><em>mechanics</em></div>
+  <div class="page-sub">19 rotating staff split into two pools — Saturday and Sunday. Each pool alternates bi-weekly. Every rotating staff member works exactly 2 weekend days per month, always the same day.</div>
+
+  <div class="cal-grid">
+    <div class="cal-card">
+      <div class="cal-title sat">Saturday rotation pool (~12 staff)</div>
+      <div class="week-row"><div class="week-num">Week 1</div><span class="group-chip chip-sa">Group S-A</span><div class="week-detail">~6 staff on</div></div>
+      <div class="week-row"><div class="week-num">Week 2</div><span class="group-chip chip-sb">Group S-B</span><div class="week-detail">~6 staff on</div></div>
+      <div class="week-row"><div class="week-num">Week 3</div><span class="group-chip chip-sa">Group S-A</span><div class="week-detail">~6 staff on</div></div>
+      <div class="week-row"><div class="week-num">Week 4</div><span class="group-chip chip-sb">Group S-B</span><div class="week-detail">~6 staff on</div></div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-title sun">Sunday rotation pool (~11 staff)</div>
+      <div class="week-row"><div class="week-num">Week 1</div><span class="group-chip chip-ua">Group U-A</span><div class="week-detail">~5–6 staff on</div></div>
+      <div class="week-row"><div class="week-num">Week 2</div><span class="group-chip chip-ub">Group U-B</span><div class="week-detail">~5–6 staff on</div></div>
+      <div class="week-row"><div class="week-num">Week 3</div><span class="group-chip chip-ua">Group U-A</span><div class="week-detail">~5–6 staff on</div></div>
+      <div class="week-row"><div class="week-num">Week 4</div><span class="group-chip chip-ub">Group U-B</span><div class="week-detail">~5–6 staff on</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:.5rem">
+    <h3>Sample month — total weekend coverage</h3>
+    <table class="tbl">
+      <tr><th>Weekend</th><th>Saturday</th><th>Sunday</th><th>Notes</th></tr>
+      <tr><td>Week 1</td><td>7 fixed + 6 rotating + ~0.5 PT = <strong>~13</strong></td><td>7 fixed + 5 rotating + ~0.5 PT = <strong>~12</strong></td><td>S-A + U-A on</td></tr>
+      <tr><td>Week 2</td><td>7 fixed + 6 rotating + ~0.5 PT = <strong>~13</strong></td><td>7 fixed + 5 rotating + ~0.5 PT = <strong>~12</strong></td><td>S-B + U-B on</td></tr>
+      <tr><td>Week 3</td><td>7 fixed + 6 rotating + ~0.5 PT = <strong>~13</strong></td><td>7 fixed + 5 rotating + ~0.5 PT = <strong>~12</strong></td><td>S-A + U-A + PT wknd</td></tr>
+      <tr><td>Week 4</td><td>7 fixed + 6 rotating + ~0.5 PT = <strong>~13</strong></td><td>7 fixed + 5 rotating + ~0.5 PT = <strong>~12</strong></td><td>S-B + U-B on</td></tr>
+    </table>
+  </div>
+  <div class="note">Publish rotation groups as a rolling 3-month calendar. No week-to-week permutations — staff always know their weekends in advance.</div>
+</section>
+
+<!-- 06 COVERAGE -->
+<section class="section" id="s5">
+  <div class="page-eyebrow">Section 06</div>
+  <div class="page-title">Coverage under<br><em>PTO + absences</em></div>
+  <div class="page-sub">Worst-case view: full PTO utilization (all 3 weekday slots filled simultaneously) plus Q1 average unplanned absence rate of 0.69/day.</div>
+
+  <div class="card">
+    <table class="tbl">
+      <tr><th></th><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+      <tr><td><strong>Target</strong></td><td>12</td><td>24</td><td>25</td><td>25</td><td>26</td><td>25</td><td>13</td></tr>
+      <tr><td><strong>Scheduled</strong></td><td>12</td><td>25</td><td>27</td><td>27</td><td>26</td><td>25</td><td>13</td></tr>
+      <tr><td><strong>Max PTO</strong></td><td>−1</td><td>−3</td><td>−3</td><td>−3</td><td>−3</td><td>−3</td><td>−1</td></tr>
+      <tr><td><strong>Avg absence</strong></td><td>—</td><td>−0.7</td><td>−0.7</td><td>−0.7</td><td>−0.7</td><td>−0.7</td><td>—</td></tr>
+      <tr class="total"><td><strong>Floor</strong></td><td>~11</td><td>~21</td><td>~23</td><td>~23</td><td>~22</td><td>~21</td><td>12</td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <h3>Absence tolerance by scenario</h3>
+    <table class="tbl">
+      <tr><th>Scenario</th><th>Avg weekday buffer</th><th>1 unplanned absence</th><th>2 unplanned absences</th></tr>
+      <tr><td>Option A (operational priority)</td><td>+2.3</td><td><span class="badge badge-good">Still covered</span></td><td><span class="badge badge-good">Still covered</span></td></tr>
+      <tr class="highlight"><td><strong>Option B — Recommended</strong></td><td>+1.4</td><td><span class="badge badge-good">Still covered</span></td><td><span class="badge badge-warn">At or near minimum</span></td></tr>
+      <tr><td>Option C (satisfaction priority)</td><td>+0.4</td><td><span class="badge badge-risk">Below target</span></td><td><span class="badge badge-risk">Significantly under</span></td></tr>
+    </table>
+  </div>
+  <div class="note"><strong>Full PTO utilization on the same day is rare in practice.</strong> Slots fill organically — the floor figures represent a simultaneous worst-case that is unlikely to persist daily. Q1 data confirms Option B operates safely within its buffer.</div>
+</section>
+
+<!-- 07 PTO -->
+<section class="section" id="s6">
+  <div class="page-eyebrow">Section 07</div>
+  <div class="page-title">PTO<br><em>policy</em></div>
+  <div class="page-sub">17 slots per week maintained as-is. No changes to Monday or Friday allocation. One rule: weekend slots are reserved for fixed weekend staff only.</div>
+
+  <div class="card">
+    <table class="tbl">
+      <tr><th>Day</th><th>Slots</th><th>Eligible staff</th><th>Note</th></tr>
+      <tr><td>Monday</td><td>3</td><td>All weekday staff</td><td></td></tr>
+      <tr><td>Tuesday</td><td>3</td><td>All weekday staff</td><td></td></tr>
+      <tr><td>Wednesday</td><td>3</td><td>All weekday staff</td><td></td></tr>
+      <tr><td>Thursday</td><td>3</td><td>All weekday staff</td><td></td></tr>
+      <tr><td>Friday</td><td>3</td><td>All weekday staff</td><td></td></tr>
+      <tr><td>Saturday</td><td>1</td><td>Fixed Saturday staff only</td><td>Types B-Sat and F-Sat eligible</td></tr>
+      <tr class="total"><td>Sunday</td><td>1</td><td>Fixed Sunday staff only</td><td>Types C-Sun and F-Sun eligible</td></tr>
+    </table>
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <h2>Weekend eligibility</h2>
+    <div class="note" style="margin-top:0">Weekend PTO slots are reserved exclusively for fixed weekend staff (Types B-Sat, C-Sun, F-Sat, F-Sun). Rotating staff are not scheduled on weekend days and are not eligible to use weekend PTO slots.</div>
+  </div>
+</section>
+
+<!-- 08 ABSENCES -->
+<section class="section" id="s7">
+  <div class="page-eyebrow">Section 08</div>
+  <div class="page-title">Absence baseline<br><em>Q1 2026</em></div>
+  <div class="page-sub">Q1 data confirms Option B is operationally safe. Even the peak month stays well within the model's +1.4 daily buffer above target.</div>
+
+  <div class="card-grid card-grid-3" style="margin-bottom:1.5rem">
+    <div class="stat-box"><div class="stat-num">62</div><div class="stat-label">Q1 total absences</div></div>
+    <div class="stat-box"><div class="stat-num">0.69</div><div class="stat-label">Daily average</div><div class="stat-sub">Jan–Mar</div></div>
+    <div class="stat-box"><div class="stat-num">0.89</div><div class="stat-label">Peak daily avg</div><div class="stat-sub">February</div></div>
+  </div>
+
+  <div class="card">
+    <h3>Monthly breakdown vs. Option B buffer (1.4)</h3>
+    <div id="absChart" style="padding:.5rem 0"></div>
+    <table class="tbl" style="margin-top:1rem">
+      <tr><th>Month</th><th>Total absences</th><th>Daily average</th><th>Headroom below buffer</th></tr>
+      <tr><td>January</td><td>20</td><td>0.65</td><td>+0.75</td></tr>
+      <tr><td>February</td><td>25</td><td>0.89</td><td>+0.51</td></tr>
+      <tr><td>March</td><td>17</td><td>0.55</td><td>+0.85</td></tr>
+      <tr class="total"><td>Q1 Total / Avg</td><td>62</td><td>0.69</td><td>+0.71</td></tr>
+    </table>
+  </div>
+  <div class="note">Recommend tracking Q2–Q4 against the same 1.4 threshold as the model is implemented. Pay particular attention to <strong>summer PTO clustering</strong> (June–August) and <strong>fall illness season</strong> (October–November) — both are likely to show higher combined impact.</div>
+</section>
+
+<!-- 09 SCENARIOS -->
+<section class="section" id="s8">
+  <div class="page-eyebrow">Section 09</div>
+  <div class="page-title">Proposed vs.<br><em>current state</em></div>
+  <div class="page-sub">Option B against the current system. The consistency gain is the primary clinical driver — eliminating 60–80 weekly permutations means patients and staff see the same faces on the same days, every week.</div>
+
+  <div class="card" style="margin-bottom:1.5rem;border-left:3px solid var(--accent2);background:#fff8f5">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.75rem">
+      <div style="font-family:var(--serif);font-size:1.2rem;font-style:italic;color:var(--ink)">Current state</div>
+      <span style="font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;background:#fde8e8;color:#9b1c1c;padding:2px 8px;border-radius:1px">Baseline for comparison</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;font-size:.82rem">
+      <div>
+        <div style="font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);margin-bottom:.3rem">Unique weekly patterns</div>
+        <div style="font-family:var(--serif);font-size:1.8rem;font-style:italic;color:var(--accent2)">60–80</div>
+        <div style="font-size:.72rem;color:var(--ink3)">22 schedules × 3–4 permutations each</div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);margin-bottom:.3rem">Staff with fixed days</div>
+        <div style="font-family:var(--serif);font-size:1.8rem;font-style:italic;color:var(--accent2)">Few</div>
+        <div style="font-size:.72rem;color:var(--ink3)">Most staff rotate through different day combinations each week</div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);margin-bottom:.3rem">Schedule consistency score</div>
+        <div style="font-family:var(--serif);font-size:1.8rem;font-style:italic;color:var(--accent2)">~15%</div>
+        <div style="font-size:.72rem;color:var(--ink3)">Estimated — based on proportion of staff on predictable fixed patterns</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-grid card-grid-2" style="margin-bottom:1.5rem">
+
+    <div class="scenario-card rec" style="border:2px solid var(--accent)">
+      <div class="rec-tag">Proposed model</div>
+      <div class="scenario-name">Option B</div>
+      <div class="scenario-desc">Balanced satisfaction &amp; resilience</div>
+      <div class="s-stat"><span class="s-stat-label">Schedule types</span><span class="s-stat-val">8 fixed</span></div>
+      <div class="s-stat"><span class="s-stat-label">Weekly permutations</span><span class="s-stat-val">0</span></div>
+      <div class="s-stat"><span class="s-stat-label">Fixed 5-day weekend staff</span><span class="s-stat-val">4 of 15</span></div>
+      <div class="s-stat"><span class="s-stat-label">Fixed 4-day weekend staff</span><span class="s-stat-val">11 of 15</span></div>
+      <div class="s-stat"><span class="s-stat-label">Weekday buffer (avg)</span><span class="s-stat-val">+1.4</span></div>
+      <div class="s-stat"><span class="s-stat-label">Absence tolerance</span><span class="s-stat-val">1–2 staff/day</span></div>
+      <div class="score-row" style="margin-top:1.25rem">
+        <div class="score-label"><span>Operational resilience</span><span style="color:var(--accent3)">72%</span></div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:.5rem">
+          <div style="flex:1;height:8px;background:var(--surface2);border-radius:1px;overflow:hidden"><div style="height:100%;width:72%;background:var(--accent3);border-radius:1px"></div></div>
+        </div>
+        <div class="score-label"><span>Schedule consistency</span><span style="color:var(--accent3)">95%</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="flex:1;height:8px;background:var(--surface2);border-radius:1px;overflow:hidden"><div style="height:100%;width:95%;background:var(--accent3);border-radius:1px"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card" style="border:1px solid var(--accent2);background:#fff8f5">
+      <div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent2);margin-bottom:.5rem">Current state</div>
+      <div class="scenario-name" style="color:var(--accent2)">Status quo</div>
+      <div class="scenario-desc">22 schedules, 3–4 permutations each</div>
+      <div class="s-stat"><span class="s-stat-label">Schedule types</span><span class="s-stat-val">22 + 15 weekend</span></div>
+      <div class="s-stat"><span class="s-stat-label">Weekly permutations</span><span class="s-stat-val">60–80</span></div>
+      <div class="s-stat"><span class="s-stat-label">Fixed weekend staff</span><span class="s-stat-val">14 (no 4-day option)</span></div>
+      <div class="s-stat"><span class="s-stat-label">Staff on fixed days</span><span class="s-stat-val">Few</span></div>
+      <div class="s-stat"><span class="s-stat-label">Weekday buffer (avg)</span><span class="s-stat-val">Variable</span></div>
+      <div class="s-stat"><span class="s-stat-label">Absence tolerance</span><span class="s-stat-val">Unknown/inconsistent</span></div>
+      <div class="score-row" style="margin-top:1.25rem">
+        <div class="score-label"><span>Operational resilience</span><span style="color:var(--accent2)">~45%</span></div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:.5rem">
+          <div style="flex:1;height:8px;background:var(--surface2);border-radius:1px;overflow:hidden"><div style="height:100%;width:45%;background:var(--accent2);border-radius:1px"></div></div>
+        </div>
+        <div class="score-label"><span>Schedule consistency</span><span style="color:var(--accent2)">~15%</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="flex:1;height:8px;background:var(--surface2);border-radius:1px;overflow:hidden"><div style="height:100%;width:15%;background:var(--accent2);border-radius:1px"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <h3>Head-to-head comparison</h3>
+    <table class="tbl">
+      <tr><th>Factor</th><th>Current state</th><th>Proposed (Option B)</th><th>Change</th></tr>
+      <tr><td>Total schedule types</td><td>37 (22 weekday + 15 weekend)</td><td>8</td><td><span class="badge badge-good">−78%</span></td></tr>
+      <tr><td>Unique weekly patterns in circulation</td><td>60–80</td><td>8 — zero permutations</td><td><span class="badge badge-good">−90%+</span></td></tr>
+      <tr><td>Staff on fixed days every week</td><td>Few</td><td>All 40</td><td><span class="badge badge-good">100%</span></td></tr>
+      <tr><td>4-day option for fixed weekend staff</td><td>None</td><td>11 of 15 on 4-day</td><td><span class="badge badge-good">New benefit</span></td></tr>
+      <tr><td>Max weekend days/month (rotating)</td><td>Variable, up to 3+</td><td>2 days — 1 full weekend/month</td><td><span class="badge badge-good">Capped &amp; fair</span></td></tr>
+      <tr><td>Weekday coverage predictability</td><td>Volatile — shifts week to week</td><td>Fixed — same staff every week</td><td><span class="badge badge-good">Consistent</span></td></tr>
+      <tr><td>Continuity of care</td><td>Low — different faces daily</td><td>High — same staff, same days</td><td><span class="badge badge-good">Core goal met</span></td></tr>
+      <tr><td>1 unplanned absence impact</td><td>Unpredictable</td><td>Absorbed within buffer</td><td><span class="badge badge-good">Improved</span></td></tr>
+    </table>
+  </div>
+  <div class="note">Q1 2026 absence baseline: 0.69/day average, peaking at 0.89 in February — well within the proposed model's +1.4 daily buffer. The consistency gain is the primary clinical driver of this change.</div>
+</section>
+
+
+<!-- C1: DAILY COVERAGE CALCULATOR -->
+<section class="section" id="s9">
+  <div class="page-eyebrow">Calculator 01</div>
+  <div class="page-title">Daily coverage<br><em>calculator</em></div>
+  <div class="page-sub">Model any weekday accounting for PTO, unplanned absences, and comp days taken by rotating staff. Toggle rotation week context to see how comp days shift the floor.</div>
+
+  <div class="calc-shell">
+    <div class="calc-inputs">
+      <h3>Day &amp; week context</h3>
+
+      <div class="input-group">
+        <label class="input-label">Day of week</label>
+        <div class="seg-group" id="dayPicker">
+          <button class="seg active" onclick="setDay('Sun',12,1,this)">Sun</button>
+          <button class="seg" onclick="setDay('Mon',24,3,this)">Mon</button>
+          <button class="seg" onclick="setDay('Tue',25,3,this)">Tue</button>
+          <button class="seg" onclick="setDay('Wed',25,3,this)">Wed</button>
+          <button class="seg" onclick="setDay('Thu',26,3,this)">Thu</button>
+          <button class="seg" onclick="setDay('Fri',25,3,this)">Fri</button>
+          <button class="seg" onclick="setDay('Sat',13,1,this)">Sat</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Rotation week type <span class="input-hint">(affects comp days in play)</span></label>
+        <div class="seg-group" id="rotWeekPicker">
+          <button class="seg active" onclick="setRotWeek('none',this)">No rotation</button>
+          <button class="seg" onclick="setRotWeek('sat',this)">Sat group on</button>
+          <button class="seg" onclick="setRotWeek('sun',this)">Sun group on</button>
+          <button class="seg" onclick="setRotWeek('both',this)">Both groups</button>
+        </div>
+      </div>
+
+      <div class="input-group" id="compGroup" style="display:none">
+        <label class="input-label">Comp days being taken today <span class="input-hint" id="compHint"></span></label>
+        <div class="num-row">
+          <button class="num-btn" onclick="nudge('comp',-1)">−</button>
+          <span class="num-val" id="compVal">0</span>
+          <button class="num-btn" onclick="nudge('comp',1)">+</button>
+        </div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.0);margin-top:.4rem" id="compNote"></div>
+      </div>
+
+      <div style="height:1px;background:var(--rule);margin:1rem 0"></div>
+      <h3 style="margin-top:0">Adjustments</h3>
+
+      <div class="input-group">
+        <label class="input-label">Scheduled staff <span class="input-hint" id="schedHint">(baseline: 12)</span></label>
+        <div class="num-row">
+          <button class="num-btn" onclick="nudge('sched',-1)">−</button>
+          <span class="num-val" id="schedVal">12</span>
+          <button class="num-btn" onclick="nudge('sched',1)">+</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">PTO slots taken <span class="input-hint" id="ptoHint">(max 1 on weekends)</span></label>
+        <div class="num-row">
+          <button class="num-btn" onclick="nudge('pto',-1)">−</button>
+          <span class="num-val" id="ptoVal">0</span>
+          <button class="num-btn" onclick="nudge('pto',1)">+</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Unplanned absences</label>
+        <div class="num-row">
+          <button class="num-btn" onclick="nudge('abs',-1)">−</button>
+          <span class="num-val" id="absVal">0</span>
+          <button class="num-btn" onclick="nudge('abs',1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-result" id="calcResult">
+      <div class="result-day" id="resultDay">Sunday</div>
+      <div class="result-num" id="resultNum">12</div>
+      <div class="result-label">net staff on floor</div>
+      <div class="result-target" id="resultTarget">target: 12</div>
+      <div class="result-badge" id="resultBadge"></div>
+      <div class="result-breakdown" id="resultBreakdown"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.5rem">
+    <h3>All days — rotation week impact</h3>
+    <div style="font-size:.78rem;color:var(--ink3);margin-bottom:.75rem;font-weight:300">Shows full-week picture with comp days distributed across the week. Highlighted day reflects your inputs above.</div>
+    <div id="allDaysGrid" class="coverage-grid" style="margin:0"></div>
+  </div>
+
+  <div class="card" style="margin-top:0">
+    <h3>Comp day reference — by rotation week type</h3>
+    <table class="tbl">
+      <tr><th>Rotation week</th><th>Who takes comp</th><th>When</th><th>Avg comp days/weekday</th><th>Most affected days</th></tr>
+      <tr><td>Sat group on (S-A or S-B)</td><td>~5–6 Sat rotating staff</td><td>Same week, Mon–Fri</td><td>~1.1</td><td>Any — staff choose flexibly</td></tr>
+      <tr><td>Sun group on (U-A or U-B)</td><td>~5 Sun rotating staff</td><td>Following week, Mon–Fri</td><td>~1.0</td><td>Any — staff choose flexibly</td></tr>
+      <tr><td>Both groups (overlap weeks 2 &amp; 3)</td><td>~10–11 staff</td><td>Same + following week</td><td>~2.1</td><td>Mon &amp; Fri most vulnerable</td></tr>
+      <tr><td>No rotation</td><td>—</td><td>—</td><td>0</td><td>—</td></tr>
+    </table>
+    <div class="note" style="margin-top:1rem;margin-bottom:0">Thursday has the deepest coverage buffer (+8 above target) and is the best natural absorber for comp days. While comp day choice is flexible, managers can gently note this when communicating rotation assignments.</div>
+  </div>
+</section>
+
+<!-- C2: PTO APPROVAL CHECKER -->
+<section class="section" id="s10">
+  <div class="page-eyebrow">Calculator 02</div>
+  <div class="page-title">PTO approval<br><em>checker</em></div>
+  <div class="page-sub">Enter the day and current slot usage to get an instant recommendation. Accounts for scheduled headcount, existing PTO, and absence risk.</div>
+
+  <div class="calc-shell">
+    <div class="calc-inputs">
+      <h3>Request details</h3>
+
+      <div class="input-group">
+        <label class="input-label">Requested day</label>
+        <div class="seg-group" id="ptoDayPicker">
+          <button class="seg active" onclick="setPtoDay('Mon',this)">Mon</button>
+          <button class="seg" onclick="setPtoDay('Tue',this)">Tue</button>
+          <button class="seg" onclick="setPtoDay('Wed',this)">Wed</button>
+          <button class="seg" onclick="setPtoDay('Thu',this)">Thu</button>
+          <button class="seg" onclick="setPtoDay('Fri',this)">Fri</button>
+          <button class="seg" onclick="setPtoDay('Sat',this)">Sat</button>
+          <button class="seg" onclick="setPtoDay('Sun',this)">Sun</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">PTO slots already approved that day</label>
+        <div class="num-row">
+          <button class="num-btn" onclick="nudgePto('approved',-1)">−</button>
+          <span class="num-val" id="approvedVal">0</span>
+          <button class="num-btn" onclick="nudgePto('approved',1)">+</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Unplanned absences so far this week</label>
+        <div class="num-row">
+          <button class="num-btn" onclick="nudgePto('weekabs',-1)">−</button>
+          <span class="num-val" id="weekabsVal">0</span>
+          <button class="num-btn" onclick="nudgePto('weekabs',1)">+</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Comp days already taken today <span class="input-hint">(rotation week)</span></label>
+        <div class="num-row">
+          <button class="num-btn" onclick="nudgePto('compdays',-1)">−</button>
+          <span class="num-val" id="compdaysVal">0</span>
+          <button class="num-btn" onclick="nudgePto('compdays',1)">+</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Is requester fixed weekend staff?</label>
+        <div class="seg-group">
+          <button class="seg" id="fixedYes" onclick="setFixed(true,this)">Yes</button>
+          <button class="seg active" id="fixedNo" onclick="setFixed(false,this)">No</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-result" id="ptoResult">
+      <div class="result-day" id="ptoResultDay">Monday</div>
+      <div class="result-num" id="ptoResultIcon" style="font-size:3rem">✓</div>
+      <div class="result-label" id="ptoResultLabel">Approve</div>
+      <div class="result-badge" id="ptoResultBadge"></div>
+      <div class="result-breakdown" id="ptoResultDetail" style="margin-top:1rem;text-align:left"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.5rem" id="ptoRulesCard">
+    <h3>Approval rules reference</h3>
+    <table class="tbl">
+      <tr><th>Condition</th><th>Recommendation</th></tr>
+      <tr><td>Weekend day + not fixed weekend staff</td><td><span class="badge badge-risk">Ineligible</span></td></tr>
+      <tr><td>All slots for that day already taken</td><td><span class="badge badge-risk">No slots available</span></td></tr>
+      <tr><td>2+ unplanned absences already this week</td><td><span class="badge badge-warn">Flag for review</span></td></tr>
+      <tr><td>Thu or Fri with 2+ slots already taken</td><td><span class="badge badge-warn">Flag for review</span></td></tr>
+      <tr><td>Mon or Fri + rotation week + 1+ comp days today</td><td><span class="badge badge-warn">Flag for review</span></td></tr>
+      <tr><td>Both groups rotating this week (overlap) + Mon or Fri</td><td><span class="badge badge-warn">Flag for review</span></td></tr>
+      <tr><td>All other cases</td><td><span class="badge badge-good">Approve</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- C3: WEEKEND SIMULATOR -->
+<section class="section" id="s11">
+  <div class="page-eyebrow">Calculator 03</div>
+  <div class="page-title">Weekend coverage<br><em>simulator</em></div>
+  <div class="page-sub">Toggle groups on or off to simulate call-outs, short staffing, or rotation gaps. See Saturday and Sunday totals update in real time.</div>
+
+  <div class="wknd-shell">
+    <div class="wknd-col">
+      <h3>Saturday groups</h3>
+      <div class="toggle-group" id="satGroups">
+        <div class="tog-row"><label class="tog-label"><input type="checkbox" checked onchange="updateWeekend()"><span class="tog-text">Fixed Sat — 5-day (Type B-Sat)</span><span class="tog-count">7</span></label></div>
+        <div class="tog-row"><label class="tog-label"><input type="checkbox" checked onchange="updateWeekend()"><span class="tog-text">Fixed Sat — 4-day (Type F-Sat)</span><span class="tog-count">3 <span style="font-size:.6rem;color:var(--ink4)">(of 3)</span></span></label></div>
+        <div style="height:1px;background:var(--rule);margin:.75rem 0"></div>
+        <div class="tog-row" style="align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem">Rotating group on this week</div>
+            <div style="display:flex;gap:8px">
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;cursor:pointer"><input type="radio" name="satRot" value="A" checked onchange="updateWeekend()"> Group S-A (~6)</label>
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;cursor:pointer"><input type="radio" name="satRot" value="B" onchange="updateWeekend()"> Group S-B (~6)</label>
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;cursor:pointer"><input type="radio" name="satRot" value="none" onchange="updateWeekend()"> None</label>
+            </div>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--rule);margin:.75rem 0"></div>
+        <div class="tog-row"><label class="tog-label"><input type="checkbox" checked onchange="updateWeekend()"><span class="tog-text">Part-time staff (this weekend)</span><span class="tog-count">~0.5</span></label></div>
+        <div class="input-group" style="margin-top:1rem">
+          <label class="input-label">Sat call-outs / absences</label>
+          <div class="num-row">
+            <button class="num-btn" onclick="nudgeWknd('satAbs',-1)">−</button>
+            <span class="num-val" id="satAbsVal">0</span>
+            <button class="num-btn" onclick="nudgeWknd('satAbs',1)">+</button>
+          </div>
+        </div>
+        <div class="input-group" style="margin-top:.75rem">
+          <label class="input-label">Sat PTO taken</label>
+          <div class="num-row">
+            <button class="num-btn" onclick="nudgeWknd('satPto',-1)">−</button>
+            <span class="num-val" id="satPtoVal">0</span>
+            <button class="num-btn" onclick="nudgeWknd('satPto',1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wknd-col">
+      <h3>Sunday groups</h3>
+      <div class="toggle-group" id="sunGroups">
+        <div class="tog-row"><label class="tog-label"><input type="checkbox" checked onchange="updateWeekend()"><span class="tog-text">Fixed Sun — 5-day (Type C)</span><span class="tog-count">4</span></label></div>
+        <div class="tog-row"><label class="tog-label"><input type="checkbox" checked onchange="updateWeekend()"><span class="tog-text">Fixed Sun — 4-day (Type F-Sun)</span><span class="tog-count">3</span></label></div>
+        <div style="height:1px;background:var(--rule);margin:.75rem 0"></div>
+        <div class="tog-row" style="align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem">Rotating group on this week</div>
+            <div style="display:flex;gap:8px">
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;cursor:pointer"><input type="radio" name="sunRot" value="A" checked onchange="updateWeekend()"> Group U-A (~5)</label>
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;cursor:pointer"><input type="radio" name="sunRot" value="B" onchange="updateWeekend()"> Group U-B (~5)</label>
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;cursor:pointer"><input type="radio" name="sunRot" value="none" onchange="updateWeekend()"> None</label>
+            </div>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--rule);margin:.75rem 0"></div>
+        <div class="tog-row"><label class="tog-label"><input type="checkbox" checked onchange="updateWeekend()"><span class="tog-text">Part-time staff (this weekend)</span><span class="tog-count">~0.5</span></label></div>
+        <div class="input-group" style="margin-top:1rem">
+          <label class="input-label">Sun call-outs / absences</label>
+          <div class="num-row">
+            <button class="num-btn" onclick="nudgeWknd('sunAbs',-1)">−</button>
+            <span class="num-val" id="sunAbsVal">0</span>
+            <button class="num-btn" onclick="nudgeWknd('sunAbs',1)">+</button>
+          </div>
+        </div>
+        <div class="input-group" style="margin-top:.75rem">
+          <label class="input-label">Sun PTO taken</label>
+          <div class="num-row">
+            <button class="num-btn" onclick="nudgeWknd('sunPto',-1)">−</button>
+            <span class="num-val" id="sunPtoVal">0</span>
+            <button class="num-btn" onclick="nudgeWknd('sunPto',1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wknd-results">
+      <h3>Live coverage</h3>
+      <div class="wknd-result-card" id="satResult">
+        <div class="wknd-day">Saturday</div>
+        <div class="wknd-big" id="satTotal">13</div>
+        <div class="wknd-target">target: 13</div>
+        <div id="satStatus"></div>
+        <div class="wknd-breakdown" id="satBreakdown"></div>
+      </div>
+      <div class="wknd-result-card" id="sunResult" style="margin-top:1rem">
+        <div class="wknd-day">Sunday</div>
+        <div class="wknd-big" id="sunTotal">12</div>
+        <div class="wknd-target">target: 12</div>
+        <div id="sunStatus"></div>
+        <div class="wknd-breakdown" id="sunBreakdown"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- R1: FULL ROSTER -->
+<section class="section" id="s12">
+  <div class="page-eyebrow">Roster 01</div>
+  <div class="page-title">Full staff<br><em>assignments</em></div>
+  <div class="page-sub">All 40 staff mapped to their proposed schedule type. Click any row to highlight. Use the search box to filter by name or schedule type.</div>
+
+  <div style="display:flex;gap:1rem;margin-bottom:1.25rem;align-items:center">
+    <input type="text" id="rosterSearch" placeholder="Search by name or schedule type..." oninput="filterRoster()" style="flex:1;max-width:360px">
+    <span style="font-family:var(--mono);font-size:.65rem;color:var(--ink3)" id="rosterCount">40 staff</span>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl" id="rosterTable">
+      <thead><tr>
+        <th>Name</th><th>Type</th><th>Days worked</th><th>Weekend</th><th>FTE</th><th>Notes</th>
+      </tr></thead>
+      <tbody id="rosterBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- R2: BY SCHEDULE TYPE -->
+<section class="section" id="s13">
+  <div class="page-eyebrow">Roster 02</div>
+  <div class="page-title">Staff by<br><em>schedule type</em></div>
+  <div class="page-sub">Eight schedule types plus part-time staff on individual fixed day arrangements.</div>
+  <div id="bySchedule"></div>
+</section>
+
+<!-- R3: ROTATION GROUPS -->
+<section class="section" id="s14">
+  <div class="page-eyebrow">Roster 03</div>
+  <div class="page-title">Weekend rotation<br><em>group assignments</em></div>
+  <div class="page-sub">21 rotating staff split into Saturday and Sunday pools, each divided into two alternating bi-weekly groups. Every rotating staff member works exactly 2 weekend days per month.</div>
+
+  <div class="card-grid card-grid-2" style="margin-bottom:1.5rem">
+    <div class="cal-card">
+      <div class="cal-title sat">Saturday pool — 11 staff</div>
+      <div style="margin-bottom:1rem">
+        <div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:.5rem">Group S-A — weeks 1 &amp; 3</div>
+        <div id="satA" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:.5rem">Group S-B — weeks 2 &amp; 4</div>
+        <div id="satB" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-title sun">Sunday pool — 10 staff</div>
+      <div style="margin-bottom:1rem">
+        <div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:.5rem">Group U-A — weeks 1 &amp; 3</div>
+        <div id="sunA" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:.5rem">Group U-B — weeks 2 &amp; 4</div>
+        <div id="sunB" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Sample month — rotation calendar</h3>
+    <table class="tbl">
+      <tr><th>Weekend</th><th>Saturday groups on</th><th>Sunday groups on</th><th>Fixed Sat</th><th>Fixed Sun</th></tr>
+      <tr><td>Week 1</td><td><span class="group-chip chip-sa">S-A (6)</span></td><td><span class="group-chip chip-ua">U-A (5)</span></td><td>8 fixed</td><td>7 fixed</td></tr>
+      <tr><td>Week 2</td><td><span class="group-chip chip-sb">S-B (5)</span></td><td><span class="group-chip chip-ub">U-B (5)</span></td><td>8 fixed</td><td>7 fixed</td></tr>
+      <tr><td>Week 3</td><td><span class="group-chip chip-sa">S-A (6)</span></td><td><span class="group-chip chip-ua">U-A (5)</span></td><td>8 fixed</td><td>7 fixed</td></tr>
+      <tr><td>Week 4</td><td><span class="group-chip chip-sb">S-B (5)</span></td><td><span class="group-chip chip-ub">U-B (5)</span></td><td>8 fixed</td><td>7 fixed</td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:0">
+    <h3>Projected weekend coverage with real names</h3>
+    <table class="tbl">
+      <tr><th></th><th>Saturday</th><th>Sunday</th></tr>
+      <tr><td>Fixed staff</td><td>8 (Tan + Liu,Mackay,Javed,Sheppard,Parker,Ibrahim,Del Priore)</td><td>7 (Britton,DiLapo,Chan,Belani,Paternite,Lebrun,Silberstein)</td></tr>
+      <tr><td>Rotating (weeks 1&amp;3)</td><td>S-A: 6</td><td>U-A: 5</td></tr>
+      <tr><td>Rotating (weeks 2&amp;4)</td><td>S-B: 5</td><td>U-B: 5</td></tr>
+      <tr><td>Part-time (avg)</td><td>~0.5</td><td>~0.5</td></tr>
+      <tr class="total"><td>Total</td><td><strong>~14–15</strong> (target 13) ✓</td><td><strong>~12–13</strong> (target 12) ✓</td></tr>
+    </table>
+  </div>
+  <div class="note"><strong>Note on D2:</strong> Type D2 (Mon,Tue,Thu,Fri) is a new addition to the model — not a new concept. This exact pattern already exists in current schedules (e.g. current schedules 2, 10, 12). It solves a structural gap: Mon and Fri are only simultaneously covered by staff who work both days. D2 covers both while keeping Wednesday as a day off, which many staff may welcome.</div>
+</section>
+
+
+<!-- C4: COMP DAY PLANNER -->
+<section class="section" id="s15">
+  <div class="page-eyebrow">Calculator 04</div>
+  <div class="page-title">Comp day<br><em>planner</em></div>
+  <div class="page-sub">Select a rotation week to see exactly which staff are working a weekend day, when their comp day falls, and the net weekday impact by day. Based on actual roster assignments.</div>
+
+  <div class="input-group" style="margin-bottom:1.5rem">
+    <label class="input-label">Rotation week</label>
+    <div class="seg-group" id="compWeekPicker">
+      <button class="seg active" onclick="setCompWeek('odd',this)">Odd weeks — S-A + U-A</button>
+      <button class="seg" onclick="setCompWeek('even',this)">Even weeks — S-B + U-B</button>
+    </div>
+  </div>
+
+  <div class="card-grid card-grid-2" style="margin-bottom:1.25rem">
+
+    <div class="card" style="margin-bottom:0">
+      <h3>Saturday workers this week</h3>
+      <div style="font-size:.78rem;color:var(--ink3);margin-bottom:.75rem;font-weight:300">These staff work Saturday and take a comp day Mon–Fri of the <em>same</em> week.</div>
+      <table class="tbl" id="satWorkersTable">
+        <thead><tr><th>Name</th><th>Type</th><th>Works Sat</th><th>Comp falls</th></tr></thead>
+        <tbody id="satWorkersList"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:0">
+      <h3>Sunday workers this week</h3>
+      <div style="font-size:.78rem;color:var(--ink3);margin-bottom:.75rem;font-weight:300">These staff work Sunday and take a comp day Mon–Fri of the <em>following</em> week.</div>
+      <table class="tbl" id="sunWorkersTable">
+        <thead><tr><th>Name</th><th>Type</th><th>Works Sun</th><th>Comp falls</th></tr></thead>
+        <tbody id="sunWorkersList"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <h3>Net weekday impact — this week vs. following week</h3>
+    <div style="font-size:.78rem;color:var(--ink3);margin-bottom:1rem;font-weight:300">Shows scheduled headcount minus expected comp days. Sat comp hits this week; Sun comp hits the following week.</div>
+    <div id="compImpactGrid"></div>
+  </div>
+
+  <div class="card" style="margin-top:0">
+    <h3>Comp day guidance by schedule type</h3>
+    <table class="tbl">
+      <tr><th>Schedule type</th><th>Staff</th><th>Weekdays available for comp</th><th>Best comp day</th></tr>
+      <tr><td><span class="type-pill tp-A">A</span> Mon–Fri</td><td>Bronfeld, Cooper, Waters, Wu</td><td>Mon, Tue, Wed, Thu, Fri</td><td>Thu (deepest buffer)</td></tr>
+      <tr><td><span class="type-pill tp-D2">D2</span> Mon,Tue,Thu,Fri</td><td>Costello, Riley, Conn, Seyffert, Snell, Rodgers, Himelfarb, Hiedacavage, Lauda</td><td>Mon, Tue, Thu, Fri</td><td>Thu (deepest buffer)</td></tr>
+      <tr><td><span class="type-pill tp-D">D</span> Mon–Thu</td><td>Ahluwalia, Dinneny, Taylor, Abraham</td><td>Mon, Tue, Wed, Thu</td><td>Thu or Wed</td></tr>
+      <tr><td><span class="type-pill tp-E">E</span> Tues–Fri</td><td>Petersen, Sopchak, Bautista, Nir</td><td>Tue, Wed, Thu, Fri</td><td>Thu (deepest buffer)</td></tr>
+    </table>
+    <div class="note" style="margin-top:1rem;margin-bottom:0">Thursday has a buffer of +8 above target and is the strongest absorber for comp days across all schedule types. Monday and Friday have zero buffer — comp days on those days during overlap weeks (weeks 2 &amp; 3) should be flagged in the same way as PTO on tight days.</div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+function go(idx, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('s'+idx).classList.add('active');
+  el.classList.add('active');
+  if(idx === 7) buildChart();
+}
+
+function showTab(id, group, btn) {
+  ['5day','4day','ptday'].forEach(t => {
+    const el = document.getElementById(t);
+    if(el) el.style.display = (t === id) ? 'block' : 'none';
+  });
+  btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function buildChart() {
+  const container = document.getElementById('absChart');
+  if(container.querySelector('svg')) return;
+  const data = [{m:'January',v:0.65},{m:'February',v:0.89},{m:'March',v:0.55}];
+  const buffer = 1.4; const optC = 0.4; const maxY = 1.6;
+  const W = container.offsetWidth || 500; const H = 160;
+  const padL = 40; const padR = 10; const padT = 20; const padB = 30;
+  const cW = W - padL - padR; const cH = H - padT - padB;
+
+  let svg = `<svg width="${W}" height="${H}" font-family="'DM Mono',monospace">`;
+  // gridlines
+  [0,0.5,1.0,1.5].forEach(v => {
+    const y = padT + cH - (v/maxY)*cH;
+    svg += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#eae7e0" stroke-width="1"/>`;
+    svg += `<text x="${padL-6}" y="${y+4}" text-anchor="end" font-size="9" fill="#aaa">${v.toFixed(1)}</text>`;
+  });
+  // bars
+  const bw = (cW/data.length)*0.45;
+  data.forEach((d,i) => {
+    const x = padL + (cW/data.length)*(i+0.5) - bw/2;
+    const bh = (d.v/maxY)*cH;
+    const y = padT + cH - bh;
+    svg += `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="#b5d4f4" rx="1"/>`;
+    svg += `<text x="${x+bw/2}" y="${y-5}" text-anchor="middle" font-size="9" fill="#555">${d.v}</text>`;
+    svg += `<text x="${x+bw/2}" y="${padT+cH+16}" text-anchor="middle" font-size="9" fill="#aaa">${d.m}</text>`;
+  });
+  // buffer lines
+  const bY = padT + cH - (buffer/maxY)*cH;
+  svg += `<line x1="${padL}" y1="${bY}" x2="${W-padR}" y2="${bY}" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="none"/>`;
+  svg += `<text x="${W-padR-2}" y="${bY-4}" text-anchor="end" font-size="9" fill="#2d6a4f">Option B buffer (1.4)</text>`;
+  const cY = padT + cH - (optC/maxY)*cH;
+  svg += `<line x1="${padL}" y1="${cY}" x2="${W-padR}" y2="${cY}" stroke="#e67e22" stroke-width="1.5" stroke-dasharray="5,3"/>`;
+  svg += `<text x="${W-padR-2}" y="${cY-4}" text-anchor="end" font-size="9" fill="#e67e22">Option C buffer (0.4)</text>`;
+  svg += '</svg>';
+  container.innerHTML = svg;
+}
+
+// ─── CALCULATOR STATE ───
+const DAY_DATA = {
+  Sun:{sched:12,maxPto:1,target:12,wknd:true},
+  Mon:{sched:24,maxPto:3,target:24,wknd:false},
+  Tue:{sched:29,maxPto:3,target:25,wknd:false},
+  Wed:{sched:27,maxPto:3,target:25,wknd:false},
+  Thu:{sched:36,maxPto:3,target:26,wknd:false},
+  Fri:{sched:25,maxPto:3,target:25,wknd:false},
+  Sat:{sched:14,maxPto:1,target:13,wknd:true}
+};
+
+// Avg comp days lost per weekday by rotation week type
+// sat: ~5.5 staff take comp same week spread across 5 days = 1.1/day
+// sun: ~5 staff take comp following week spread across 5 days = 1.0/day
+// both: ~10.5 total = 2.1/day
+const COMP_BY_WEEK = {none:0, sat:1.1, sun:1.0, both:2.1};
+// Max possible comp days in a week (for the nudge cap)
+const COMP_MAX_BY_WEEK = {none:0, sat:6, sun:5, both:11};
+
+const calcState = {day:'Sun', sched:12, pto:0, abs:0, comp:0, rotWeek:'none'};
+const ptoState  = {day:'Mon', approved:0, weekabs:0, fixedWknd:false, compdays:0};
+const wkndState = {satAbs:0, satPto:0, sunAbs:0, sunPto:0};
+
+function setRotWeek(type, btn){
+  calcState.rotWeek = type;
+  calcState.comp = 0;
+  document.getElementById('compVal').textContent = '0';
+  document.querySelectorAll('#rotWeekPicker .seg').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const compGroup = document.getElementById('compGroup');
+  const compHint  = document.getElementById('compHint');
+  if(type === 'none'){
+    compGroup.style.display = 'none';
+  } else {
+    compGroup.style.display = 'block';
+    const avg = COMP_BY_WEEK[type];
+    const maxC = COMP_MAX_BY_WEEK[type];
+    const who = type==='sat'?'Sat rotating staff (same week)':type==='sun'?'Sun rotating staff (following week)':'Sat + Sun rotating staff';
+    compHint.textContent = '('+who+', avg ~'+avg.toFixed(1)+'/day, max '+maxC+')';
+  }
+  updateCalc(); updateAllDays();
+}
+
+function setDay(d, sched, maxPto, btn){
+  calcState.day=d; calcState.sched=sched; calcState.pto=0; calcState.abs=0; calcState.comp=0;
+  document.getElementById('schedVal').textContent=sched;
+  document.getElementById('ptoVal').textContent='0';
+  document.getElementById('absVal').textContent='0';
+  document.getElementById('compVal').textContent='0';
+  document.getElementById('schedHint').textContent='(baseline: '+sched+')';
+  document.getElementById('ptoHint').textContent='(max '+maxPto+' on '+(DAY_DATA[d].wknd?'weekends':'weekdays')+')';
+  document.querySelectorAll('#dayPicker .seg').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  updateCalc(); updateAllDays();
+}
+
+function nudge(field, delta){
+  const d = DAY_DATA[calcState.day];
+  if(field==='sched') calcState.sched = Math.max(0, calcState.sched+delta);
+  if(field==='pto')   calcState.pto   = Math.max(0, Math.min(d.maxPto, calcState.pto+delta));
+  if(field==='abs')   calcState.abs   = Math.max(0, calcState.abs+delta);
+  if(field==='comp')  calcState.comp  = Math.max(0, Math.min(COMP_MAX_BY_WEEK[calcState.rotWeek], calcState.comp+delta));
+  document.getElementById(field+'Val').textContent = calcState[field];
+  updateCalc(); updateAllDays();
+}
+
+function updateCalc(){
+  const d   = DAY_DATA[calcState.day];
+  const net = calcState.sched - calcState.pto - calcState.abs - calcState.comp;
+  const diff = net - d.target;
+  document.getElementById('resultDay').textContent    = calcState.day;
+  document.getElementById('resultNum').textContent    = net;
+  document.getElementById('resultTarget').textContent = 'target: '+d.target;
+  const nb = document.getElementById('resultNum');
+  nb.className = 'result-num '+(diff>=0?'result-ok':diff>=-2?'result-warn':'result-risk');
+  const badge = document.getElementById('resultBadge');
+  const mkBadge = (bg,col,txt) => `<span style="background:${bg};color:${col};padding:3px 10px;border-radius:1px;font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase">${txt}</span>`;
+  if(diff>=2)       badge.innerHTML = mkBadge('rgba(110,231,183,.2)','#6ee7b7','Above target');
+  else if(diff===1) badge.innerHTML = mkBadge('rgba(110,231,183,.15)','#6ee7b7','Met +1');
+  else if(diff===0) badge.innerHTML = mkBadge('rgba(252,211,77,.2)','#fcd34d','Exactly at target');
+  else if(diff>=-2) badge.innerHTML = mkBadge('rgba(252,211,77,.15)','#fcd34d','Below target');
+  else              badge.innerHTML = mkBadge('rgba(252,165,165,.2)','#fca5a5','Significantly under');
+
+  let breakdown = calcState.sched+' scheduled';
+  if(calcState.pto>0)  breakdown += '<br>− '+calcState.pto+' PTO taken';
+  if(calcState.abs>0)  breakdown += '<br>− '+calcState.abs+' unplanned absence'+(calcState.abs>1?'s':'');
+  if(calcState.comp>0) breakdown += '<br>− '+calcState.comp+' comp day'+(calcState.comp>1?'s':'')+' (rotation)';
+  breakdown += '<br>= <strong style="color:#fff">'+net+' on floor</strong>';
+  if(calcState.rotWeek!=='none' && calcState.comp===0){
+    const avg = COMP_BY_WEEK[calcState.rotWeek];
+    breakdown += '<br><span style="color:rgba(255,255,255,.35);font-size:.7rem">↑ set comp days above (avg '+avg.toFixed(1)+'/day this week)</span>';
+  }
+  document.getElementById('resultBreakdown').innerHTML = breakdown;
+}
+
+function updateAllDays(){
+  const grid = document.getElementById('allDaysGrid');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const avgComp = DAY_DATA[calcState.day].wknd ? 0 : COMP_BY_WEEK[calcState.rotWeek];
+  grid.innerHTML = days.map(d => {
+    const dd = DAY_DATA[d];
+    const isActive = (d === calcState.day);
+    const pto  = isActive ? calcState.pto  : 0;
+    const abs  = isActive ? calcState.abs  : 0;
+    const comp = isActive ? calcState.comp : (dd.wknd ? 0 : avgComp);
+    const sched = isActive ? calcState.sched : dd.sched;
+    const net  = Math.round((sched - pto - abs - comp) * 10) / 10;
+    const diff = net - dd.target;
+    const col  = diff>=0 ? 'var(--accent3)' : diff>=-2 ? '#e67e22' : '#c0392b';
+    const border = isActive ? '2px solid var(--accent2)' : '1px solid var(--rule)';
+    const compLabel = (!isActive && !dd.wknd && avgComp>0) ? `<div style="font-size:.55rem;color:#e67e22;margin-top:.2rem">−${avgComp.toFixed(1)} comp</div>` : '';
+    return `<div class="cov-cell" style="border:${border}">
+      <div class="cov-day">${d}</div>
+      <div class="cov-num" style="color:${col}">${Math.round(net)}</div>
+      <div class="cov-target">target ${dd.target}</div>
+      ${compLabel}
+      <div class="cov-bar"><div class="cov-fill" style="width:${Math.min(100,Math.max(0,net/dd.target*100))}%;background:${col}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ─── PTO CHECKER ───
+function setPtoDay(d, btn){
+  ptoState.day=d; ptoState.approved=0; ptoState.weekabs=0; ptoState.compdays=0;
+  document.getElementById('approvedVal').textContent='0';
+  document.getElementById('weekabsVal').textContent='0';
+  document.getElementById('compdaysVal').textContent='0';
+  document.querySelectorAll('#ptoDayPicker .seg').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  updatePto();
+}
+
+function nudgePto(field, delta){
+  const d = DAY_DATA[ptoState.day];
+  if(field==='approved') ptoState.approved = Math.max(0, Math.min(d.maxPto, ptoState.approved+delta));
+  if(field==='weekabs')  ptoState.weekabs  = Math.max(0, ptoState.weekabs+delta);
+  if(field==='compdays') ptoState.compdays = Math.max(0, Math.min(11, ptoState.compdays+delta));
+  const ids = {approved:'approvedVal', weekabs:'weekabsVal', compdays:'compdaysVal'};
+  document.getElementById(ids[field]).textContent = ptoState[field];
+  updatePto();
+}
+
+function setFixed(val, btn){
+  ptoState.fixedWknd = val;
+  document.getElementById('fixedYes').classList.toggle('active', val);
+  document.getElementById('fixedNo').classList.toggle('active', !val);
+  updatePto();
+}
+
+function updatePto(){
+  const d      = DAY_DATA[ptoState.day];
+  const icon   = document.getElementById('ptoResultIcon');
+  const label  = document.getElementById('ptoResultLabel');
+  const badge  = document.getElementById('ptoResultBadge');
+  const detail = document.getElementById('ptoResultDetail');
+  document.getElementById('ptoResultDay').textContent = ptoState.day;
+
+  let recommendation='approve', reason=[], icon_char='✓';
+  const isMonFri = (ptoState.day==='Mon' || ptoState.day==='Fri');
+  const isThursFri = (ptoState.day==='Thu' || ptoState.day==='Fri');
+
+  if(d.wknd && !ptoState.fixedWknd){
+    recommendation='ineligible'; icon_char='✕';
+    reason.push('Weekend PTO is reserved for fixed weekend staff only');
+  } else if(ptoState.approved >= d.maxPto){
+    recommendation='full'; icon_char='✕';
+    reason.push('All '+d.maxPto+' slot'+(d.maxPto>1?'s':'')+' for '+ptoState.day+' are already taken');
+  } else if(ptoState.weekabs >= 2){
+    recommendation='flag'; icon_char='⚠';
+    reason.push('2+ unplanned absences already this week — review before approving');
+  } else if(isThursFri && ptoState.approved >= 2){
+    recommendation='flag'; icon_char='⚠';
+    reason.push(ptoState.day+' has zero buffer — '+ptoState.approved+' of '+d.maxPto+' slots already taken');
+  } else if(isMonFri && ptoState.compdays >= 2){
+    recommendation='flag'; icon_char='⚠';
+    reason.push('Rotation week with '+ptoState.compdays+' comp days already on '+ptoState.day+' — combined impact on a tight day');
+  } else if(isMonFri && ptoState.compdays >= 1 && ptoState.approved >= 2){
+    recommendation='flag'; icon_char='⚠';
+    reason.push('Comp days + PTO stacking on '+ptoState.day+' — Mon/Fri have no buffer');
+  } else {
+    const remaining = d.maxPto - ptoState.approved;
+    reason.push((remaining-1)+' slot'+(remaining-2===0?'':'s')+' remaining after this approval');
+    if(isMonFri) reason.push('Note: '+ptoState.day+' has no buffer — monitor comp day stacking on rotation weeks');
+    if(ptoState.compdays>0) reason.push(ptoState.compdays+' comp day'+(ptoState.compdays>1?'s':'')+' already today — within tolerance');
+  }
+
+  const colors  = {approve:'#6ee7b7', flag:'#fcd34d', full:'#fca5a5', ineligible:'#fca5a5'};
+  const labels  = {approve:'Approve', flag:'Flag for review', full:'No slots available', ineligible:'Ineligible'};
+  const bgColors= {approve:'rgba(110,231,183,.2)', flag:'rgba(252,211,77,.2)', full:'rgba(252,165,165,.2)', ineligible:'rgba(252,165,165,.2)'};
+
+  icon.textContent  = icon_char;
+  icon.style.color  = colors[recommendation];
+  label.textContent = labels[recommendation];
+  label.style.color = colors[recommendation];
+  badge.innerHTML   = `<span style="background:${bgColors[recommendation]};color:${colors[recommendation]};padding:3px 10px;border-radius:1px;font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase">${labels[recommendation]}</span>`;
+
+  detail.innerHTML = '<div style="color:rgba(255,255,255,.5);line-height:2">'
+    +'<div>Day: <strong style="color:#fff">'+ptoState.day+'</strong></div>'
+    +'<div>Slots taken: <strong style="color:#fff">'+ptoState.approved+' / '+d.maxPto+'</strong></div>'
+    +'<div>Week absences: <strong style="color:#fff">'+ptoState.weekabs+'</strong></div>'
+    +'<div>Comp days today: <strong style="color:#fff">'+ptoState.compdays+'</strong></div>'
+    +'<div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.1);color:'+colors[recommendation]+'">'
+    +reason.map(r=>'→ '+r).join('<br>')+'</div></div>';
+}
+
+// ─── WEEKEND SIMULATOR ───
+function nudgeWknd(field, delta){
+  wkndState[field] = Math.max(0, wkndState[field]+delta);
+  document.getElementById(field+'Val').textContent = wkndState[field];
+  updateWeekend();
+}
+
+function updateWeekend(){
+  const satCBs = document.querySelectorAll('#satGroups input[type=checkbox]');
+  const sunCBs = document.querySelectorAll('#sunGroups input[type=checkbox]');
+  const satRot = document.querySelector('input[name="satRot"]:checked').value;
+  const sunRot = document.querySelector('input[name="sunRot"]:checked').value;
+
+  let sat=0;
+  if(satCBs[0].checked) sat+=7;
+  if(satCBs[1].checked) sat+=3;
+  if(satRot==='A') sat+=6;
+  else if(satRot==='B') sat+=5;
+  if(satCBs[2].checked) sat+=0.5;
+  sat -= wkndState.satAbs;
+  sat -= wkndState.satPto;
+
+  let sun=0;
+  if(sunCBs[0].checked) sun+=4;
+  if(sunCBs[1].checked) sun+=3;
+  if(sunRot==='A') sun+=5;
+  else if(sunRot==='B') sun+=5;
+  if(sunCBs[2].checked) sun+=0.5;
+  sun -= wkndState.sunAbs;
+  sun -= wkndState.sunPto;
+
+  const satNet = Math.max(0, Math.round(sat));
+  const sunNet = Math.max(0, Math.round(sun));
+
+  function statusBadge(net, target){
+    const diff = net-target;
+    if(diff>=0) return '<span style="background:rgba(110,231,183,.2);color:#6ee7b7;padding:2px 8px;border-radius:1px;font-family:var(--mono);font-size:.58rem;letter-spacing:.05em;text-transform:uppercase">On target</span>';
+    if(diff>=-2) return '<span style="background:rgba(252,211,77,.2);color:#fcd34d;padding:2px 8px;border-radius:1px;font-family:var(--mono);font-size:.58rem;letter-spacing:.05em;text-transform:uppercase">Below target</span>';
+    return '<span style="background:rgba(252,165,165,.2);color:#fca5a5;padding:2px 8px;border-radius:1px;font-family:var(--mono);font-size:.58rem;letter-spacing:.05em;text-transform:uppercase">Significantly under</span>';
+  }
+
+  document.getElementById('satTotal').textContent = satNet;
+  document.getElementById('satTotal').style.color = satNet>=13?'#6ee7b7':satNet>=11?'#fcd34d':'#fca5a5';
+  document.getElementById('satStatus').innerHTML  = statusBadge(satNet,13);
+  document.getElementById('sunTotal').textContent = sunNet;
+  document.getElementById('sunTotal').style.color = sunNet>=12?'#6ee7b7':sunNet>=10?'#fcd34d':'#fca5a5';
+  document.getElementById('sunStatus').innerHTML  = statusBadge(sunNet,12);
+
+  const satBreak =
+    (satCBs[0].checked?'8 fixed (Tan + F-Sat 7)<br>':'0 fixed Sat<br>')
+    +(satRot!=='none'?'+ '+(satRot==='A'?6:5)+' rotating (Group S-'+satRot+')<br>':'0 rotating<br>')
+    +(satCBs[2].checked?'+ ~0.5 part-time<br>':'')
+    +(wkndState.satAbs>0?'− '+wkndState.satAbs+' absence(s)<br>':'')
+    +(wkndState.satPto>0?'− '+wkndState.satPto+' PTO<br>':'')
+    +'<strong style="color:#fff">= '+satNet+' on floor</strong>';
+
+  const sunBreak =
+    (sunCBs[0].checked?'7 fixed (F-Sun 7)<br>':'0 fixed Sun<br>')
+    +(sunRot!=='none'?'+ '+(sunRot==='A'?5:5)+' rotating (Group U-'+sunRot+')<br>':'0 rotating<br>')
+    +(sunCBs[2].checked?'+ ~0.5 part-time<br>':'')
+    +(wkndState.sunAbs>0?'− '+wkndState.sunAbs+' absence(s)<br>':'')
+    +(wkndState.sunPto>0?'− '+wkndState.sunPto+' PTO<br>':'')
+    +'<strong style="color:#fff">= '+sunNet+' on floor</strong>';
+
+  document.getElementById('satBreakdown').innerHTML = satBreak;
+  document.getElementById('sunBreakdown').innerHTML = sunBreak;
+}
+
+updateCalc(); updateAllDays(); updatePto(); updateWeekend();
+
+
+// ─── ROSTER DATA ───
+const ROSTER = [
+  {name:"Bronfeld",   type:"A",     days:"Mon–Fri",           wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Wu",         type:"A",     days:"Mon–Fri",           wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Cooper",     type:"A",     days:"Mon–Fri",           wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Waters",     type:"A",     days:"Mon–Fri",           wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Tan",        type:"B-Sat",     days:"Tues–Sat",          wknd:"Fixed Saturday",  fte:1.0, notes:"Incoming"},
+  {name:"Costello",   type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Rodgers",    type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Riley",      type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Himelfarb",  type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Conn",       type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Hiedacavage",type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Seyffert",   type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Lauda",      type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Snell",      type:"D2",    days:"Mon,Tue,Thu,Fri",   wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Ahluwalia",  type:"D",     days:"Mon–Thu",           wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Dinneny",    type:"D",     days:"Mon–Thu",           wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Taylor",     type:"D",     days:"Mon–Thu",           wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Abraham",    type:"D",     days:"Mon–Thu",           wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Petersen",   type:"E",     days:"Tues–Fri",          wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Sopchak",    type:"E",     days:"Tues–Fri",          wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Bautista",   type:"E",     days:"Tues–Fri",          wknd:"1 full weekend/month (Sat)",  fte:1.0, notes:""},
+  {name:"Nir",        type:"E",     days:"Tues–Fri",          wknd:"1 full weekend/month (Sun)",  fte:1.0, notes:""},
+  {name:"Liu",        type:"F-Sat", days:"Wed–Sat",           wknd:"Fixed Saturday",  fte:1.0, notes:""},
+  {name:"Mackay",     type:"F-Sat", days:"Wed–Sat",           wknd:"Fixed Saturday",  fte:1.0, notes:""},
+  {name:"Javed",      type:"F-Sat", days:"Wed–Sat",           wknd:"Fixed Saturday",  fte:1.0, notes:""},
+  {name:"Sheppard",   type:"F-Sat", days:"Wed–Sat",           wknd:"Fixed Saturday",  fte:1.0, notes:""},
+  {name:"Parker",     type:"F-Sat", days:"Wed–Sat",           wknd:"Fixed Saturday",  fte:1.0, notes:""},
+  {name:"Ibrahim",    type:"F-Sat", days:"Wed–Sat",           wknd:"Fixed Saturday",  fte:1.0, notes:""},
+  {name:"Del Priore", type:"F-Sat", days:"Wed–Sat",           wknd:"Fixed Saturday",  fte:1.0, notes:""},
+  {name:"Britton",    type:"F-Sun", days:"Sun, Mon–Thu",           wknd:"Fixed Sunday",    fte:1.0, notes:""},
+  {name:"DiLapo",     type:"F-Sun", days:"Sun, Mon–Thu",           wknd:"Fixed Sunday",    fte:1.0, notes:""},
+  {name:"Chan",       type:"F-Sun", days:"Sun, Mon–Thu",           wknd:"Fixed Sunday",    fte:1.0, notes:""},
+  {name:"Belani",     type:"F-Sun", days:"Sun, Mon–Thu",           wknd:"Fixed Sunday",    fte:1.0, notes:""},
+  {name:"Paternite",  type:"F-Sun", days:"Sun, Mon–Thu",           wknd:"Fixed Sunday",    fte:1.0, notes:""},
+  {name:"Lebrun",     type:"F-Sun", days:"Sun, Mon–Thu",           wknd:"Fixed Sunday",    fte:1.0, notes:""},
+  {name:"Silberstein",type:"F-Sun", days:"Sun, Mon–Thu",           wknd:"Fixed Sunday",    fte:1.0, notes:""},
+  {name:"Woods",      type:"PT",    days:"Tue, Thu",          wknd:"1 full weekend/month",  fte:0.5, notes:"0.5 FTE"},
+  {name:"Hwang",      type:"PT",    days:"Mon, Fri",          wknd:"1 full weekend/month",  fte:0.5, notes:"0.5 FTE"},
+  {name:"Milko",      type:"PT",    days:"Thu, Fri",          wknd:"1 full weekend/month",  fte:0.4, notes:"0.4 FTE"},
+  {name:"O'Hara",     type:"PT",    days:"Thu",               wknd:"1 full weekend/month",  fte:0.2, notes:"0.2 FTE"},
+];
+
+const TYPE_LABELS = {
+  'A':    'Mon–Fri (5-day)',
+  'B-Sat':    'Tues–Sat (5-day, fixed Sat)',
+  'D2':   'Mon,Tue,Thu,Fri (4-day)',
+  'D':    'Mon–Thu (4-day)',
+  'E':    'Tues–Fri (4-day)',
+  'F-Sat':'Wed–Sat (4-day, fixed Sat)',
+  'F-Sun':'Sun, Mon–Thu (4-day, fixed Sun)',
+  'PT':   'Part-time (individual fixed days)',
+};
+
+function typePill(t){
+  const cls=t.replace('-','');
+  return `<span class="type-pill tp-${cls}">${t}</span>`;
+}
+
+function renderRoster(data){
+  const tbody=document.getElementById('rosterBody');
+  tbody.innerHTML=data.map((r,i)=>`
+    <tr onclick="selectRow(this)" style="cursor:pointer">
+      <td><strong>${r.name}</strong>${r.notes?` <span style="font-size:.7rem;color:var(--ink4)">(${r.notes})</span>`:''}</td>
+      <td>${typePill(r.type)}</td>
+      <td style="font-family:var(--mono);font-size:.75rem">${r.days}</td>
+      <td style="font-size:.8rem">${r.wknd}</td>
+      <td style="font-family:var(--mono);font-size:.75rem">${r.fte}</td>
+      <td style="font-size:.75rem;color:var(--ink3)">${r.notes||'—'}</td>
+    </tr>`).join('');
+  document.getElementById('rosterCount').textContent=data.length+' staff';
+}
+
+function filterRoster(){
+  const q=document.getElementById('rosterSearch').value.toLowerCase();
+  const filtered=ROSTER.filter(r=>r.name.toLowerCase().includes(q)||r.type.toLowerCase().includes(q)||r.days.toLowerCase().includes(q)||r.wknd.toLowerCase().includes(q));
+  renderRoster(filtered);
+}
+
+function selectRow(tr){
+  document.querySelectorAll('#rosterTable tr.row-selected').forEach(r=>r.classList.remove('row-selected'));
+  tr.classList.add('row-selected');
+}
+
+function renderBySchedule(){
+  const types=['A','B-Sat','C-Sun','D2','D','E','F-Sat','F-Sun','PT'];
+  const container=document.getElementById('bySchedule');
+  const dayMap={
+    'A':['Mon','Tue','Wed','Thu','Fri'],
+    'B':['Tue','Wed','Thu','Fri','Sat'],
+    'D2':['Mon','Tue','Thu','Fri'],
+    'D':['Mon','Tue','Wed','Thu'],
+    'E':['Tue','Wed','Thu','Fri'],
+    'F-Sat':['Wed','Thu','Fri','Sat'],
+    'F-Sun':['Sun','Mon','Tue','Wed','Thu'],
+    'PT':['Mon','Tue','Thu','Fri']
+  };
+  const allDays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  container.innerHTML=types.map(t=>{
+    const staff=ROSTER.filter(r=>r.type===t);
+    const worked=dayMap[t];
+    const pills=allDays.map(d=>{
+      const on=worked.includes(d);
+      const wknd=(d==='Sat'||d==='Sun');
+      const cls=on?(wknd?'pill-wknd':'pill-on'):'pill-off';
+      return `<div class="day-pill ${cls}">${d.slice(0,2)}</div>`;
+    }).join('');
+    const cls=t.replace('-','');
+    return `<div class="sched-block">
+      <div class="sched-header">
+        <div class="sched-count">${staff.length}</div>
+        <div class="sched-info">
+          <div class="sched-name">${typePill(t)} &nbsp;${TYPE_LABELS[t]}</div>
+          <div class="day-row" style="margin-top:.5rem">${pills}</div>
+        </div>
+      </div>
+      <div class="staff-list">${staff.map(s=>`<span class="name-chip">${s.name}${s.fte<1?' <span style="font-size:.65rem;color:var(--ink4)">(${s.fte})</span>':''}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderRotationGroups(){
+  const groups={
+    satA:['Bronfeld','Cooper','Waters','Costello','Riley','Conn'],
+    satB:['Seyffert','Snell','Petersen','Sopchak','Bautista'],
+    sunA:['Wu','Rodgers','Himelfarb','Nir','Lauda'],
+    sunB:['Hiedacavage','Ahluwalia','Dinneny','Taylor','Abraham']
+  };
+  const chipColors={
+    satA:'chip-sa',satB:'chip-sb',sunA:'chip-ua',sunB:'chip-ub'
+  };
+  Object.entries(groups).forEach(([id,names])=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=names.map(n=>`<span class="group-chip ${chipColors[id]}">${n}</span>`).join('');
+  });
+}
+
+// init roster sections when navigated to
+const origGo=go;
+go=function(idx,el){
+  origGo(idx,el);
+  if(idx===12){renderRoster(ROSTER);}
+  if(idx===13){renderBySchedule();}
+  if(idx===14){renderRotationGroups();}
+};
+
+// pre-render roster on page load
+setTimeout(()=>{
+  renderRoster(ROSTER);
+  renderBySchedule();
+  renderRotationGroups();
+},100);
+
+
+// ─── COMP DAY PLANNER ───
+const ROTATION_GROUPS = {
+  satA: ['Bronfeld','Cooper','Waters','Costello','Riley','Conn'],
+  satB: ['Seyffert','Snell','Petersen','Sopchak','Bautista'],
+  sunA: ['Wu','Rodgers','Himelfarb','Nir','Lauda'],
+  sunB: ['Hiedacavage','Ahluwalia','Dinneny','Taylor','Abraham']
+};
+
+const STAFF_TYPE = {
+  Bronfeld:'A', Cooper:'A', Waters:'A', Wu:'A',
+  Costello:'D2', Riley:'D2', Conn:'D2', Seyffert:'D2', Snell:'D2',
+  Rodgers:'D2', Himelfarb:'D2', Hiedacavage:'D2', Lauda:'D2',
+  Ahluwalia:'D', Dinneny:'D', Taylor:'D', Abraham:'D',
+  Petersen:'E', Sopchak:'E', Bautista:'E', Nir:'E'
+};
+
+// Days each schedule type works (weekdays only)
+const TYPE_WEEKDAYS = {
+  A:  ['Mon','Tue','Wed','Thu','Fri'],
+  D2: ['Mon','Tue','Thu','Fri'],
+  D:  ['Mon','Tue','Wed','Thu'],
+  E:  ['Tue','Wed','Thu','Fri']
+};
+
+// Best comp day suggestion per type
+const BEST_COMP = {A:'Thu', D2:'Thu', D:'Thu', E:'Thu'};
+
+const WEEK_CONFIG = {
+  odd:  {sat:'satA', sun:'sunA', label:'Odd weeks (1, 3, 5…)'},
+  even: {sat:'satB', sun:'sunB', label:'Even weeks (2, 4, 6…)'}
+};
+
+// Baseline scheduled staff per weekday (from DAY_DATA)
+const WEEKDAY_BASE = {Mon:24, Tue:29, Wed:27, Thu:36, Fri:25};
+const WEEKDAY_TARGET = {Mon:24, Tue:25, Wed:25, Thu:26, Fri:25};
+
+let currentCompWeek = 'odd';
+
+function setCompWeek(week, btn){
+  currentCompWeek = week;
+  document.querySelectorAll('#compWeekPicker .seg').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCompPlanner();
+}
+
+function renderCompPlanner(){
+  const cfg = WEEK_CONFIG[currentCompWeek];
+  const satWorkers = ROTATION_GROUPS[cfg.sat];
+  const sunWorkers = ROTATION_GROUPS[cfg.sun];
+
+  // Render sat workers table
+  document.getElementById('satWorkersList').innerHTML = satWorkers.map(name => {
+    const type = STAFF_TYPE[name];
+    const days = TYPE_WEEKDAYS[type];
+    const best = BEST_COMP[type];
+    return `<tr>
+      <td><strong>${name}</strong></td>
+      <td><span class="type-pill tp-${type.replace('-','')}">${type}</span></td>
+      <td style="font-family:var(--mono);font-size:.7rem">Saturday</td>
+      <td style="font-size:.78rem">This week — <span style="color:var(--accent3);font-weight:500">${best} preferred</span><br>
+        <span style="color:var(--ink4);font-size:.7rem">Any of: ${days.join(', ')}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Render sun workers table
+  document.getElementById('sunWorkersList').innerHTML = sunWorkers.map(name => {
+    const type = STAFF_TYPE[name];
+    const days = TYPE_WEEKDAYS[type];
+    const best = BEST_COMP[type];
+    return `<tr>
+      <td><strong>${name}</strong></td>
+      <td><span class="type-pill tp-${type.replace('-','')}">${type}</span></td>
+      <td style="font-family:var(--mono);font-size:.7rem">Sunday</td>
+      <td style="font-size:.78rem">Following week — <span style="color:var(--accent3);font-weight:500">${best} preferred</span><br>
+        <span style="color:var(--ink4);font-size:.7rem">Any of: ${days.join(', ')}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Compute comp day pressure per weekday
+  // For each weekday, count how many sat workers could take comp there this week
+  // and how many sun workers could take comp there (following week)
+  const days = ['Mon','Tue','Wed','Thu','Fri'];
+
+  // Count sat comp exposure this week
+  const satCompCount = {};
+  const sunCompCount = {};
+  days.forEach(d => { satCompCount[d] = 0; sunCompCount[d] = 0; });
+
+  satWorkers.forEach(name => {
+    const type = STAFF_TYPE[name];
+    TYPE_WEEKDAYS[type].forEach(d => satCompCount[d]++);
+  });
+  sunWorkers.forEach(name => {
+    const type = STAFF_TYPE[name];
+    TYPE_WEEKDAYS[type].forEach(d => sunCompCount[d]++);
+  });
+
+  // Each worker takes exactly 1 comp day — spread evenly across their available days
+  // Probability per day = 1 / num_available_days
+  const satExpected = {};
+  const sunExpected = {};
+  days.forEach(d => { satExpected[d] = 0; sunExpected[d] = 0; });
+
+  satWorkers.forEach(name => {
+    const type = STAFF_TYPE[name];
+    const avail = TYPE_WEEKDAYS[type].length;
+    TYPE_WEEKDAYS[type].forEach(d => satExpected[d] += 1/avail);
+  });
+  sunWorkers.forEach(name => {
+    const type = STAFF_TYPE[name];
+    const avail = TYPE_WEEKDAYS[type].length;
+    TYPE_WEEKDAYS[type].forEach(d => sunExpected[d] += 1/avail);
+  });
+
+  // Build impact grid — two rows: this week (sat comp) and following week (sun comp)
+  const mkCell = (day, base, compLoss, target, label) => {
+    const net = base - compLoss;
+    const diff = net - target;
+    const col = diff >= 0 ? 'var(--accent3)' : diff >= -2 ? '#e67e22' : '#c0392b';
+    const compStr = compLoss > 0 ? `<div style="font-size:.65rem;color:#e67e22">−${compLoss.toFixed(1)} comp</div>` : `<div style="font-size:.65rem;color:var(--ink4)">no comp</div>`;
+    const bufStr = diff >= 0
+      ? `<span style="color:var(--accent3);font-size:.6rem">+${diff.toFixed(0)}</span>`
+      : `<span style="color:#c0392b;font-size:.6rem">${diff.toFixed(0)}</span>`;
+    return `<div class="cov-cell">
+      <div class="cov-day">${day}</div>
+      <div class="cov-num" style="color:${col};font-size:1.4rem">${Math.round(net)}</div>
+      <div class="cov-target">target ${target} ${bufStr}</div>
+      ${compStr}
+      <div class="cov-bar"><div class="cov-fill" style="width:${Math.min(100,Math.max(0,net/target*100))}%;background:${col}"></div></div>
+    </div>`;
+  };
+
+  const thisWeekGrid = `<div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem">${cfg.label} — sat comp (same week) + baseline</div>
+    <div class="coverage-grid" style="margin-bottom:1.25rem">${days.map(d => mkCell(d, WEEKDAY_BASE[d], satExpected[d], WEEKDAY_TARGET[d], 'this week')).join('')}</div>`;
+
+  const followWeekGrid = `<div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem">Following week — sun comp from ${cfg.label}</div>
+    <div class="coverage-grid" style="margin-bottom:0">${days.map(d => mkCell(d, WEEKDAY_BASE[d], sunExpected[d], WEEKDAY_TARGET[d], 'following week')).join('')}</div>`;
+
+  document.getElementById('compImpactGrid').innerHTML = thisWeekGrid + followWeekGrid;
+}
+
+// init on section load
+const _origGo2 = go;
+go = function(idx, el){
+  _origGo2(idx, el);
+  if(idx === 15) renderCompPlanner();
+};
+setTimeout(() => renderCompPlanner(), 150);
+
+</script>
+</body>
+</html>
