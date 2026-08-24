@@ -1,19 +1,4 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-							<style>
-								body {
-									background-color: white; /* Ensure the iframe has a white background */
-								}
-
-								
-							</style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -136,7 +121,7 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 </style>
 </head>
 <body>
-<header><h1>Clinical Department — Staffing Model</h1><p>Sun–Sat weeks · hard ≥−1 cap · N-1 grown to 2 (most-desirable) · N-4 excluded (no occupant) · attribute-tag desirability</p></header>
+<header><h1>Clinical Department — Staffing Model</h1><p>Sun–Sat weeks · hard ≥−1 cap · N-1 grown to 3 (Morrissey Thu-Fri-Sat move + N-3→N-1 pull, restores Tuesday) · N-4 excluded (no occupant) · attribute-tag desirability</p></header>
 <div class="tabs">
 <div class="tab active" data-page="bid">Bidding Model</div>
 <div class="tab" data-page="cal">Weekly Calendar</div>
@@ -272,12 +257,14 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 </div>
 <div class="page" id="grow">
 <div class="card"><h2>Growth Planner — Where to Add Slots as You Scale</h2>
-<div class="controls">
+<p class="note">Three-phase hierarchy, each phase computed against the live floor math (base archetype coverage + weekend rotation + comp-day placement), not a fixed list: <b>Phase 1 — fill deficits</b> (minimize below-floor cells across all 9 candidate archetypes, including N-4, which has no current occupant but a new hire can seed cleanly). <b>Phase 2 — scale logically</b> (once deficits are gone, keep building until every day has at least a +1 cushion — enough to absorb the department's documented &lt;1/day average call-out without dropping below floor). <b>Phase 3 — desirability</b> (once that cushion exists everywhere, further growth serves staff satisfaction, restricted to N-1 and N-4 — the only two archetypes Part 8.1 actually names as most-desirable).</p>
+<div id="growGap" class="metric" style="margin-top:10px"></div>
+<div class="controls" style="margin-top:10px">
 <label>Add staff: <input type="number" id="growN" value="0" min="0" max="20" style="width:70px"></label>
 <span id="growTotal" class="note"></span>
 </div>
+<div id="growCompare" style="margin-bottom:14px"></div>
 <div id="growPlan"></div>
-<p class="note">First priority: seed the desirable weekday-only archetypes (N-1 Mon–Thu, N-4 Tue–Fri) that can't grow to 3 within current headcount without a −2 — a new hire adds the seat AND its coverage [1]. Then protect Thursday (26), Friday/Monday.</p>
 </div>
 <div class="card"><h2>Required Headcount per Schedule (Minimums)</h2><table id="growReqTbl"></table></div>
 </div>
@@ -297,12 +284,12 @@ const ARCH={
 "N-3":["Mon","Wed","Thu","Fri"],"N-5":["Mon","Tue","Wed","Thu","Fri"]
 };
 const ARCH_CAT={"S-Sat-A":"Shifted (Sat) 4d","S-Sat-B":"Shifted (Sat) 4d","S-Sun-A":"Shifted (Sun) 4d","S-Sun-B":"Shifted (Sun) 4d","N-1":"Non-shifted 4d","N-2":"Non-shifted 4d (Mon+Fri)","N-3":"Non-shifted 4d (Mon+Fri)","N-5":"Non-shifted 5d"};
-const REQUIRED={"S-Sat-A":5,"S-Sat-B":4,"S-Sun-A":6,"S-Sun-B":4,"N-1":2,"N-2":6,"N-3":6,"N-5":2};
+const REQUIRED={"S-Sat-A":5,"S-Sat-B":4,"S-Sun-A":6,"S-Sun-B":4,"N-1":3,"N-2":6,"N-3":5,"N-5":2};
 const ATTR={
 "N-1":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Fri off",rot:true},
 "N-2":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Wed off",rot:true},
 "N-3":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Tue off",rot:true},
-"N-5":{days:"5d",hrs:"~8h/day",wknd:"none",wkndcls:"tag-wknd-none",off:"weekend off",rot:false},
+"N-5":{days:"5d",hrs:"~8h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"weekend off",rot:true},
 "S-Sat-A":{days:"4d",hrs:"~10h/day",wknd:"fixed Sat",wkndcls:"tag-wknd-fix",off:"Mon/Thu off",rot:false},
 "S-Sat-B":{days:"4d",hrs:"~10h/day",wknd:"fixed Sat",wkndcls:"tag-wknd-fix",off:"Mon/Wed off",rot:false},
 "S-Sun-A":{days:"4d",hrs:"~10h/day",wknd:"fixed Sun",wkndcls:"tag-wknd-fix",off:"Tue/Fri off",rot:false},
@@ -313,27 +300,26 @@ const STAFF=[
 {n:"Javed",a:"S-Sat-B",rot:false},{n:"Parker",a:"S-Sat-B",rot:false},{n:"Tan",a:"S-Sat-B",rot:false},{n:"Castro",a:"S-Sat-B",rot:false},
 {n:"Britton",a:"S-Sun-A",rot:false},{n:"Chan",a:"S-Sun-A",rot:false},{n:"Paternite",a:"S-Sun-A",rot:false},{n:"Silberstein",a:"S-Sun-A",rot:false},{n:"Pardo",a:"S-Sun-A",rot:false},{n:"Waters",a:"S-Sun-A",rot:false},
 {n:"DiLapo",a:"S-Sun-B",rot:false},{n:"Belani",a:"S-Sun-B",rot:false},{n:"Lebrun",a:"S-Sun-B",rot:false},{n:"Cooper",a:"S-Sun-B",rot:false},
-{n:"Dinneny",a:"N-3",rot:true},{n:"Taylor",a:"N-3",rot:true},{n:"Berkman",a:"N-3",rot:true},{n:"Riley",a:"N-3",rot:true},
+{n:"Dinneny",a:"N-1",rot:true},{n:"Taylor",a:"N-3",rot:true},{n:"Berkman",a:"N-3",rot:true},{n:"Riley",a:"N-3",rot:true},
 {n:"Seyffert",a:"N-2",rot:true},{n:"Conn",a:"N-2",rot:true},{n:"Hiedacavage",a:"N-2",rot:true},{n:"Costello",a:"N-2",rot:true},
 {n:"Ahluwalia",a:"N-3",rot:true},{n:"Petersen",a:"N-2",rot:true},{n:"Snell",a:"N-3",rot:true},{n:"Rodgers",a:"N-2",rot:true},
 {n:"Lauda",a:"N-1",rot:true},{n:"Abraham",a:"N-1",rot:true},
-{n:"Bronfeld",a:"N-5",rot:false},{n:"Wu",a:"N-5",rot:false}
+{n:"Bronfeld",a:"N-5",rot:true},{n:"Wu",a:"N-5",rot:true}
 ];
 const PT={
 "Milko":[["Thu","Fri"],["Thu","Fri"],["Fri","Sat"],["Thu","Fri"]],
 "Woods":[["Tue","Sat"],["Sun","Tue"],["Tue","Thu"],["Tue","Thu"]],
 "OHara":[["Thu"],["Thu"],["Thu"],["Thu"]],
 "Hwang":[["Mon","Fri"],["Mon","Sat"],["Sun","Mon"],["Mon","Fri"]],
-"Morrissey":[["Tue","Wed","Thu"],["Tue","Wed","Thu"],["Tue","Wed","Sat"],["Tue","Wed","Thu"]]
+"Morrissey":[["Thu","Fri","Sat"],["Thu","Fri","Sat"],["Thu","Fri","Sat"],["Thu","Fri","Sat"]]
 };
 const PT_SUGGEST={
-"Milko":{fte:"0.4",days:[["Thu","Fri"],["Thu","Fri"],["Fri","Mon"],["Thu","Fri"]],note:"Wk3 Sat → Mon — fixes Wk3 Monday −1 (senior claim over Morrissey)"},
-"Woods":{fte:"0.5",days:[["Tue","Mon"],["Fri","Tue"],["Tue","Thu"],["Tue","Thu"]],note:"Wk1 Sat → Mon (fixes Wk1 Mon −1); Wk2 Sun → Fri (fixes Wk2 Fri −1)"},
+"Milko":{fte:"0.4",days:[["Thu","Fri"],["Thu","Fri"],["Fri","Mon"],["Thu","Fri"]],note:"Wk3 Sat → Mon — fixes Wk3 Monday −1"},
+"Woods":{fte:"0.5",days:[["Tue","Mon"],["Mon","Tue"],["Tue","Thu"],["Tue","Thu"]],note:"Wk1 Sat → Mon (fixes Wk1 Monday −1); Wk2 Sun → Mon (fixes Wk2 Monday −1)"},
 "OHara":{fte:"0.2",days:[["Thu"],["Thu"],["Thu"],["Thu"]],note:"No change — already optimal on Thursday (tightest floor, 26)"},
-"Hwang":{fte:"0.5",days:[["Mon","Fri"],["Mon","Fri"],["Fri","Mon"],["Mon","Fri"]],note:"Wk2 Sat → Fri (fixes Wk2 Fri −1); Wk3 Sun → Fri (fixes Wk3 Fri −1)"},
-"Morrissey":{fte:"0.6",days:[["Tue","Wed","Thu"],["Tue","Wed","Thu"],["Tue","Wed","Thu"],["Tue","Wed","Thu"]],note:"Wk3 Sat → Thu (buffer) — both Wk3 deficits already covered by Milko & Hwang; least senior"}
+"Hwang":{fte:"0.5",days:[["Mon","Fri"],["Mon","Wed"],["Wed","Mon"],["Mon","Fri"]],note:"Wk2 Sat → Wed (fixes Wk2 Wednesday −1); Wk3 Sun → Wed (fixes Wk3 Wednesday −1)"}
 };
-const DEFICITS=[{Mon:-1},{Fri:-1},{Mon:-1,Fri:-1},{}];
+const DEFICITS=[{Mon:-1,Fri:-1},{Mon:-1,Wed:-1,Fri:-1},{Mon:-1,Wed:-1,Fri:-1},{Mon:-1}];
 const LEGACY={
 "Costello":[["Sun","Mon","Thu","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu"],["Mon","Wed","Thu","Sat"]],
 "Rodgers":[["Mon","Tue","Thu","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Wed","Thu"],["Mon","Tue","Thu","Fri"]],
@@ -376,7 +362,7 @@ const LEGACY={
 const ROTATORS=STAFF.filter(s=>s.rot).map(s=>s.n);
 const ROT_ARCH={};STAFF.forEach(s=>{if(s.rot)ROT_ARCH[s.n]=s.a;});
 const ROT_WEEK={};
-const ROT_WEEK_PLAN=[0,1,2,3,0,1,2,3,0,1,2,3,1,3];
+const ROT_WEEK_PLAN=[0,1,2,3,0,1,2,3,0,1,2,3,1,3,0,2];
 ROTATORS.forEach((n,i)=>ROT_WEEK[n]=ROT_WEEK_PLAN[i%ROT_WEEK_PLAN.length]);
 const weekOf=n=>ROT_WEEK[n];
 const nextWk=w=>(w+1)%4;
@@ -603,8 +589,8 @@ cells+=`<div class="sd ${cls}">${d.slice(0,3)}<span class="dl">${(d==="Sat"||d==
 return `<div class="stripwk"><div class="stripwkhd">Week ${w+1}</div><div class="strip7">${cells}</div></div>`;
 }
 function renderPTCards(){
-const order=["Milko","Woods","OHara","Hwang","Morrissey"];
-const disp={Milko:"Milko",Woods:"Woods",OHara:"O'Hara",Hwang:"Hwang",Morrissey:"Morrissey"};
+const order=["Milko","Woods","OHara","Hwang"];
+const disp={Milko:"Milko",Woods:"Woods",OHara:"O'Hara",Hwang:"Hwang"};
 let html="";
 order.forEach(name=>{
 const cw=countPTweekend(PT[name]);const sw=countPTweekend(PT_SUGGEST[name].days);
@@ -647,26 +633,168 @@ let s="<tr><th>Day</th><th>Week</th><th>Current</th><th>Without PT wknd</th><th>
 [["Saturday","Sat"],["Sunday","Sun"]].forEach(([label,d])=>{for(let w=0;w<4;w++){const mm=buildMatrix(w);const cur=dayCount(mm,d);let pc=0;Object.keys(PT).forEach(p=>{if(mm[p][d]==="on")pc++;});const wo=cur-pc;const safe=wo>=FLOOR[d];if(!safe)allSafe=false;s+=`<tr><td class='rowlabel'>${label}</td><td>Week ${w+1}</td><td>${cur}</td><td class="${safe?'pass':'fail'}">${wo}</td><td>${FLOOR[d]}</td><td class="${safe?'pass':'fail'}">${safe?'✓':'✗'}</td></tr>`;}});
 document.getElementById("ptSafeTbl").innerHTML=s;
 document.getElementById("ptSafeFlag").innerHTML=allSafe?`<div class="flagbox flagok">All weekends remain ≥ floor (13) with part-time weekend days removed — reallocation would not breach weekend coverage [1].</div>`:`<div class="flagbox">One or more weekends fall below floor without part-time weekend days — those cannot be reallocated without backfill [1].</div>`;
-let tc=0,ts=0;Object.keys(PT).forEach(p=>{tc+=countPTweekend(PT[p]);ts+=countPTweekend(PT_SUGGEST[p].days);});
-document.getElementById("ptNet").innerHTML=`<div class="metric"><b>${tc}</b>Current PT weekend-days / cycle</div><div class="metric"><b>${ts}</b>Suggested PT weekend-days / cycle</div><div class="metric"><b>${tc-ts}</b>Weekend-days redirected to weekdays</div><p class="note">Of these, the moves onto Monday and Friday would cover the Week 1, 2, and 3 below-floor cells if applied; Morrissey's Week 3 move is buffer (Week 3's two deficits are already covered by Milko and Hwang) [1]. Illustrative — the live grids are not recomputed here.</p>`;
+let tc=0,ts=0;Object.keys(PT_SUGGEST).forEach(p=>{tc+=countPTweekend(PT[p]);ts+=countPTweekend(PT_SUGGEST[p].days);});
+document.getElementById("ptNet").innerHTML=`<div class="metric"><b>${tc}</b>Current PT weekend-days / cycle</div><div class="metric"><b>${ts}</b>Suggested PT weekend-days / cycle</div><div class="metric"><b>${tc-ts}</b>Weekend-days redirected to weekdays</div><p class="note">These 5 redirects clear Monday in Weeks 1–3 (via Woods & Milko) and Wednesday in Weeks 2–3 (via Hwang), cutting below-floor cells from 9 to 4. Friday (Weeks 1–3) and Week 4's Monday have no remaining part-time weekend capacity to draw on and stay unaddressed [1]. Morrissey is no longer part of this pool — she moved to a fixed Thu/Fri/Sat schedule and has no occasional weekend day left to redirect. Illustrative — the live grids are not recomputed here.</p>`;
 }
+// --- Growth Planner: candidate archetype set includes N-4 (Tue,Wed,Thu,Fri).
+// N-4 has no current occupant (Part 6.3) but a NEW hire can seed it cleanly —
+// unlike an internal swap, a new hire adds capacity with no opportunity cost,
+// so it's a legitimate growth candidate even though it's excluded from the
+// live 8-archetype menu.
+const GROWTH_ARCH=Object.assign({},ARCH,{"N-4":["Tue","Wed","Thu","Fri"]});
+
+function leastPopulatedWeek(rotWeekMap){
+const counts=[0,0,0,0];
+Object.values(rotWeekMap).forEach(w=>counts[w]++);
+let best=0;
+for(let i=1;i<4;i++) if(counts[i]<counts[best]) best=i;
+return best;
+}
+// Parameterized twin of buildMatrix/placeCompsGlobal: takes a hypothetical
+// staff list + rotation-week map instead of reading the live module-level
+// STAFF/ROTATORS, so it can simulate "what if we hired into archetype X"
+// without touching the real model used by every other tab.
+function buildMatrixCand(staffList, rotWeekMap, w, archSet){
+let m={};
+staffList.forEach(s=>{m[s.n]={};DAYS.forEach(d=>m[s.n][d]=archSet[s.a].includes(d)?"on":"off");});
+Object.keys(PT).forEach(p=>{m[p]={};DAYS.forEach(d=>m[p][d]=PT[p][w].includes(d)?"on":"off");});
+const rotators=staffList.filter(s=>s.rot).map(s=>s.n);
+const rotArch={};staffList.forEach(s=>{if(s.rot)rotArch[s.n]=s.a;});
+rotators.filter(n=>rotWeekMap[n]===w).forEach(n=>{m[n]["Sat"]="on";});
+rotators.filter(n=>rotWeekMap[n]===prevWk(w)).forEach(n=>{m[n]["Sun"]="on";});
+function countDay(d){let c=0;Object.keys(m).forEach(n=>{if(m[n][d]==="on")c++;});return c;}
+let margin={};WEEKDAYS.forEach(d=>margin[d]=countDay(d)-FLOOR[d]);
+let compTally={};WEEKDAYS.forEach(d=>compTally[d]=0);
+let tasks=[];
+rotators.filter(n=>rotWeekMap[n]===w).forEach(n=>tasks.push({n,window:SAT_WINDOW,kind:"Sat"}));
+rotators.filter(n=>rotWeekMap[n]===prevWk(w)).forEach(n=>tasks.push({n,window:SUN_WINDOW,kind:"Sun"}));
+tasks.forEach(t=>{const arch=rotArch[t.n];const archDays=arch?archSet[arch]:[];t.elig=t.window.filter(d=>archDays.includes(d)&&m[t.n][d]==="on");});
+tasks.sort((a,b)=>a.elig.length-b.elig.length);
+tasks.forEach(t=>{
+if(!t.elig.length)return;
+const notYetMinus1=t.elig.filter(d=>margin[d]>-1);
+const pool=notYetMinus1.length?notYetMinus1:t.elig;
+const spilling=notYetMinus1.length===0;
+let best=null,bestScore=-1e9;
+pool.forEach(d=>{
+const safe=margin[d]>0;let score=0;
+score+=safe?1000:0;
+if(!safe&&!spilling){if(t.kind==="Sat"&&d===SAT_RESIDUAL_DAY)score+=60;else if(t.kind==="Sun"&&d===RESIDUAL_DAY)score+=60;}
+score+=margin[d]*10;score-=compTally[d]*8;
+if(d==="Thu")score-=30+compTally["Thu"]*40;
+if(score>bestScore){bestScore=score;best=d;}
+});
+m[t.n][best]="comp";margin[best]--;compTally[best]++;
+});
+return m;
+}
+function dayCountCand(mm,d){let c=0;Object.keys(mm).forEach(n=>{if(mm[n][d]==="on")c++;});return c;}
+function evalRosterCand(staffList, rotWeekMap, archSet){
+let mFail=0, worst=0, totalDeficit=0, minMargin=Infinity;
+for(let w=0;w<4;w++){
+const mm=buildMatrixCand(staffList, rotWeekMap, w, archSet);
+WEEKDAYS.forEach(d=>{
+const margin=dayCountCand(mm,d)-FLOOR[d];
+if(margin<0){mFail++;totalDeficit+=(-margin);}
+if(margin<worst)worst=margin;
+if(margin<minMargin)minMargin=margin;
+});
+}
+return {mFail, worst, totalDeficit, minMargin};
+}
+// Phase 2 target: Part 3.3 states average daily call-out is <1. A minMargin
+// of +1 means a single call-out still leaves the day AT floor, not under it —
+// a documented, defensible stopping point for "comfortably scaled" rather
+// than an arbitrary buffer number.
+const BUFFER_TARGET=1;
+// Phase 3 pool: Part 8.1 explicitly names N-1 and N-4 — and only these two —
+// as "the most desirable weekday-only patterns" because each sheds a
+// "bookend" day. Desirability growth is restricted to this documented pair,
+// not a list I'm inventing; weekend-resilience archetypes (S-Sun/S-Sat) are
+// a separate concern and only get chosen in Phase 1/2 when the math favors them.
+const DESIRABLE_ARCHETYPES=["N-1","N-4"];
+function computeGrowthPlan(nSlots){
+let staffList=STAFF.map(s=>({...s}));
+let rotWeekMap={...ROT_WEEK};
+const log=[];
+const candidates=Object.keys(GROWTH_ARCH);
+let desirIdx=0;
+for(let i=0;i<nSlots;i++){
+const cur=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH);
+let phase, chosen, reason, comparisons=null;
+function evalAll(){
+return candidates.map(arch=>{
+const isShifted=arch.startsWith("S-");
+const name="__cand__";
+const candStaff=[...staffList, {n:name, a:arch, rot:!isShifted}];
+let candRotMap=rotWeekMap;
+if(!isShifted) candRotMap={...rotWeekMap, [name]: leastPopulatedWeek(rotWeekMap)};
+return {arch, result:evalRosterCand(candStaff, candRotMap, GROWTH_ARCH), isShifted};
+});
+}
+if(cur.mFail>0){
+phase=1;
+let evals=evalAll();
+evals.sort((a,b)=> a.result.mFail-b.result.mFail || b.result.worst-a.result.worst || a.result.totalDeficit-b.result.totalDeficit || (a.isShifted===b.isShifted?0:(a.isShifted?-1:1)));
+chosen=evals[0].arch;
+if(evals[0].result.mFail===0){
+const tied=evals.filter(e=>e.result.mFail===0).map(e=>e.arch).filter(a=>a!==chosen);
+reason = tied.length ? `Fills every remaining below-floor cell on its own (tied with ${tied.join(", ")} — this one adds no weekend-rotation/comp burden where possible).` : `Fills every remaining below-floor cell on its own.`;
+comparisons = evals.slice(0,6);
+} else {
+reason = `Best available reduction toward zero deficits: below-floor cells drop to ${evals[0].result.mFail}, worst deficit ${evals[0].result.worst}.`;
+}
+} else if(cur.minMargin<BUFFER_TARGET){
+phase=2;
+let evals=evalAll();
+evals.sort((a,b)=> b.result.minMargin-a.result.minMargin || (a.isShifted===b.isShifted?0:(a.isShifted?-1:1)));
+chosen=evals[0].arch;
+reason=`Raises the currently tightest day the most (minMargin → ${evals[0].result.minMargin}), building toward a +${BUFFER_TARGET} cushion everywhere — enough to absorb the department's <1/day average call-out (Part 3.3) without dropping below floor.`;
+} else {
+phase=3;
+chosen=DESIRABLE_ARCHETYPES[desirIdx % DESIRABLE_ARCHETYPES.length]; desirIdx++;
+reason=`Coverage is met and every day already has a +${BUFFER_TARGET}+ cushion — growth is now for staff satisfaction, not operational need. ${chosen} is one of the two archetypes Part 8.1 names as most-desirable (sheds a "bookend" day).`;
+}
+const isShifted=chosen.startsWith("S-");
+const realName="Hire#"+(i+1);
+staffList.push({n:realName, a:chosen, rot:!isShifted});
+if(!isShifted) rotWeekMap[realName]=leastPopulatedWeek(rotWeekMap);
+const after=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH);
+log.push({slot:i+1, phase, archetype:chosen, mFail:after.mFail, worst:after.worst, minMargin:after.minMargin, reason, comparisons});
+}
+return log;
+}
+const PHASE_LABEL={1:"Fill deficits",2:"Scale logically",3:"Desirability"};
+const PHASE_CLASS={1:"under",2:"ok",3:"over"};
 function renderGrowth(){
 const n=parseInt(document.getElementById("growN").value)||0;const base=ALLNAMES.length;
 document.getElementById("growTotal").textContent=`Current: ${base} staff → Target: ${base+n} staff`;
-const priority=[
-{a:"N-4 (Tue–Fri)",reason:"Seed the empty desirable Tue–Fri archetype — a new hire adds the seat AND Friday/Thursday coverage (can't reach it via swap without a −2)"},
-{a:"N-1 (Mon–Thu)",reason:"Grow the most-desirable Mon–Thu to 3 cleanly — new body adds the seat AND Thursday coverage without robbing Friday"},
-{a:"N-3",reason:"Protect Thursday (floor 26) & Friday"},
-{a:"N-2",reason:"Reinforce Monday & Friday"},
-{a:"N-3",reason:"Further Thursday/Friday support — retires residual −1 cells"},
-{a:"N-5",reason:"Add weekday staff-days across the week"},
-{a:"S-Sun-A",reason:"Weekend resilience — Sunday buffer"},
-{a:"S-Sat-A",reason:"Weekend resilience — Saturday buffer"}
-];
-let html="";
-if(n===0){html="<div class='step'>Set a number above to see where each new slot should be added. First hires re-open the desirable N-4 (Tue–Fri) and grow N-1 (Mon–Thu) — the seats that can't be created within current headcount without a −2 [1].</div>";}
-for(let i=0;i<n;i++){const total=base+i+1;const p=priority[Math.min(i,priority.length-1)];html+=`<div class="step"><b>Slot ${i+1} (staff #${total}):</b> Add to <b>${p.a}</b>. ${p.reason}.</div>`;}
-document.getElementById("growPlan").innerHTML=html;
+const curFail=tallyFails(), curWorst=worstDeficit();
+document.getElementById("growGap").innerHTML=`<b>${curFail}</b>Below-floor cells right now (worst ${curWorst}) — Phase 1 needs to close this before Phases 2–3 apply`;
+let compareHtml="", planHtml="";
+if(n===0){
+planHtml="<div class='step'>Set a number above to see the computed plan: Phase 1 fills deficits, Phase 2 builds a call-out-safe buffer, Phase 3 grows the most-desirable schedules. Each slot is simulated against the live floor math — not a fixed list.</div>";
+} else {
+const plan=computeGrowthPlan(n);
+let lastPhase=null;
+plan.forEach(r=>{
+const total=base+r.slot;
+const days=(GROWTH_ARCH[r.archetype]||[]).join(", ");
+if(r.phase!==lastPhase){
+planHtml+=`<div class="note" style="margin:14px 0 4px;font-weight:700;color:#1a2332">Phase ${r.phase} — ${PHASE_LABEL[r.phase]}</div>`;
+lastPhase=r.phase;
+}
+planHtml+=`<div class="step"><span class="tag ${PHASE_CLASS[r.phase]==='under'?'tag-wknd-fix':(PHASE_CLASS[r.phase]==='ok'?'tag-wknd-rot':'tag-wknd-none')}">P${r.phase}</span> <b>Slot ${r.slot} (staff #${total}):</b> Add to <b>${r.archetype}</b> (${days}). ${r.reason} <span style="color:#64748b">[below-floor: ${r.mFail}, worst: ${r.worst}, min margin: ${r.minMargin}]</span></div>`;
+if(r.comparisons){
+let t="<table style='margin:8px 0 16px'><tr><th>Archetype</th><th>Days</th><th>Below-floor cells if added here</th><th>Worst deficit</th></tr>";
+r.comparisons.forEach(c=>{t+=`<tr><td>${c.arch}</td><td>${(GROWTH_ARCH[c.arch]||[]).join(", ")}</td><td>${c.result.mFail}</td><td>${c.result.worst}</td></tr>`;});
+t+="</table>";
+compareHtml+=`<p class="note" style="margin-top:0">Full comparison for the slot that closes the gap (Slot ${r.slot}), all 9 candidate archetypes:</p>`+t;
+}
+});
+}
+document.getElementById("growCompare").innerHTML=compareHtml;
+document.getElementById("growPlan").innerHTML=planHtml;
 }
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
 document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
@@ -687,10 +815,3 @@ document.getElementById("mRecon").textContent=`${rec.placed}/${rec.expected}${re
 </script>
 </body>
 </html>
-
-							<script>
-                            	
-							</script>
-                        </body>
-                        </html>
-                    
