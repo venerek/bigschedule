@@ -121,7 +121,7 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 </style>
 </head>
 <body>
-<header><h1>Clinical Department — Staffing Model</h1><p>Sun–Sat weeks · hard ≥−1 cap · N-1 grown to 3 (Morrissey Thu-Fri-Sat move + N-3→N-1 pull, restores Tuesday) · N-4 excluded (no occupant) · attribute-tag desirability</p></header>
+<header><h1>Staffing Model</h1></header>
 <div class="tabs">
 <div class="tab active" data-page="bid">Bidding Model</div>
 <div class="tab" data-page="cal">Weekly Calendar</div>
@@ -213,23 +213,22 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 <div class="card"><h2>Legacy System vs. New Model — Schedule Structure</h2>
 <div class="pcbox">
 <div class="pcside newm"><h3>New Model</h3><div class="pcbig newm">8</div><div class="pcsub"><b>8 fixed archetypes</b> — 1 pattern each, <b>zero week-to-week variation</b>. Every staff member works the same days every week.</div></div>
-<div class="pcside legacy"><h3>Legacy System</h3><div class="pcbig legacy">37</div><div class="pcsub"><b>37 schedule slots = 33 permuting + 4 static</b> (22 non-shifted + 15 shifted).<br><br>• <b>33 permuting schedules</b> (×4 weekly versions each → 60–80 unique weekly patterns)<br>• <b>4 static schedules</b> — no week-to-week change (three are the identical Tue–Sat pattern; one is Sun–Thu)</div></div>
+<div class="pcside legacy"><h3>Legacy System</h3><div class="pcbig legacy" id="pcLegacyTotal">—</div><div class="pcsub" id="pcLegacySub">—</div></div>
 </div>
 <table style="margin-top:16px">
 <tr><th>Metric</th><th>Legacy System</th><th>New Model</th><th>Why it matters</th></tr>
-<tr><td class="rowlabel">Schedule slots</td><td>37 (22 non-shifted + 15 shifted)</td><td>8 archetypes</td><td>Far fewer schedule types to manage</td></tr>
-<tr><td class="rowlabel">Permuting schedules</td><td>33 (×4 weekly versions each)</td><td>0</td><td>Each permuting schedule changes days worked week to week</td></tr>
-<tr><td class="rowlabel">Static schedules</td><td>4 (3 identical Tue–Sat + 1 Sun–Thu)</td><td>8 (all fixed)</td><td>Only these legacy schedules held steady week to week</td></tr>
+<tr><td class="rowlabel">Schedule slots</td><td id="tblLegacySlots">—</td><td>8 archetypes</td><td>Far fewer schedule types to manage</td></tr>
+<tr><td class="rowlabel">Permuting schedules</td><td id="tblLegacyPerm">—</td><td>0</td><td>Each permuting schedule changes days worked week to week</td></tr>
+<tr><td class="rowlabel">Static schedules</td><td id="tblLegacyStatic">—</td><td>8 (all fixed)</td><td>Only these legacy schedules held steady week to week</td></tr>
 <tr><td class="rowlabel">Unique weekly patterns</td><td>60–80</td><td>8</td><td>The core complexity the model eliminates</td></tr>
 <tr><td class="rowlabel">Day-to-day staff predictability</td><td class="fail">Low</td><td class="pass">Fixed core</td><td>Same people on the same weekdays every week</td></tr>
 <tr><td class="rowlabel">"Who's here today?" lookup</td><td class="fail">Check each person's permutation for the week</td><td class="pass">Single static roster</td><td>A single absence currently requires checking which permutation everyone is on that week</td></tr>
 <tr><td class="rowlabel">Morning floor-assignment routine</td><td class="fail">~1 hr/morning*</td><td class="pass">Reduced — stable starting point</td><td>Admin assign staff to floors & assign out patients each morning; more shifting = more time*</td></tr>
 <tr><td class="rowlabel">Patient continuity of care</td><td class="fail">Variable team week-to-week</td><td class="pass">Consistent weekday team</td><td>A patient on a given weekday sees a consistent team; continuity suffers under permutations</td></tr>
 </table>
-<p class="note">The 33/4 split is our analysis of the legacy tables applying a "collapse only fully-static schedules" rule; the 37 slots, 22/15 split, and 60–80 unique weekly patterns are stated directly in the brief. Each permuting schedule changes days worked week to week — the source of the 60–80 patterns and the continuity/predictability problems. *The ~1 hr/morning figure is a department operational estimate, not measured data.</p>
 </div>
-<div class="card"><h2>Week-to-Week Continuity — Do Staff Work the Same Days Every Week?</h2>
-<div class="illus">The core benefit of the fixed model. The legacy 33 permuting schedules changed a person's days from one week to the next. This measures, for each weekday, the share of staff who are the <b>same person</b> present as the prior week — averaged across the four week-transitions. New-model figures are exact; legacy is an illustrative reconstruction (see note).</div>
+<div class="card"><h2>Week-to-Week Continuity — Do Schedules Repeat Their Days Every Week?</h2>
+<div class="illus">The core benefit of the fixed model. This measures, for each weekday, what share of scheduled positions work the exact same set of days as the prior week — averaged across the four week-transitions.</div>
 <div class="bigstat">
 <div class="bs legacy"><div class="v" id="w2wLegacy">—</div><div class="l">Legacy week-to-week continuity</div></div>
 <div class="bs newm"><div class="v" id="w2wNew">—</div><div class="l">New-model week-to-week continuity</div></div>
@@ -237,7 +236,7 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 </div>
 <div class="cmphd"><div></div><div>Legacy (avg)</div><div>New model</div></div>
 <div class="cmpbars" id="w2wBars"></div>
-<p class="note">New-model full-timers are 100% consistent by construction; the small dips below 100% come only from rotators picking up a weekend that week (their comp day shifts one weekday) and from part-time pattern variation. Comp days count as "not present." Legacy is reconstructed from the permutation tables assuming lockstep advancement — real legacy churn was likely worse.</p>
+<p class="note">New-model full-timers are 100% consistent by construction; the small dips below 100% come only from rotators picking up a weekend that week (their comp day shifts one weekday) and from part-time pattern variation. Comp days count as "not present." Because this is slot-based rather than person-based, it isn't affected by staff turnover on either side — no mapping of current employees onto historical schedules is needed or performed.</p>
 </div>
 <div class="card"><h2>New-Model Staff × Day Heatmap — Contiguous Care Blocks</h2>
 <div class="illus">New-model only. Rows grouped by archetype so contiguous working blocks cluster — an N-1 (Mon–Thu) staffer reads as a solid run: a patient admitted Monday sees them through Thursday.</div>
@@ -249,7 +248,7 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 </div>
 <div class="card"><h2>Consistency at a Glance</h2>
 <div class="metric"><b>60–80 → 8</b>Unique weekly patterns</div>
-<div class="metric"><b>33 → 0</b>Permuting schedules</div>
+<div class="metric"><b>34 → 0</b>Permuting schedules</div>
 <div class="metric"><b>0</b>Weekly schedule changes per staff</div>
 <div class="metric"><b>100%</b>Fixed full-time weekday core identical week-to-week*</div>
 <p class="note">*100% for the fixed full-time weekday core. Rotators shift a comp day the week they pick up a weekend, and part-timers vary by design, so the whole-roster figure is slightly below 100%.</p>
@@ -320,45 +319,62 @@ const PT_SUGGEST={
 "Hwang":{fte:"0.5",days:[["Mon","Fri"],["Mon","Wed"],["Wed","Mon"],["Mon","Fri"]],note:"Wk2 Sat → Wed (fixes Wk2 Wednesday −1); Wk3 Sun → Wed (fixes Wk3 Wednesday −1)"}
 };
 const DEFICITS=[{Mon:-1,Fri:-1},{Mon:-1,Wed:-1,Fri:-1},{Mon:-1,Wed:-1,Fri:-1},{Mon:-1}];
-const LEGACY={
-"Costello":[["Sun","Mon","Thu","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu"],["Mon","Wed","Thu","Sat"]],
-"Rodgers":[["Mon","Tue","Thu","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Wed","Thu"],["Mon","Tue","Thu","Fri"]],
-"Riley":[["Mon","Wed","Thu","Fri"],["Mon","Tue","Thu","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Tue","Wed","Thu"]],
-"Berkman":[["Mon","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Wed","Thu"]],
-"Conn":[["Tue","Wed","Fri","Sat"],["Sun","Tue","Wed","Thu"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"]],
-"Hiedacavage":[["Mon","Tue","Wed","Sat"],["Sun","Mon","Thu","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"]],
-"Seyffert":[["Mon","Tue","Wed","Thu"],["Mon","Tue","Wed","Sat"],["Sun","Wed","Thu","Fri"],["Mon","Tue","Thu","Fri"]],
-"Sopchak":[["Mon","Tue","Fri","Sat"],["Sun","Mon","Thu","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Tue","Thu","Fri"]],
-"Bronfeld":[["Mon","Tue","Wed","Thu","Fri"],["Mon","Wed","Thu","Fri","Sat"],["Sun","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"]],
-"Lauda":[["Mon","Tue","Wed","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Wed","Thu"],["Mon","Tue","Thu","Fri"]],
-"Waters":[["Sun","Mon","Tue","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Fri","Sat"]],
-"Snell":[["Mon","Tue","Thu","Fri"],["Mon","Tue","Thu","Fri"],["Mon","Thu","Fri","Sat"],["Sun","Wed","Thu","Fri"]],
-"Abraham":[["Sun","Wed","Thu","Fri"],["Mon","Tue","Thu","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Tue","Fri","Sat"]],
-"Wu":[["Sun","Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Fri","Sat"]],
-"Ibrahim":[["Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Thu","Fri"]],
-"Javed":[["Mon","Tue","Fri","Sat"],["Sun","Tue","Wed","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Wed","Thu","Fri"]],
-"Ahluwalia":[["Mon","Tue","Wed","Thu"],["Mon","Tue","Thu","Sat"],["Sun","Mon","Tue","Thu"],["Mon","Tue","Wed","Thu"]],
-"Petersen":[["Sun","Tue","Thu","Fri"],["Tue","Wed","Thu","Fri"],["Tue","Wed","Thu","Fri"],["Tue","Wed","Fri","Sat"]],
-"Dinneny":[["Sun","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Fri","Sat"]],
-"Taylor":[["Mon","Tue","Wed","Thu"],["Mon","Tue","Wed","Thu"],["Mon","Tue","Wed","Sat"],["Sun","Tue","Wed","Thu"]],
-"Cooper":[["Mon","Wed","Thu","Fri","Sat"],["Sun","Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"]],
-"Woods":[["Tue","Sat"],["Sun","Tue"],["Tue","Thu"],["Tue","Thu"]],
-"Hwang":[["Mon","Fri"],["Mon","Sat"],["Sun","Mon"],["Mon","Fri"]],
-"Mackay":[["Wed","Thu","Fri","Sat"],["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Thu","Fri","Sat"]],
-"Pardo":[["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"]],
-"Del Priore":[["Wed","Thu","Fri","Sat"],["Tue","Wed","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Wed","Fri","Sat"]],
-"Parker":[["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"]],
-"Castro":[["Tue","Wed","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Wed","Fri","Sat"],["Wed","Thu","Fri","Sat"]],
-"Tan":[["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"]],
-"Liu":[["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"]],
-"Britton":[["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"]],
-"DiLapo":[["Sun","Mon","Tue","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Tue","Thu"],["Sun","Mon","Tue","Wed"]],
-"Chan":[["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"]],
-"Belani":[["Sun","Mon","Tue","Wed"],["Sun","Mon","Tue","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Tue","Thu"]],
-"Paternite":[["Sun","Mon","Tue","Wed","Thu"],["Sun","Mon","Tue","Wed","Thu"],["Sun","Mon","Tue","Wed","Thu"],["Sun","Mon","Tue","Wed","Thu"]],
-"Lebrun":[["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"]],
-"Silberstein":[["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"]]
+// LEGACY_SLOTS: the 38 documented schedule patterns from the original brief
+// (22 non-shifted rows + the unlisted Hwang row + 15 shifted rows), keyed by
+// schedule identity, NOT staff name. A schedule's week-to-week pattern is a
+// permanent structural fact — it doesn't change as staff turn over — so this
+// sidesteps entirely the "who currently maps to old schedule #6" problem
+// (previous staff-name mapping had real, verified errors: Del Priore and
+// Javed were mapped to other people's removed schedules, and Pardo/Castro
+// had fabricated duplicate entries, since neither ever worked under legacy).
+const LEGACY_SLOTS={
+"NS1":[["Sun","Mon","Thu","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu"],["Mon","Wed","Thu","Sat"]],
+"NS2":[["Mon","Tue","Thu","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Wed","Thu"],["Mon","Tue","Thu","Fri"]],
+"NS3":[["Mon","Wed","Thu","Fri"],["Mon","Tue","Thu","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Tue","Wed","Thu"]],
+"NS4":[["Mon","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Wed","Thu"]],
+"NS5":[["Tue","Wed","Fri","Sat"],["Sun","Tue","Wed","Thu"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"]],
+"NS6":[["Mon","Tue","Wed","Sat"],["Sun","Mon","Thu","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"]],
+"NS7":[["Mon","Tue","Wed","Thu"],["Mon","Tue","Wed","Sat"],["Sun","Wed","Thu","Fri"],["Mon","Tue","Thu","Fri"]],
+"NS8":[["Mon","Tue","Fri","Sat"],["Sun","Mon","Thu","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Tue","Thu","Fri"]],
+"NS9":[["Mon","Tue","Wed","Thu","Fri"],["Mon","Wed","Thu","Fri","Sat"],["Sun","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"]],
+"NS10":[["Mon","Tue","Wed","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Wed","Thu"],["Mon","Tue","Thu","Fri"]],
+"NS11":[["Sun","Mon","Tue","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Fri","Sat"]],
+"NS12":[["Mon","Tue","Thu","Fri"],["Mon","Tue","Thu","Fri"],["Mon","Thu","Fri","Sat"],["Sun","Wed","Thu","Fri"]],
+"NS13":[["Sun","Wed","Thu","Fri"],["Mon","Tue","Thu","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Tue","Fri","Sat"]],
+"NS14":[["Sun","Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Fri","Sat"]],
+"NS15":[["Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Fri","Sat"],["Sun","Mon","Thu","Fri"]],
+"NS16":[["Mon","Tue","Fri","Sat"],["Sun","Tue","Wed","Fri"],["Mon","Wed","Thu","Fri"],["Mon","Wed","Thu","Fri"]],
+"NS17":[["Mon","Tue","Wed","Thu"],["Mon","Tue","Thu","Sat"],["Sun","Mon","Tue","Thu"],["Mon","Tue","Wed","Thu"]],
+"NS18":[["Sun","Tue","Thu","Fri"],["Tue","Wed","Thu","Fri"],["Tue","Wed","Thu","Fri"],["Tue","Wed","Fri","Sat"]],
+"NS19":[["Sun","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Wed","Fri"],["Mon","Tue","Fri","Sat"]],
+"NS20":[["Mon","Tue","Wed","Thu"],["Mon","Tue","Wed","Thu"],["Mon","Tue","Wed","Sat"],["Sun","Tue","Wed","Thu"]],
+"NS21":[["Mon","Wed","Thu","Fri","Sat"],["Sun","Mon","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"],["Mon","Tue","Wed","Thu","Fri"]],
+"NS22":[["Tue","Sat"],["Sun","Tue"],["Tue","Thu"],["Tue","Thu"]],
+"NS23-PT":[["Mon","Fri"],["Mon","Sat"],["Sun","Mon"],["Mon","Fri"]],
+"S1":[["Wed","Thu","Fri","Sat"],["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Thu","Fri","Sat"]],
+"S2":[["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"]],
+"S3":[["Wed","Thu","Fri","Sat"],["Tue","Wed","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Wed","Fri","Sat"]],
+"S4":[["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Thu","Fri","Sat"],["Wed","Thu","Fri","Sat"]],
+"S5":[["Tue","Wed","Fri","Sat"],["Wed","Thu","Fri","Sat"],["Tue","Wed","Fri","Sat"],["Wed","Thu","Fri","Sat"]],
+"S6":[["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"]],
+"S7":[["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"]],
+"S8":[["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"]],
+"S9":[["Sun","Mon","Tue","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Tue","Thu"],["Sun","Mon","Tue","Wed"]],
+"S10":[["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"]],
+"S11":[["Sun","Mon","Tue","Wed"],["Sun","Mon","Tue","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Tue","Thu"]],
+"S12":[["Sun","Mon","Tue","Wed","Thu"],["Sun","Mon","Tue","Wed","Thu"],["Sun","Mon","Tue","Wed","Thu"],["Sun","Mon","Tue","Wed","Thu"]],
+"S13":[["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"]],
+"S14":[["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"],["Sun","Mon","Wed","Thu"],["Sun","Mon","Tue","Wed"]],
+"S15":[["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"],["Tue","Wed","Thu","Fri","Sat"]]
 };
+function legacySlotStats(){
+let staticCount=0, permCount=0;
+Object.values(LEGACY_SLOTS).forEach(weeks=>{
+const asSets=weeks.map(w=>[...w].sort().join(","));
+if(asSets.every(s=>s===asSets[0])) staticCount++; else permCount++;
+});
+return {total:Object.keys(LEGACY_SLOTS).length, staticCount, permCount};
+}
 const ROTATORS=STAFF.filter(s=>s.rot).map(s=>s.n);
 const ROT_ARCH={};STAFF.forEach(s=>{if(s.rot)ROT_ARCH[s.n]=s.a;});
 const ROT_WEEK={};
@@ -509,7 +525,7 @@ ALLNAMES.forEach(n=>{r[n]=DAYS.filter(d=>mm[n][d]==="on");});
 return r;
 }
 function legacyRosterDays(w){
-const r={};Object.keys(LEGACY).forEach(n=>{r[n]=LEGACY[n][w]||[];});return r;
+const r={};Object.keys(LEGACY_SLOTS).forEach(id=>{r[id]=LEGACY_SLOTS[id][w]||[];});return r;
 }
 function weekToWeekByDay(fn){
 const perDay={};WEEKDAYS.forEach(d=>perDay[d]={sameSum:0,denomSum:0});
@@ -565,7 +581,15 @@ html+=`</tr>`;
 });
 document.getElementById("hmTable").innerHTML=html;
 }
-function renderContinuity(){renderW2W();renderHeatmap();}
+function renderLegacyStats(){
+const s=legacySlotStats();
+document.getElementById("pcLegacyTotal").textContent=s.total;
+document.getElementById("pcLegacySub").innerHTML=`<b>${s.total} schedule slots = ${s.permCount} permuting + ${s.staticCount} static</b> (22 non-shifted rows + 1 unlisted part-time row + 15 shifted rows).<br><br>• <b>${s.permCount} permuting schedules</b> (×4 weekly versions each → 60–80 unique weekly patterns)<br>• <b>${s.staticCount} static schedules</b> — no week-to-week change (three are the identical Tue–Sat pattern; one is Sun–Thu)`;
+document.getElementById("tblLegacySlots").textContent=`${s.total} (23 non-shifted + 15 shifted)`;
+document.getElementById("tblLegacyPerm").textContent=`${s.permCount} (×4 weekly versions each)`;
+document.getElementById("tblLegacyStatic").textContent=`${s.staticCount} (3 identical Tue–Sat + 1 Sun–Thu)`;
+}
+function renderContinuity(){renderLegacyStats();renderW2W();renderHeatmap();}
 function countPTweekend(arr){let c=0;arr.forEach(wk=>wk.forEach(d=>{if(d==="Sat"||d==="Sun")c++;}));return c;}
 function suggClass(name,w,day){
 const curDays=PT[name][w];const sugDays=PT_SUGGEST[name].days[w];
