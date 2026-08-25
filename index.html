@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Staffing Model</title>
+<title>Staffing Model — Full Tool</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#f4f6f9;color:#1a2332;}
 header{background:#1a2332;color:#fff;padding:18px 24px;}header h1{margin:0;font-size:20px;}header p{margin:4px 0 0;font-size:13px;opacity:.85;}
@@ -118,6 +118,22 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 .pcbig{font-size:34px;font-weight:800;}
 .pcbig.newm{color:#059669;}.pcbig.legacy{color:#b45309;}
 .pcsub{font-size:12px;color:#475569;margin-top:6px;}
+@media (max-width: 640px){
+.wrap{padding:12px}
+header{padding:14px 16px}
+header h1{font-size:17px}
+.tabs{padding:0 8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:10px 12px;font-size:13px;white-space:nowrap;flex:0 0 auto}
+.card{padding:14px}
+h2{font-size:15px}
+table:not(.wraptext){display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+table.wraptext th,table.wraptext td{white-space:normal}
+.calgrid,.strip4,.pcbox{grid-template-columns:1fr}
+.weekgrid,.bigstat{grid-template-columns:1fr!important}
+.cmprow,.cmphd{grid-template-columns:70px 1fr 1fr}
+select,input{padding:8px 10px}
+.metric{margin-right:14px}
+}
 </style>
 </head>
 <body>
@@ -215,7 +231,7 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 <div class="pcside newm"><h3>New Model</h3><div class="pcbig newm">8</div><div class="pcsub"><b>8 fixed archetypes</b> — 1 pattern each, <b>zero week-to-week variation</b>. Every staff member works the same days every week.</div></div>
 <div class="pcside legacy"><h3>Legacy System</h3><div class="pcbig legacy" id="pcLegacyTotal">—</div><div class="pcsub" id="pcLegacySub">—</div></div>
 </div>
-<table style="margin-top:16px">
+<table class="wraptext" style="margin-top:16px">
 <tr><th>Metric</th><th>Legacy System</th><th>New Model</th><th>Why it matters</th></tr>
 <tr><td class="rowlabel">Schedule slots</td><td id="tblLegacySlots">—</td><td>8 archetypes</td><td>Far fewer schedule types to manage</td></tr>
 <tr><td class="rowlabel">Permuting schedules</td><td id="tblLegacyPerm">—</td><td>0</td><td>Each permuting schedule changes days worked week to week</td></tr>
