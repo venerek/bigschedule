@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Staffing Model — Full Tool</title>
+<title>Staffing Model</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#f4f6f9;color:#1a2332;}
 header{background:#1a2332;color:#fff;padding:18px 24px;}header h1{margin:0;font-size:20px;}header p{margin:4px 0 0;font-size:13px;opacity:.85;}
@@ -121,7 +121,7 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 </style>
 </head>
 <body>
-<header><h1>Staffing Model</h1></header>
+<header><h1>Clinical Department — Staffing Model</h1><p>4-week fixed-schedule model</p></header>
 <div class="tabs">
 <div class="tab active" data-page="bid">Bidding Model</div>
 <div class="tab" data-page="cal">Weekly Calendar</div>
@@ -132,17 +132,22 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 </div>
 <div class="wrap">
 <div class="page active" id="bid">
-<div class="card"><h2>Model Summary</h2>
-<div class="metric"><b id="mArch">—</b>Archetypes (was 60–80 patterns)</div>
-<div class="metric"><b id="mStaff">—</b>Total staff</div>
-<div class="metric"><b id="mShift">—</b>Fixed weekend (shifted)</div>
-<div class="metric"><b id="mFail">—</b>Below-floor cells</div>
-<div class="metric"><b id="mWorst">—</b>Worst single-day deficit</div>
-<div class="metric"><b id="mRecon">—</b>Comp reconciliation</div>
-<p class="note">Assignments delegated by seniority; the grid below verifies coverage on the slot inventory [1]. Residual −1 cells are the intended per-diem fill targets.</p>
+<div class="card"><h2>At a Glance</h2>
+<div id="execStatus" style="font-size:15px;margin-bottom:14px"></div>
+<div class="bigstat" style="grid-template-columns:repeat(3,1fr)">
+<div class="bs newm"><div class="v" id="execArch">—</div><div class="l">Schedule types (was 60–80 patterns)</div></div>
+<div class="bs newm"><div class="v" id="execContinuity">—</div><div class="l">Week-to-week continuity (was <span id="execContinuityLegacy">—</span>%)</div></div>
+<div class="bs newm"><div class="v" id="execChanges">—</div><div class="l">Schedule changes/staff/cycle (was up to 3)</div></div>
+</div>
+</div>
+<div class="card"><h2>Coverage Verification — All 4 Weeks</h2>
+<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1 (per-diem target)</span><span class="spill">−2 spill (needs review)</span></div>
+<table id="allWeeksGrid"></table>
+<div id="allWeeksFlag" style="margin-top:10px"></div>
+<p class="note">Weekend floors (13) already include the reserved PTO slot [1].</p>
 </div>
 <div class="card"><h2>Schedule Menu — Slots Available for Seniority Bidding</h2>
-<p class="note">Staff sign up for the schedules they want; slots are delegated by seniority. Each row is sized to meet the daily floors [1]. Total slots = required staff.</p>
+<p class="note">Bidding by seniority; each row sized to the daily floors [1].</p>
 <table id="bidTbl"></table>
 <div style="margin-top:12px">
 <span class="metric"><b id="bSlots">—</b>Total slots (staff needed)</span>
@@ -150,22 +155,16 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 <span class="metric"><b id="bWeekday">—</b>Weekday-only slots</span>
 </div>
 </div>
-<div class="card"><h2>Required Headcount per Archetype (Slot Inventory)</h2>
-<table id="reqTbl"></table>
-<p class="note">Slot inventory sized to the floors [1]. Bidding fills these by seniority.</p>
-</div>
 <div class="card"><h2>Schedule Attributes — Bid by Your Own Priorities</h2>
-<div class="illus">All schedules work the same <b>weekly hours</b> — 4-day schedules are longer days (e.g., 4×10h), 5-day are shorter (e.g., 5×8h) [1]. There is no single "best" schedule: some staff prefer fewer, longer days; others prefer a shorter-day Mon–Fri routine or wish to avoid/prefer weekends. These tags let you rank by what matters to you; seniority governs pick order.</div>
+<div class="illus">Weekly hours are equal across all schedules — 4-day = longer days, 5-day = shorter [1]. No single "best" schedule; bid by what matters to you.</div>
 <table id="attrTbl"></table>
-<p class="note">Weekend commitment, day-off position, and days-per-week are independent trade-offs — not a single ranking. Senior staff pick first from the full menu [1].</p>
 </div>
-<div class="card"><h2>Floor Verification — If All Slots Are Filled</h2>
+<div class="card"><h2>Detailed Daily Verification (by week)</h2>
 <div class="controls"><label>Cycle week:
 <select id="weekSelB"><option value="0">Week 1</option><option value="1">Week 2</option><option value="2">Week 3</option><option value="3">Week 4</option></select></label></div>
 <div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1</span><span class="spill">−2 spill</span></div>
 <table id="bidGrid"></table>
 <div id="bidFlag"></div>
-<p class="note">Weekend floors of 13 already account for the reserved weekend PTO slot [1].</p>
 </div>
 </div>
 <div class="page" id="cal">
@@ -174,7 +173,7 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 <select id="weekSelC"><option value="0">Week 1</option><option value="1">Week 2</option><option value="2">Week 3</option><option value="3">Week 4</option></select></label>
 <div class="legend"><span class="lg-on">Working</span><span class="lg-comp">Comp</span><span class="lg-off">Scheduled off</span></div></div>
 <div class="calgrid" id="calgrid"></div>
-<p class="note">Comp chips show the weekend day + week that earned them. Sat comp → same week Mon–Fri (Wed/Fri, Thu capped); Sun comp → next week Mon–Fri (Mon/Tue/Wed) [1].</p>
+<p class="note">Comp chips show which weekend day/week earned them. Sat → same week (Wed/Fri, Thu capped); Sun → next week (Mon/Tue/Wed) [1].</p>
 </div>
 </div>
 <div class="page" id="wknd">
@@ -184,30 +183,31 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 <span class="chip rot" style="border:1px solid #99f6e4">Non-shifted (rotated onto this weekend)</span>
 <span class="chip pt" style="border:1px solid #e9d5ff">Part-timer weekend day</span>
 </div>
-<p class="note">A rotator's weekend = a Saturday + the immediately following Sunday. Saturday earns a comp within its week's Mon–Fri (prefer Wed/Fri, Thu capped). Sunday earns a comp within the following week's Mon–Fri (prefer Mon/Tue/Wed). Comps land only on base-archetype working days; windows are hard constraints [1].</p>
+<p class="note">A rotator's weekend = Saturday + the following Sunday. Sat comp lands same week (Wed/Fri, Thu capped); Sun comp lands next week (Mon/Tue/Wed), only on days the person's archetype already works [1].</p>
 </div>
 <div class="card"><h2>Weekend Rotation Calendar — 4-Week Cycle</h2><div class="weekgrid" id="weekgrid"></div></div>
-<div class="card"><h2>Weekend Coverage Summary vs. Floor (13 each) [1]</h2><table id="sumTbl"></table></div>
+<div class="card"><h2>Weekend Coverage Summary vs. Floor (13 each) [1]</h2><table id="sumTbl"></table><div id="compReconLine" class="note" style="margin-top:10px"></div></div>
 </div>
 <div class="page" id="pt">
 <div class="card"><h2>Part-Time Reallocation — Illustrative Only</h2>
-<div class="illus"><b>Illustrative analysis — not wired into the live coverage grids.</b> Each part-timer's current schedule is shown against a suggested one that moves weekend days (already landing on covered floor-13 days) onto the specific weekday cells that are actually below floor. FTE is preserved — only day placement changes [1].</div>
+<div class="illus"><b>Illustrative — not applied to the live schedule.</b> Moves each part-timer's weekend day(s) onto below-floor weekdays; FTE unchanged [1].</div>
 <div class="deflegend">
 <span class="sd work" style="border-radius:4px">worked day</span>
-<span class="sd wkndmove" style="border-radius:4px">weekend day being moved</span>
-<span class="sd fix" style="border-radius:4px">retargeted → fixes a deficit</span>
-<span class="sd buffer" style="border-radius:4px">retargeted → buffer (no deficit that week)</span>
+<span class="sd wkndmove" style="border-radius:4px">weekend day moving</span>
+<span class="sd fix" style="border-radius:4px">fixes a deficit</span>
+<span class="sd buffer" style="border-radius:4px">buffer (no deficit)</span>
 </div>
 <div id="ptCards" style="margin-top:14px"></div>
 </div>
-<div class="card"><h2>Deficit Resolution — Weekday Cells Below Floor</h2>
-<p class="note">Actual below-floor weekday cells in the live model, and whether the suggested part-time moves would cover them if applied. Illustrative — the live grid is not recomputed here [1].</p>
-<div class="defsummary" id="defSummary"></div>
+<div class="card"><h2>Coverage Verification — All 4 Weeks, Before / After Suggested Changes</h2>
+<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1 (per-diem target)</span><span class="spill">−2 spill (needs review)</span></div>
+<p class="note" style="margin-top:0"><b>Current (live)</b></p>
+<table id="ptGridCurrent"></table>
+<p class="note"><b>With suggested changes applied</b></p>
+<table id="ptGridSuggested"></table>
+<div id="ptGridDelta" style="margin-top:10px"></div>
+<p class="note">Computed live, same method as the Bidding tab grid; comp placement is recomputed for the suggested scenario. Illustrative — not applied to the live model [1].</p>
 </div>
-<div class="card"><h2>Weekend Safety Check — Do Weekends Stay ≥13 Without Part-Time Weekend Days?</h2>
-<table id="ptSafeTbl"></table><div id="ptSafeFlag"></div>
-</div>
-<div class="card"><h2>Net Effect Summary</h2><div id="ptNet"></div></div>
 </div>
 <div class="page" id="cmp">
 <div class="card"><h2>Legacy System vs. New Model — Schedule Structure</h2>
@@ -226,9 +226,10 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 <tr><td class="rowlabel">Morning floor-assignment routine</td><td class="fail">~1 hr/morning*</td><td class="pass">Reduced — stable starting point</td><td>Admin assign staff to floors & assign out patients each morning; more shifting = more time*</td></tr>
 <tr><td class="rowlabel">Patient continuity of care</td><td class="fail">Variable team week-to-week</td><td class="pass">Consistent weekday team</td><td>A patient on a given weekday sees a consistent team; continuity suffers under permutations</td></tr>
 </table>
+<p class="note">Computed from the 38 documented legacy patterns (corrects the brief's own 37/33/4 tally, which missed the unlisted part-time row). 60–80 patterns figure is from the brief. *~1 hr/morning is an estimate, not measured.</p>
 </div>
 <div class="card"><h2>Week-to-Week Continuity — Do Schedules Repeat Their Days Every Week?</h2>
-<div class="illus">The core benefit of the fixed model. This measures, for each weekday, what share of scheduled positions work the exact same set of days as the prior week — averaged across the four week-transitions.</div>
+<div class="illus">Share of scheduled positions working the same days as the prior week, averaged across transitions. Computed by schedule identity, not by who holds it — unaffected by staff turnover on either side.</div>
 <div class="bigstat">
 <div class="bs legacy"><div class="v" id="w2wLegacy">—</div><div class="l">Legacy week-to-week continuity</div></div>
 <div class="bs newm"><div class="v" id="w2wNew">—</div><div class="l">New-model week-to-week continuity</div></div>
@@ -236,10 +237,10 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 </div>
 <div class="cmphd"><div></div><div>Legacy (avg)</div><div>New model</div></div>
 <div class="cmpbars" id="w2wBars"></div>
-<p class="note">New-model full-timers are 100% consistent by construction; the small dips below 100% come only from rotators picking up a weekend that week (their comp day shifts one weekday) and from part-time pattern variation. Comp days count as "not present." Because this is slot-based rather than person-based, it isn't affected by staff turnover on either side — no mapping of current employees onto historical schedules is needed or performed.</p>
+<p class="note">New-model dips below 100% come only from rotators' comp-day shifts and part-time variation.</p>
 </div>
 <div class="card"><h2>New-Model Staff × Day Heatmap — Contiguous Care Blocks</h2>
-<div class="illus">New-model only. Rows grouped by archetype so contiguous working blocks cluster — an N-1 (Mon–Thu) staffer reads as a solid run: a patient admitted Monday sees them through Thursday.</div>
+<div class="illus">Rows grouped by archetype — contiguous blocks show which patients see a consistent team.</div>
 <div class="controls"><label>Cycle week:
 <select id="weekSelCont"><option value="0">Week 1</option><option value="1">Week 2</option><option value="2">Week 3</option><option value="3">Week 4</option></select></label>
 <div class="legend"><span style="background:#22c55e;color:#fff;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:600">Working (weekday)</span><span style="background:#3b82f6;color:#fff;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:600">Working (weekend)</span><span style="background:#f1f5f9;color:#475569;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:600;border:1px solid #cbd5e1">Off</span></div>
@@ -251,12 +252,13 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 <div class="metric"><b>34 → 0</b>Permuting schedules</div>
 <div class="metric"><b>0</b>Weekly schedule changes per staff</div>
 <div class="metric"><b>100%</b>Fixed full-time weekday core identical week-to-week*</div>
-<p class="note">*100% for the fixed full-time weekday core. Rotators shift a comp day the week they pick up a weekend, and part-timers vary by design, so the whole-roster figure is slightly below 100%.</p>
+<p class="note">*Full-time weekday core only; rotators/part-timers vary slightly.</p>
 </div>
 </div>
 <div class="page" id="grow">
 <div class="card"><h2>Growth Planner — Where to Add Slots as You Scale</h2>
-<p class="note">Three-phase hierarchy, each phase computed against the live floor math (base archetype coverage + weekend rotation + comp-day placement), not a fixed list: <b>Phase 1 — fill deficits</b> (minimize below-floor cells across all 9 candidate archetypes, including N-4, which has no current occupant but a new hire can seed cleanly). <b>Phase 2 — scale logically</b> (once deficits are gone, keep building until every day has at least a +1 cushion — enough to absorb the department's documented &lt;1/day average call-out without dropping below floor). <b>Phase 3 — desirability</b> (once that cushion exists everywhere, further growth serves staff satisfaction, restricted to N-1 and N-4 — the only two archetypes Part 8.1 actually names as most-desirable).</p>
+<p class="note">Computed live, not a fixed list. <b>Phase 1</b> — fill deficits. <b>Phase 2</b> — build a +1 cushion (absorbs the &lt;1/day average call-out). <b>Phase 3</b> — desirability (N-1/N-4 only, per Part 8.1).</p>
+<div id="growDesirable" style="margin:14px 0"></div>
 <div id="growGap" class="metric" style="margin-top:10px"></div>
 <div class="controls" style="margin-top:10px">
 <label>Add staff: <input type="number" id="growN" value="0" min="0" max="20" style="width:70px"></label>
@@ -289,6 +291,7 @@ const ATTR={
 "N-2":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Wed off",rot:true},
 "N-3":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Tue off",rot:true},
 "N-5":{days:"5d",hrs:"~8h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"weekend off",rot:true},
+"N-4":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Mon off",rot:true},
 "S-Sat-A":{days:"4d",hrs:"~10h/day",wknd:"fixed Sat",wkndcls:"tag-wknd-fix",off:"Mon/Thu off",rot:false},
 "S-Sat-B":{days:"4d",hrs:"~10h/day",wknd:"fixed Sat",wkndcls:"tag-wknd-fix",off:"Mon/Wed off",rot:false},
 "S-Sun-A":{days:"4d",hrs:"~10h/day",wknd:"fixed Sun",wkndcls:"tag-wknd-fix",off:"Tue/Fri off",rot:false},
@@ -318,7 +321,6 @@ const PT_SUGGEST={
 "OHara":{fte:"0.2",days:[["Thu"],["Thu"],["Thu"],["Thu"]],note:"No change — already optimal on Thursday (tightest floor, 26)"},
 "Hwang":{fte:"0.5",days:[["Mon","Fri"],["Mon","Wed"],["Wed","Mon"],["Mon","Fri"]],note:"Wk2 Sat → Wed (fixes Wk2 Wednesday −1); Wk3 Sun → Wed (fixes Wk3 Wednesday −1)"}
 };
-const DEFICITS=[{Mon:-1,Fri:-1},{Mon:-1,Wed:-1,Fri:-1},{Mon:-1,Wed:-1,Fri:-1},{Mon:-1}];
 // LEGACY_SLOTS: the 38 documented schedule patterns from the original brief
 // (22 non-shifted rows + the unlisted Hwang row + 15 shifted rows), keyed by
 // schedule identity, NOT staff name. A schedule's week-to-week pattern is a
@@ -406,6 +408,30 @@ placeCompsGlobal(m,tasks,margin,compTally,compInfo);
 m.__compInfo=compInfo;
 return m;
 }
+// Same as buildMatrix, but the part-time layer uses each person's PT_SUGGEST
+// days where one exists (Milko/Woods/OHara/Hwang), live PT otherwise
+// (Morrissey — no longer a reallocation candidate). Reuses placeCompsGlobal
+// so comp-day placement follows the exact same methodology as the real
+// model; only the base PT inputs differ.
+function buildMatrixSuggested(w){
+let m={};let compInfo={};
+STAFF.forEach(s=>{m[s.n]={};DAYS.forEach(d=>m[s.n][d]=ARCH[s.a].includes(d)?"on":"off");});
+Object.keys(PT).forEach(p=>{
+const days = PT_SUGGEST[p] ? PT_SUGGEST[p].days[w] : PT[p][w];
+m[p]={};DAYS.forEach(d=>m[p][d]=days.includes(d)?"on":"off");
+});
+ROTATORS.filter(n=>weekOf(n)===w).forEach(n=>{m[n]["Sat"]="on";});
+ROTATORS.filter(n=>weekOf(n)===prevWk(w)).forEach(n=>{m[n]["Sun"]="on";});
+function countDay(d){let c=0;Object.keys(m).forEach(n=>{if(m[n][d]==="on")c++;});return c;}
+let margin={};WEEKDAYS.forEach(d=>margin[d]=countDay(d)-FLOOR[d]);
+let compTally={};WEEKDAYS.forEach(d=>compTally[d]=0);
+let tasks=[];
+ROTATORS.filter(n=>weekOf(n)===w).forEach(n=>tasks.push({n,window:SAT_WINDOW,kind:"Sat",src:"Sat Wk"+(w+1)}));
+ROTATORS.filter(n=>weekOf(n)===prevWk(w)).forEach(n=>tasks.push({n,window:SUN_WINDOW,kind:"Sun",src:"Sun Wk"+(w+1)}));
+placeCompsGlobal(m,tasks,margin,compTally,compInfo);
+m.__compInfo=compInfo;
+return m;
+}
 function placeCompsGlobal(m,tasks,margin,compTally,compInfo){
 tasks.forEach(t=>{const arch=ROT_ARCH[t.n];const archDays=arch?ARCH[arch]:[];t.elig=t.window.filter(d=>archDays.includes(d)&&m[t.n][d]==="on");});
 tasks.sort((a,b)=>a.elig.length-b.elig.length);
@@ -444,8 +470,8 @@ const resid=DAYS.filter(d=>dayCount(mm,d)===FLOOR[d]-1).map(d=>`${d} (${dayCount
 const spill=DAYS.filter(d=>dayCount(mm,d)<FLOOR[d]-1).map(d=>`${d} (${dayCount(mm,d)}/${FLOOR[d]})`);
 if(resid.length===0&&spill.length===0)return `<div class="flagbox flagok">Week ${w+1}: all floors met ✓</div>`;
 let out="";
-if(spill.length)out+=`<div class="flagbox flagspill">Week ${w+1} −2 SPILL (oversubscribed — needs review): ${spill.join(", ")}</div>`;
-if(resid.length)out+=`<div class="flagbox flagresid">Week ${w+1} residual −1 (per-diem fill target): ${resid.join(", ")}</div>`;
+if(spill.length)out+=`<div class="flagbox flagspill">Week ${w+1} −2 spill: ${spill.join(", ")}</div>`;
+if(resid.length)out+=`<div class="flagbox flagresid">Week ${w+1} residual −1: ${resid.join(", ")}</div>`;
 return out;
 }
 function renderBidGrid(){const w=parseInt(document.getElementById("weekSelB").value);document.getElementById("bidGrid").innerHTML=gridHtml(w);document.getElementById("bidFlag").innerHTML=flagHtml(w);}
@@ -459,12 +485,94 @@ let html="<tr><th>Archetype</th><th>Days</th><th>Required</th><th>Assigned</th><
 Object.keys(ARCH).forEach(k=>{const req=REQUIRED[k],got=asg[k];let cls,lbl;if(got<req){cls='under';lbl='Understaffed (−'+(req-got)+')';}else if(got>req){cls='over';lbl='Cushion (+'+(got-req)+')';}else{cls='ok';lbl='OK';}html+=`<tr><td>${k}</td><td>${ARCH[k].join(", ")}</td><td>${req}</td><td>${got}</td><td class="${cls}">${lbl}</td></tr>`;});
 document.getElementById(tblId).innerHTML=html;
 }
-function renderBid(){
-let html="<tr><th>Schedule</th><th>Days</th><th>Type</th><th>Slots</th><th>Weekend?</th></tr>";
+function renderScheduleMenu(){
+const asg=assignedCounts();
+let html="<tr><th>Schedule</th><th>Days</th><th>Type</th><th>Weekend?</th><th>Seats (Required / Assigned)</th><th>Status</th></tr>";
 let totSlots=0,shiftSlots=0,wdaySlots=0;
-Object.keys(ARCH).forEach(k=>{const slots=REQUIRED[k];totSlots+=slots;const isShift=k.startsWith("S-");if(isShift)shiftSlots+=slots;else wdaySlots+=slots;html+=`<tr><td>${k}</td><td>${ARCH[k].join(", ")}</td><td>${ARCH_CAT[k]}</td><td><b>${slots}</b></td><td>${isShift?'Fixed '+(k.includes('Sat')?'Sat':'Sun'):'Rotation'}</td></tr>`;});
+Object.keys(ARCH).forEach(k=>{
+const req=REQUIRED[k], got=asg[k];
+totSlots+=req; const isShift=k.startsWith("S-"); if(isShift) shiftSlots+=req; else wdaySlots+=req;
+let cls,lbl; if(got<req){cls='under';lbl='Understaffed (−'+(req-got)+')';}else if(got>req){cls='over';lbl='Cushion (+'+(got-req)+')';}else{cls='ok';lbl='OK';}
+html+=`<tr><td>${k}</td><td>${ARCH[k].join(", ")}</td><td>${ARCH_CAT[k]}</td><td>${isShift?'Fixed '+(k.includes('Sat')?'Sat':'Sun'):'Rotation'}</td><td><b>${req} / ${got}</b></td><td class="${cls}">${lbl}</td></tr>`;
+});
 document.getElementById("bidTbl").innerHTML=html;
 document.getElementById("bSlots").textContent=totSlots;document.getElementById("bShift").textContent=shiftSlots;document.getElementById("bWeekday").textContent=wdaySlots;
+}
+function renderAllWeeksGrid(){
+let html="<tr><th>Day</th><th>Floor</th>";
+for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
+html+="</tr>";
+DAYS.forEach(d=>{
+html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
+for(let w=0;w<4;w++){
+const mm=buildMatrix(w);
+html+=`<td class="${cellClass(mm,d)}">${dayCount(mm,d)}</td>`;
+}
+html+="</tr>";
+});
+document.getElementById("allWeeksGrid").innerHTML=html;
+const curFail=tallyFails();
+const flagEl=document.getElementById("allWeeksFlag");
+if(curFail===0){
+flagEl.innerHTML=`<div class="flagbox flagok">All floors met ✓</div>`;
+}else{
+let resid=[], spill=[];
+for(let w=0;w<4;w++){
+const mm=buildMatrix(w);
+DAYS.forEach(d=>{
+const m2=dayCount(mm,d)-FLOOR[d];
+if(m2===-1) resid.push(`${d} Wk${w+1}`);
+if(m2<-1) spill.push(`${d} Wk${w+1}`);
+});
+}
+let out="";
+if(spill.length) out+=`<div class="flagbox flagspill">−2 spill: ${spill.join(", ")}</div>`;
+if(resid.length) out+=`<div class="flagbox flagresid">Residual −1: ${resid.join(", ")}</div>`;
+flagEl.innerHTML=out;
+}
+}
+function gridRowsHtml(matrixFn){
+let html="<tr><th>Day</th><th>Floor</th>";
+for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
+html+="</tr>";
+DAYS.forEach(d=>{
+html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
+for(let w=0;w<4;w++){
+const mm=matrixFn(w);
+html+=`<td class="${cellClass(mm,d)}">${dayCount(mm,d)}</td>`;
+}
+html+="</tr>";
+});
+return html;
+}
+function tallyFailsFor(matrixFn){let t=0;for(let w=0;w<4;w++){const mm=matrixFn(w);DAYS.forEach(d=>{if(dayCount(mm,d)<FLOOR[d])t++;});}return t;}
+function worstDeficitFor(matrixFn){let worst=0;for(let w=0;w<4;w++){const mm=matrixFn(w);DAYS.forEach(d=>{const m2=dayCount(mm,d)-FLOOR[d];if(m2<worst)worst=m2;});}return worst;}
+function renderPTGrids(){
+document.getElementById("ptGridCurrent").innerHTML=gridRowsHtml(buildMatrix);
+document.getElementById("ptGridSuggested").innerHTML=gridRowsHtml(buildMatrixSuggested);
+const curFail=tallyFailsFor(buildMatrix), curWorst=worstDeficitFor(buildMatrix);
+const sugFail=tallyFailsFor(buildMatrixSuggested), sugWorst=worstDeficitFor(buildMatrixSuggested);
+const cls = sugFail<curFail ? 'flagok' : (sugFail===curFail ? 'flagresid' : 'flagspill');
+document.getElementById("ptGridDelta").innerHTML=`<div class="flagbox ${cls}">Below-floor cells: ${curFail} → ${sugFail}. Worst deficit: ${curWorst} → ${sugWorst}.</div>`;
+}
+function renderExecSummary(){
+const curFail=tallyFails(), curWorst=worstDeficit();
+const statusEl=document.getElementById("execStatus");
+if(curFail===0){
+statusEl.className="flagbox flagok";
+statusEl.textContent="All coverage floors met.";
+}else{
+statusEl.className="flagbox flagresid";
+statusEl.textContent=`${curFail} below-floor cell(s) remain (worst ${curWorst}) — see Coverage Verification below.`;
+}
+document.getElementById("execArch").textContent=Object.keys(ARCH).length;
+const legacy=weekToWeekByDay(legacyRosterDays);
+const neu=weekToWeekByDay(newModelRosterDays);
+const lgMean=Math.round(WEEKDAYS.reduce((a,d)=>a+legacy[d],0)/WEEKDAYS.length);
+const nmMean=Math.round(WEEKDAYS.reduce((a,d)=>a+neu[d],0)/WEEKDAYS.length);
+document.getElementById("execContinuity").textContent=nmMean+"%";
+document.getElementById("execContinuityLegacy").textContent=lgMean;
+document.getElementById("execChanges").textContent="0";
 }
 function renderAttr(){
 let html="<tr><th>Schedule</th><th>Days worked</th><th>Days / week</th><th>Weekly hours</th><th>Weekend commitment</th><th>Notable day off</th></tr>";
@@ -516,6 +624,11 @@ document.getElementById("weekgrid").innerHTML=html;
 let s="<tr><th>Day</th><th>Week 1</th><th>Week 2</th><th>Week 3</th><th>Week 4</th><th>Floor</th></tr>";
 [["Saturday","Sat"],["Sunday","Sun"]].forEach(([label,d])=>{s+=`<tr><td class='rowlabel'>${label}</td>`;for(let w=0;w<4;w++){const c=dayCount(buildMatrix(w),d);s+=`<td style="color:${c>=13?'#065f46':'#b91c1c'};font-weight:600">${c}</td>`;}s+=`<td>13</td></tr>`;});
 document.getElementById("sumTbl").innerHTML=s;
+const rec=compReconcile();
+const recOk = rec.unplaced===0 && rec.spills===0;
+document.getElementById("compReconLine").innerHTML = recOk
+? `<span style="color:#065f46;font-weight:600">✓ ${rec.placed}/${rec.expected} comp days placed cleanly</span>`
+: `<span style="color:#b91c1c;font-weight:600">⚠ Comp placement issue</span> — ${rec.placed}/${rec.expected} placed${rec.unplaced?`, ${rec.unplaced} unplaced`:''}${rec.spills?`, ${rec.spills} spill`:''}`;
 }
 const ARCH_ORDER=["N-1","N-2","N-3","N-5","S-Sat-A","S-Sat-B","S-Sun-A","S-Sun-B"];
 const ARCH_LABEL={"N-1":"N-1 (Mon–Thu)","N-2":"N-2 (Mon,Tue,Thu,Fri)","N-3":"N-3 (Mon,Wed,Thu,Fri)","N-5":"N-5 (Mon–Fri)","S-Sat-A":"S-Sat-A (Tue,Wed,Fri,Sat)","S-Sat-B":"S-Sat-B (Tue,Thu,Fri,Sat)","S-Sun-A":"S-Sun-A (Sun,Mon,Wed,Thu)","S-Sun-B":"S-Sun-B (Sun,Mon,Tue,Wed)"};
@@ -584,7 +697,7 @@ document.getElementById("hmTable").innerHTML=html;
 function renderLegacyStats(){
 const s=legacySlotStats();
 document.getElementById("pcLegacyTotal").textContent=s.total;
-document.getElementById("pcLegacySub").innerHTML=`<b>${s.total} schedule slots = ${s.permCount} permuting + ${s.staticCount} static</b> (22 non-shifted rows + 1 unlisted part-time row + 15 shifted rows).<br><br>• <b>${s.permCount} permuting schedules</b> (×4 weekly versions each → 60–80 unique weekly patterns)<br>• <b>${s.staticCount} static schedules</b> — no week-to-week change (three are the identical Tue–Sat pattern; one is Sun–Thu)`;
+document.getElementById("pcLegacySub").innerHTML=`<b>${s.total} schedule slots = ${s.permCount} permuting + ${s.staticCount} static</b><br><br>• <b>${s.permCount} permuting</b> (×4 weekly versions each) → 60–80 unique weekly patterns<br>• <b>${s.staticCount} static</b> — three Tue–Sat, one Sun–Thu`;
 document.getElementById("tblLegacySlots").textContent=`${s.total} (23 non-shifted + 15 shifted)`;
 document.getElementById("tblLegacyPerm").textContent=`${s.permCount} (×4 weekly versions each)`;
 document.getElementById("tblLegacyStatic").textContent=`${s.staticCount} (3 identical Tue–Sat + 1 Sun–Thu)`;
@@ -596,8 +709,8 @@ const curDays=PT[name][w];const sugDays=PT_SUGGEST[name].days[w];
 const isNew=sugDays.includes(day)&&!curDays.includes(day);
 if(!sugDays.includes(day))return"emptyd";
 if(!isNew)return"work";
-const def=DEFICITS[w]||{};
-return (def[day]!==undefined)?"fix":"buffer";
+const mm=buildMatrix(w);
+return (dayCount(mm,day)<FLOOR[day])?"fix":"buffer";
 }
 function stripRow(name,w,mode){
 let cells="";
@@ -632,33 +745,6 @@ html+=`<div class="ptcard">
 </div>`;
 });
 document.getElementById("ptCards").innerHTML=html;
-}
-function renderDefSummary(){
-let html="";
-for(let w=0;w<4;w++){
-const def=DEFICITS[w]||{};const keys=Object.keys(def);
-if(keys.length===0){
-html+=`<div class="defcell clean"><div class="wk">Week ${w+1}</div><div class="st">No deficit</div></div>`;
-}else{
-let coveredBy={};
-Object.keys(PT_SUGGEST).forEach(name=>{
-const sugDays=PT_SUGGEST[name].days[w];const curDays=PT[name][w];
-sugDays.forEach(d=>{if(def[d]!==undefined&&!curDays.includes(d))coveredBy[d]=name;});
-});
-const parts=keys.map(d=>`${d} ${coveredBy[d]?'✓ '+coveredBy[d]:'— uncovered'}`);
-const allCovered=keys.every(d=>coveredBy[d]);
-html+=`<div class="defcell ${allCovered?'resolved':''}"><div class="wk">Week ${w+1}</div><div class="st">${parts.join('<br>')}</div></div>`;
-}
-}
-document.getElementById("defSummary").innerHTML=html;
-}
-function renderPTSafety(){
-let s="<tr><th>Day</th><th>Week</th><th>Current</th><th>Without PT wknd</th><th>Floor</th><th>Safe?</th></tr>";let allSafe=true;
-[["Saturday","Sat"],["Sunday","Sun"]].forEach(([label,d])=>{for(let w=0;w<4;w++){const mm=buildMatrix(w);const cur=dayCount(mm,d);let pc=0;Object.keys(PT).forEach(p=>{if(mm[p][d]==="on")pc++;});const wo=cur-pc;const safe=wo>=FLOOR[d];if(!safe)allSafe=false;s+=`<tr><td class='rowlabel'>${label}</td><td>Week ${w+1}</td><td>${cur}</td><td class="${safe?'pass':'fail'}">${wo}</td><td>${FLOOR[d]}</td><td class="${safe?'pass':'fail'}">${safe?'✓':'✗'}</td></tr>`;}});
-document.getElementById("ptSafeTbl").innerHTML=s;
-document.getElementById("ptSafeFlag").innerHTML=allSafe?`<div class="flagbox flagok">All weekends remain ≥ floor (13) with part-time weekend days removed — reallocation would not breach weekend coverage [1].</div>`:`<div class="flagbox">One or more weekends fall below floor without part-time weekend days — those cannot be reallocated without backfill [1].</div>`;
-let tc=0,ts=0;Object.keys(PT_SUGGEST).forEach(p=>{tc+=countPTweekend(PT[p]);ts+=countPTweekend(PT_SUGGEST[p].days);});
-document.getElementById("ptNet").innerHTML=`<div class="metric"><b>${tc}</b>Current PT weekend-days / cycle</div><div class="metric"><b>${ts}</b>Suggested PT weekend-days / cycle</div><div class="metric"><b>${tc-ts}</b>Weekend-days redirected to weekdays</div><p class="note">These 5 redirects clear Monday in Weeks 1–3 (via Woods & Milko) and Wednesday in Weeks 2–3 (via Hwang), cutting below-floor cells from 9 to 4. Friday (Weeks 1–3) and Week 4's Monday have no remaining part-time weekend capacity to draw on and stay unaddressed [1]. Morrissey is no longer part of this pool — she moved to a fixed Thu/Fri/Sat schedule and has no occasional weekend day left to redirect. Illustrative — the live grids are not recomputed here.</p>`;
 }
 // --- Growth Planner: candidate archetype set includes N-4 (Tue,Wed,Thu,Fri).
 // N-4 has no current occupant (Part 6.3) but a NEW hire can seed it cleanly —
@@ -763,21 +849,21 @@ evals.sort((a,b)=> a.result.mFail-b.result.mFail || b.result.worst-a.result.wors
 chosen=evals[0].arch;
 if(evals[0].result.mFail===0){
 const tied=evals.filter(e=>e.result.mFail===0).map(e=>e.arch).filter(a=>a!==chosen);
-reason = tied.length ? `Fills every remaining below-floor cell on its own (tied with ${tied.join(", ")} — this one adds no weekend-rotation/comp burden where possible).` : `Fills every remaining below-floor cell on its own.`;
+reason = tied.length ? `Clears all remaining below-floor cells (tied with ${tied.join(", ")}).` : `Clears all remaining below-floor cells.`;
 comparisons = evals.slice(0,6);
 } else {
-reason = `Best available reduction toward zero deficits: below-floor cells drop to ${evals[0].result.mFail}, worst deficit ${evals[0].result.worst}.`;
+reason = `Reduces below-floor cells to ${evals[0].result.mFail} (worst ${evals[0].result.worst}).`;
 }
 } else if(cur.minMargin<BUFFER_TARGET){
 phase=2;
 let evals=evalAll();
 evals.sort((a,b)=> b.result.minMargin-a.result.minMargin || (a.isShifted===b.isShifted?0:(a.isShifted?-1:1)));
 chosen=evals[0].arch;
-reason=`Raises the currently tightest day the most (minMargin → ${evals[0].result.minMargin}), building toward a +${BUFFER_TARGET} cushion everywhere — enough to absorb the department's <1/day average call-out (Part 3.3) without dropping below floor.`;
+reason=`Raises the tightest day to minMargin ${evals[0].result.minMargin}.`;
 } else {
 phase=3;
 chosen=DESIRABLE_ARCHETYPES[desirIdx % DESIRABLE_ARCHETYPES.length]; desirIdx++;
-reason=`Coverage is met and every day already has a +${BUFFER_TARGET}+ cushion — growth is now for staff satisfaction, not operational need. ${chosen} is one of the two archetypes Part 8.1 names as most-desirable (sheds a "bookend" day).`;
+reason=`Most-desirable archetype (Part 8.1).`;
 }
 const isShifted=chosen.startsWith("S-");
 const realName="Hire#"+(i+1);
@@ -790,11 +876,27 @@ return log;
 }
 const PHASE_LABEL={1:"Fill deficits",2:"Scale logically",3:"Desirability"};
 const PHASE_CLASS={1:"under",2:"ok",3:"over"};
+function renderDesirableCallout(){
+const asg=assignedCounts();
+let html=`<div class="illus" style="margin-bottom:10px"><b>Most-desirable archetypes (Part 8.1)</b> — each sheds one tight "bookend" day.</div><div class="weekgrid" style="grid-template-columns:repeat(2,1fr)">`;
+["N-1","N-4"].forEach(k=>{
+const a=ATTR[k];
+const seats=(k in ARCH)?(asg[k]||0):0;
+const hidden = !(k in ARCH);
+html+=`<div class="weekcol"><div class="weekhead">${k} (${GROWTH_ARCH[k].join(", ")})</div><div class="dayblock" style="padding:10px 12px">`;
+html+=`<div style="margin-bottom:8px">${hidden?'<span class="tag tag-wknd-fix">Hidden — 0 seats</span>':`<span class="tag tag-wknd-none">Active — ${seats} seats</span>`}</div>`;
+html+=`<span class="tag tag-days">${a.days}</span> <span class="tag tag-hrs">${a.hrs}</span> <span class="tag ${a.wkndcls}">${a.wknd} (occasional rot.)</span> <span class="tag tag-off">${a.off}</span>`;
+html+=`</div></div>`;
+});
+html+="</div>";
+document.getElementById("growDesirable").innerHTML=html;
+}
 function renderGrowth(){
+renderDesirableCallout();
 const n=parseInt(document.getElementById("growN").value)||0;const base=ALLNAMES.length;
 document.getElementById("growTotal").textContent=`Current: ${base} staff → Target: ${base+n} staff`;
 const curFail=tallyFails(), curWorst=worstDeficit();
-document.getElementById("growGap").innerHTML=`<b>${curFail}</b>Below-floor cells right now (worst ${curWorst}) — Phase 1 needs to close this before Phases 2–3 apply`;
+document.getElementById("growGap").innerHTML=`<b>${curFail}</b>Below-floor cells right now (worst ${curWorst})`;
 let compareHtml="", planHtml="";
 if(n===0){
 planHtml="<div class='step'>Set a number above to see the computed plan: Phase 1 fills deficits, Phase 2 builds a call-out-safe buffer, Phase 3 grows the most-desirable schedules. Each slot is simulated against the live floor math — not a fixed list.</div>";
@@ -813,7 +915,7 @@ if(r.comparisons){
 let t="<table style='margin:8px 0 16px'><tr><th>Archetype</th><th>Days</th><th>Below-floor cells if added here</th><th>Worst deficit</th></tr>";
 r.comparisons.forEach(c=>{t+=`<tr><td>${c.arch}</td><td>${(GROWTH_ARCH[c.arch]||[]).join(", ")}</td><td>${c.result.mFail}</td><td>${c.result.worst}</td></tr>`;});
 t+="</table>";
-compareHtml+=`<p class="note" style="margin-top:0">Full comparison for the slot that closes the gap (Slot ${r.slot}), all 9 candidate archetypes:</p>`+t;
+compareHtml+=`<p class="note" style="margin-top:0">All 9 candidates for Slot ${r.slot}:</p>`+t;
 }
 });
 }
@@ -828,14 +930,8 @@ document.getElementById("weekSelB").addEventListener("change",renderBidGrid);
 document.getElementById("weekSelC").addEventListener("change",e=>{MATRIX=buildMatrix(parseInt(e.target.value));renderCal();});
 document.getElementById("weekSelCont").addEventListener("change",renderHeatmap);
 document.getElementById("growN").addEventListener("input",renderGrowth);
-renderBid();renderAttr();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderDefSummary();renderPTSafety();renderReq("reqTbl");renderReq("growReqTbl");renderGrowth();
-document.getElementById("mArch").textContent=Object.keys(ARCH).length;
-document.getElementById("mStaff").textContent=ALLNAMES.length;
-document.getElementById("mShift").textContent=STAFF.filter(s=>s.a.startsWith("S-")).length;
-document.getElementById("mFail").textContent=tallyFails();
-document.getElementById("mWorst").textContent=worstDeficit();
-const rec=compReconcile();
-document.getElementById("mRecon").textContent=`${rec.placed}/${rec.expected}${rec.unplaced?' ('+rec.unplaced+' unplaced!)':''}${rec.spills?' ('+rec.spills+' spill)':' ✓'}`;
+renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();
+renderExecSummary();
 </script>
 </body>
 </html>
