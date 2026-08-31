@@ -145,6 +145,7 @@ select,input{padding:8px 10px}
 <div class="tab" data-page="pt">Part-Time Suggestion</div>
 <div class="tab" data-page="cmp">Comparison</div>
 <div class="tab" data-page="grow">Growth Planner</div>
+<div class="tab" data-page="mock">Growth Preview</div>
 </div>
 <div class="wrap">
 <div class="page active" id="bid">
@@ -284,6 +285,23 @@ select,input{padding:8px 10px}
 <div id="growPlan"></div>
 </div>
 <div class="card"><h2>Required Headcount per Schedule (Minimums)</h2><table id="growReqTbl"></table></div>
+</div>
+<div class="page" id="mock">
+<div class="card"><h2>Growth Preview — 4 New FTEs: N-4 + S-Sat-C Both Launched</h2>
+<div class="illus"><b>Mock preview — not applied to the live model.</b> 4 new hires: 1× S-Sat-A (closes the current gap on its own), 1× N-4 and 1× S-Sat-C (both new archetypes seeded fresh — no one moved off an existing schedule), 1× N-1 (further desirability). No dedicated buffer hire needed — N-4/S-Sat-C carry real coverage weight themselves.</div>
+<div class="bigstat" style="grid-template-columns:repeat(3,1fr)">
+<div class="bs newm"><div class="v" id="mockArch">—</div><div class="l">Archetypes (was 8)</div></div>
+<div class="bs newm"><div class="v" id="mockFail">—</div><div class="l">Below-floor cells (was 9)</div></div>
+<div class="bs newm"><div class="v" id="mockWorst">—</div><div class="l">Worst deficit (was −1)</div></div>
+</div>
+</div>
+<div class="card"><h2>Coverage Verification — All 4 Weeks (Mock)</h2>
+<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1</span><span class="spill">−2 spill</span></div>
+<table id="mockGrid"></table>
+</div>
+<div class="card"><h2>Schedule Menu (Mock, 10 Archetypes)</h2>
+<table id="mockMenu"></table>
+</div>
 </div>
 </div>
 <script>
@@ -815,6 +833,67 @@ m[t.n][best]="comp";margin[best]--;compTally[best]++;
 return m;
 }
 function dayCountCand(mm,d){let c=0;Object.keys(mm).forEach(n=>{if(mm[n][d]==="on")c++;});return c;}
+// --- Growth Preview (mock tab): both N-4 (Tue,Wed,Thu,Fri) and S-Sat-C
+// (Wed,Thu,Fri,Sat) launched with the 4 new FTEs — 1x S-Sat-A (closes the
+// current gap on its own), 1x N-4, 1x S-Sat-C (both new archetypes seeded
+// fresh), 1x N-1 (further desirability). Tested: this fully clears the
+// gap without a dedicated buffer hire, since N-4/S-Sat-C carry real
+// coverage weight themselves — the 4th hire is free to go to more
+// desirability rather than being needed for coverage.
+// Entirely separate data from the live model — additive only, nothing here
+// touches STAFF/ARCH/REQUIRED, so the rest of the tool is unaffected.
+const MOCK_ARCH=Object.assign({},ARCH,{"N-4":["Tue","Wed","Thu","Fri"],"S-Sat-C":["Wed","Thu","Fri","Sat"]});
+const MOCK_NEW_HIRES=[
+{n:"New Hire 1",a:"S-Sat-A",rot:false},
+{n:"New Hire 2",a:"N-4",rot:true},
+{n:"New Hire 3",a:"S-Sat-C",rot:false},
+{n:"New Hire 4",a:"N-1",rot:true}
+];
+const MOCK_STAFF=STAFF.concat(MOCK_NEW_HIRES);
+const MOCK_REQUIRED=Object.assign({},REQUIRED,{"S-Sat-A":REQUIRED["S-Sat-A"]+1,"N-4":1,"S-Sat-C":1,"N-1":REQUIRED["N-1"]+1});
+const __mockRotWeek={...ROT_WEEK};
+__mockRotWeek["New Hire 2"]=leastPopulatedWeek(__mockRotWeek);
+__mockRotWeek["New Hire 4"]=leastPopulatedWeek(__mockRotWeek);
+const MOCK_ROT_WEEK=__mockRotWeek;
+function renderMockSummary(){
+document.getElementById("mockArch").textContent=Object.keys(MOCK_ARCH).length;
+let mFail=0,worst=0;
+for(let w=0;w<4;w++){
+const mm=buildMatrixCand(MOCK_STAFF,MOCK_ROT_WEEK,w,MOCK_ARCH);
+WEEKDAYS.forEach(d=>{const m2=dayCountCand(mm,d)-FLOOR[d];if(m2<0)mFail++;if(m2<worst)worst=m2;});
+}
+document.getElementById("mockFail").textContent=mFail;
+document.getElementById("mockWorst").textContent=worst;
+}
+function renderMockGrid(){
+let html="<tr><th>Day</th><th>Floor</th>";
+for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
+html+="</tr>";
+DAYS.forEach(d=>{
+html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
+for(let w=0;w<4;w++){
+const mm=buildMatrixCand(MOCK_STAFF,MOCK_ROT_WEEK,w,MOCK_ARCH);
+const c=dayCountCand(mm,d);const m2=c-FLOOR[d];
+const cls=m2>0?'pass':(m2===0?'atfloor':(m2===-1?'residual':'spill'));
+html+=`<td class="${cls}">${c}</td>`;
+}
+html+="</tr>";
+});
+document.getElementById("mockGrid").innerHTML=html;
+}
+function renderMockMenu(){
+const asg={};
+MOCK_STAFF.forEach(s=>{asg[s.a]=(asg[s.a]||0)+1;});
+let html="<tr><th>Schedule</th><th>Days</th><th>Weekend?</th><th>Seats (Required / Assigned)</th><th>Status</th></tr>";
+Object.keys(MOCK_ARCH).forEach(k=>{
+const req=MOCK_REQUIRED[k]||0,got=asg[k]||0;
+const isShift=k.startsWith("S-");
+let cls,lbl;if(got<req){cls='under';lbl='Understaffed (−'+(req-got)+')';}else if(got>req){cls='over';lbl='Cushion (+'+(got-req)+')';}else{cls='ok';lbl='OK';}
+html+=`<tr><td>${k}</td><td>${MOCK_ARCH[k].join(", ")}</td><td>${isShift?'Fixed '+(k.includes('Sat')?'Sat':'Sun'):'Rotation'}</td><td><b>${req} / ${got}</b></td><td class="${cls}">${lbl}</td></tr>`;
+});
+document.getElementById("mockMenu").innerHTML=html;
+}
+function renderMock(){renderMockSummary();renderMockGrid();renderMockMenu();}
 function evalRosterCand(staffList, rotWeekMap, archSet){
 let mFail=0, worst=0, totalDeficit=0, minMargin=Infinity;
 for(let w=0;w<4;w++){
@@ -946,7 +1025,7 @@ document.getElementById("weekSelB").addEventListener("change",renderBidGrid);
 document.getElementById("weekSelC").addEventListener("change",e=>{MATRIX=buildMatrix(parseInt(e.target.value));renderCal();});
 document.getElementById("weekSelCont").addEventListener("change",renderHeatmap);
 document.getElementById("growN").addEventListener("input",renderGrowth);
-renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();
+renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderMock();
 renderExecSummary();
 </script>
 </body>
