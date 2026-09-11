@@ -302,11 +302,21 @@ select,input{padding:8px 10px}
 </div>
 <div class="page" id="sandbox">
 <div class="card"><h2>Live Staffing Sandbox — Adjust Archetype Seat Counts</h2>
-<div class="illus">Type a seat count for any archetype and the coverage grid recomputes instantly — full comp-day and weekend-rotation math included, same engine as the rest of this tool. Part-time staff stay fixed as currently scheduled; this only varies full-time archetype seats.</div>
+<div class="illus">Type a seat count for any archetype and the coverage grid recomputes instantly — full comp-day and weekend-rotation math included, same engine as the rest of this tool. Part-time staff stay fixed as currently scheduled and count toward coverage, but aren't part of the totals below — this is about the 39 full-time archetype seats.</div>
 <div id="sbInputs" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px"></div>
-<div class="controls"><button id="sbReset" style="padding:6px 14px;border-radius:5px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-size:13px">Reset to current</button></div>
-<div class="bigstat" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
-<div class="bs newm"><div class="v" id="sbTotal">—</div><div class="l">Total staff (FT + PT)</div></div>
+<div class="controls" style="flex-direction:column;align-items:flex-start;gap:10px">
+<div>
+<label style="margin-right:20px;font-size:13px"><input type="radio" name="sbMode" value="guardrails" id="sbModeGuard" checked> <b>Guardrails</b> — cap total at 39 (reallocate current full-time staff only)</label><br>
+<label style="font-size:13px"><input type="radio" name="sbMode" value="hypothetical" id="sbModeHypo"> <b>Hypothetical</b> — allow growth beyond 39</label>
+</div>
+<div id="sbSliderRow" style="font-size:13px;display:none">Additional staff beyond 39: <input type="range" id="sbSlider" min="0" max="20" value="0" style="width:220px;vertical-align:middle"> <b id="sbSliderVal">0</b> → target <b id="sbTargetTotal">39</b></div>
+<div id="sbAssignedLine" style="font-size:14px;font-weight:700">—</div>
+<div>
+<button id="sbFillRec" style="padding:6px 14px;border-radius:5px;border:1px solid #38bdf8;background:#eff6ff;color:#1e40af;cursor:pointer;font-size:13px;font-weight:600">Fill Recommended</button>
+<button id="sbReset" style="padding:6px 14px;border-radius:5px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-size:13px;margin-left:8px">Reset to current</button>
+</div>
+</div>
+<div class="bigstat" style="grid-template-columns:repeat(2,1fr);margin-top:14px">
 <div class="bs newm"><div class="v" id="sbFail">—</div><div class="l">Below-floor cells</div></div>
 <div class="bs newm"><div class="v" id="sbWorst">—</div><div class="l">Worst deficit</div></div>
 </div>
@@ -927,7 +937,7 @@ function renderSandboxInputs(){
 const asg=assignedCounts();
 let html="";
 Object.keys(ARCH).forEach(k=>{
-html+=`<div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:2px;color:#475569">${k} <span style="font-weight:400;color:#94a3b8">(${ARCH[k].join(",")})</span></label><input type="number" id="sb_${k}" value="${asg[k]||0}" min="0" max="30" style="width:100%"></div>`;
+html+=`<div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:2px;color:#475569">${k} <span style="font-weight:400;color:#94a3b8">(${ARCH[k].join(",")})</span></label><input type="number" id="sb_${k}" value="${asg[k]||0}" min="0" max="39" style="width:100%"></div>`;
 });
 document.getElementById("sbInputs").innerHTML=html;
 Object.keys(ARCH).forEach(k=>{
@@ -951,6 +961,24 @@ rotWeekMap[n]=leastPopulatedWeek(rotWeekMap);
 });
 return rotWeekMap;
 }
+// The 39-total cap in Guardrails mode is enforced visually (a clear
+// over/under readout), not by fighting the input mid-keystroke — auto-
+// clamping a number input on every keystroke makes for a frustrating typing
+// experience and isn't necessary to make the constraint unmistakable.
+function updateAssignedCounter(){
+const sum=Object.keys(ARCH).reduce((s,k)=>s+(parseInt(document.getElementById("sb_"+k).value)||0),0);
+const guardrails=document.getElementById("sbModeGuard").checked;
+const el=document.getElementById("sbAssignedLine");
+if(guardrails){
+const remaining=39-sum;
+const over=remaining<0;
+el.innerHTML=`Assigned: <span style="color:${over?'#b91c1c':'#1a2332'}">${sum}</span> / 39 &nbsp;·&nbsp; Unassigned: <span style="color:${over?'#b91c1c':'#065f46'}">${remaining}</span>${over?' &nbsp;<span style="color:#b91c1c">⚠ over the 39-staff cap</span>':''}`;
+} else {
+const beyond=sum-39;
+el.innerHTML=`Assigned: <span style="color:#1a2332">${sum}</span> FT &nbsp;·&nbsp; ${beyond>=0?beyond+' beyond current (39)':(-beyond)+' below current (39)'}`;
+}
+return sum;
+}
 function renderSandbox(){
 const staffList=buildSandboxStaff();
 const rotWeekMap=buildSandboxRotWeek(staffList);
@@ -970,12 +998,43 @@ html+=`<td class="${cls}">${c}</td>`;
 html+="</tr>";
 });
 document.getElementById("sbGrid").innerHTML=html;
-document.getElementById("sbTotal").textContent=staffList.length+Object.keys(PT).length+" ("+staffList.length+" FT + "+Object.keys(PT).length+" PT)";
 document.getElementById("sbFail").textContent=mFail;
 document.getElementById("sbWorst").textContent=worst;
+updateAssignedCounter();
+}
+function updateSandboxMode(){
+const guardrails=document.getElementById("sbModeGuard").checked;
+document.getElementById("sbSliderRow").style.display=guardrails?"none":"block";
+updateAssignedCounter();
+}
+function updateSandboxSliderLabel(){
+const additional=parseInt(document.getElementById("sbSlider").value)||0;
+document.getElementById("sbSliderVal").textContent=additional;
+document.getElementById("sbTargetTotal").textContent=39+additional;
 }
 function resetSandbox(){
+document.getElementById("sbModeGuard").checked=true;
+document.getElementById("sbSlider").value=0;
+updateSandboxSliderLabel();
 renderSandboxInputs();
+updateSandboxMode();
+renderSandbox();
+}
+// Fill Recommended reuses computeGrowthPlanFrom — the exact same phased
+// logic (fill deficits -> scale to +1 buffer -> desirability) that drives
+// the Growth Planner tab. Both modes now build the distribution from
+// scratch for a target total, rather than layering on top of today's
+// actual per-archetype counts: Guardrails targets exactly 39 (reallocating
+// today's headcount); Hypothetical targets 39 + the slider value (growth).
+function fillRecommended(){
+const guardrails=document.getElementById("sbModeGuard").checked;
+const additional=guardrails?0:(parseInt(document.getElementById("sbSlider").value)||0);
+const targetSlots=39+additional;
+const log=computeGrowthPlanFrom([],{},targetSlots);
+let tally={};
+Object.keys(ARCH).forEach(k=>tally[k]=0);
+log.forEach(entry=>{tally[entry.archetype]=(tally[entry.archetype]||0)+1;});
+Object.keys(ARCH).forEach(k=>{document.getElementById("sb_"+k).value=tally[k]||0;});
 renderSandbox();
 }
 function evalRosterCand(staffList, rotWeekMap, archSet){
@@ -1006,9 +1065,9 @@ const BUFFER_TARGET=1;
 // S-Sat-A/B) remain a separate concern, chosen only in Phase 1/2 when the
 // math favors them.
 const DESIRABLE_ARCHETYPES=["N-1","N-4","S-Sat-C"];
-function computeGrowthPlan(nSlots){
-let staffList=STAFF.map(s=>({...s}));
-let rotWeekMap={...ROT_WEEK};
+function computeGrowthPlanFrom(baseStaffList, baseRotWeekMap, nSlots){
+let staffList=baseStaffList.map(s=>({...s}));
+let rotWeekMap={...baseRotWeekMap};
 const log=[];
 const candidates=Object.keys(GROWTH_ARCH);
 let desirIdx=0;
@@ -1056,6 +1115,9 @@ const after=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH);
 log.push({slot:i+1, phase, archetype:chosen, mFail:after.mFail, worst:after.worst, minMargin:after.minMargin, reason, comparisons});
 }
 return log;
+}
+function computeGrowthPlan(nSlots){
+return computeGrowthPlanFrom(STAFF, ROT_WEEK, nSlots);
 }
 const PHASE_LABEL={1:"Fill deficits",2:"Scale logically",3:"Desirability"};
 const PHASE_CLASS={1:"under",2:"ok",3:"over"};
@@ -1114,7 +1176,12 @@ document.getElementById("weekSelC").addEventListener("change",e=>{MATRIX=buildMa
 document.getElementById("weekSelCont").addEventListener("change",renderHeatmap);
 document.getElementById("growN").addEventListener("input",renderGrowth);
 document.getElementById("sbReset").addEventListener("click",resetSandbox);
+document.getElementById("sbFillRec").addEventListener("click",fillRecommended);
+document.getElementById("sbSlider").addEventListener("input",updateSandboxSliderLabel);
+document.getElementById("sbModeGuard").addEventListener("change",updateSandboxMode);
+document.getElementById("sbModeHypo").addEventListener("change",updateSandboxMode);
 renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderSandboxInputs();renderSandbox();
+updateSandboxSliderLabel();updateSandboxMode();
 renderExecSummary();
 </script>
 </body>
