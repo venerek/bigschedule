@@ -145,7 +145,8 @@ select,input{padding:8px 10px}
 <div class="tab" data-page="pt">Part-Time Suggestion</div>
 <div class="tab" data-page="cmp">Comparison</div>
 <div class="tab" data-page="grow">Growth Planner</div>
-<div class="tab" data-page="mock">10 Schedule Mock</div>
+<div class="tab" data-page="legacy8">Legacy 8-Archetype Model</div>
+<div class="tab" data-page="tenure">Tenure Segregation</div>
 </div>
 <div class="wrap">
 <div class="page active" id="bid">
@@ -167,9 +168,10 @@ select,input{padding:8px 10px}
 <p class="note">Bidding by seniority; each row sized to the daily floors [1].</p>
 <table id="bidTbl"></table>
 <div style="margin-top:12px">
-<span class="metric"><b id="bSlots">—</b>Total slots (staff needed)</span>
+<span class="metric"><b id="bSlots">—</b>Full-time archetype slots</span>
 <span class="metric"><b id="bShift">—</b>Fixed-weekend slots</span>
 <span class="metric"><b id="bWeekday">—</b>Weekday-only slots</span>
+<span class="metric"><b id="bTotal">—</b>Total staff (FT + part-time)</span>
 </div>
 </div>
 <div class="card"><h2>Schedule Attributes — Bid by Your Own Priorities</h2>
@@ -229,14 +231,14 @@ select,input{padding:8px 10px}
 <div class="page" id="cmp">
 <div class="card"><h2>Legacy System vs. New Model — Schedule Structure</h2>
 <div class="pcbox">
-<div class="pcside newm"><h3>New Model</h3><div class="pcbig newm">8</div><div class="pcsub"><b>8 fixed archetypes</b> — 1 pattern each, <b>zero week-to-week variation</b>. Every staff member works the same days every week.</div></div>
+<div class="pcside newm"><h3>New Model</h3><div class="pcbig newm" id="pcNewModelCount">—</div><div class="pcsub"><b id="pcNewModelSub">—</b> — 1 pattern each, <b>zero week-to-week variation</b>. Every staff member works the same days every week.</div></div>
 <div class="pcside legacy"><h3>Legacy System</h3><div class="pcbig legacy" id="pcLegacyTotal">—</div><div class="pcsub" id="pcLegacySub">—</div></div>
 </div>
 <table class="wraptext" style="margin-top:16px">
 <tr><th>Metric</th><th>Legacy System</th><th>New Model</th><th>Why it matters</th></tr>
-<tr><td class="rowlabel">Schedule slots</td><td id="tblLegacySlots">—</td><td>8 archetypes</td><td>Far fewer schedule types to manage</td></tr>
+<tr><td class="rowlabel">Schedule slots</td><td id="tblLegacySlots">—</td><td id="tblNewArchCount">—</td><td>Far fewer schedule types to manage</td></tr>
 <tr><td class="rowlabel">Permuting schedules</td><td id="tblLegacyPerm">—</td><td>0</td><td>Each permuting schedule changes days worked week to week</td></tr>
-<tr><td class="rowlabel">Static schedules</td><td id="tblLegacyStatic">—</td><td>8 (all fixed)</td><td>Only these legacy schedules held steady week to week</td></tr>
+<tr><td class="rowlabel">Static schedules</td><td id="tblLegacyStatic">—</td><td id="tblNewArchCount2">—</td><td>Only these legacy schedules held steady week to week</td></tr>
 <tr><td class="rowlabel">Unique weekly patterns</td><td>60–80</td><td>8</td><td>The core complexity the model eliminates</td></tr>
 <tr><td class="rowlabel">Day-to-day staff predictability</td><td class="fail">Low</td><td class="pass">Fixed core</td><td>Same people on the same weekdays every week</td></tr>
 <tr><td class="rowlabel">"Who's here today?" lookup</td><td class="fail">Check each person's permutation for the week</td><td class="pass">Single static roster</td><td>A single absence currently requires checking which permutation everyone is on that week</td></tr>
@@ -265,7 +267,7 @@ select,input{padding:8px 10px}
 <div class="hmwrap"><table class="hmtable" id="hmTable"></table></div>
 </div>
 <div class="card"><h2>Consistency at a Glance</h2>
-<div class="metric"><b>60–80 → 8</b>Unique weekly patterns</div>
+<div class="metric"><b>60–80 → <span id="ccArchCount">—</span></b>Unique weekly patterns</div>
 <div class="metric"><b>34 → 0</b>Permuting schedules</div>
 <div class="metric"><b>0</b>Weekly schedule changes per staff</div>
 <div class="metric"><b>100%</b>Fixed full-time weekday core identical week-to-week*</div>
@@ -286,21 +288,34 @@ select,input{padding:8px 10px}
 </div>
 <div class="card"><h2>Required Headcount per Schedule (Minimums)</h2><table id="growReqTbl"></table></div>
 </div>
-<div class="page" id="mock">
-<div class="card"><h2>Growth Preview — 4 New FTEs: N-4 + S-Sat-C Both Launched</h2>
-<div class="illus"><b>Mock preview — not applied to the live model.</b> 4 new hires: 1× S-Sat-A (closes the current gap on its own), 1× N-4 and 1× S-Sat-C (both new archetypes seeded fresh — no one moved off an existing schedule), 1× N-1 (further desirability). No dedicated buffer hire needed — N-4/S-Sat-C carry real coverage weight themselves.</div>
-<div class="bigstat" style="grid-template-columns:repeat(3,1fr)">
-<div class="bs newm"><div class="v" id="mockArch">—</div><div class="l">Archetypes (was 8)</div></div>
-<div class="bs newm"><div class="v" id="mockFail">—</div><div class="l">Below-floor cells (was 9)</div></div>
-<div class="bs newm"><div class="v" id="mockWorst">—</div><div class="l">Worst deficit (was −1)</div></div>
+<div class="page" id="legacy8">
+<div class="card"><h2>Legacy 8-Archetype Model (Retired — Reference Only)</h2>
+<div class="illus">Retired now that the 10-archetype model (8 original archetypes + N-4 + S-Sat-C, 44 staff) is primary everywhere else in this tool. Kept here for reference — the original 35-staff/8-archetype state, before N-4 and S-Sat-C were added.</div>
 </div>
+<div class="card"><h2>Schedule Menu (8 Archetypes, 35 Staff)</h2>
+<table id="legacy8Menu"></table>
 </div>
-<div class="card"><h2>Coverage Verification — All 4 Weeks (Mock)</h2>
+<div class="card"><h2>Coverage Verification — All 4 Weeks</h2>
 <div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1</span><span class="spill">−2 spill</span></div>
-<table id="mockGrid"></table>
+<table id="legacy8Grid"></table>
 </div>
-<div class="card"><h2>Schedule Menu (Mock, 10 Archetypes)</h2>
-<table id="mockMenu"></table>
+</div>
+<div class="page" id="tenure">
+<div class="card"><h2>Permanent vs. Temp (2-Year) Schedule Segregation</h2>
+<div class="illus">Nothing in the model currently tracks employment tenure — Part 1.4 explicitly separates it from weekend rotation ("both types can hold any schedule"). This is a proposal, not live data: real per-person tenure isn't in the roster, so this allocates <b>seats per archetype</b>, not named individuals. Logic: (1) reserve a proportional share of N-1/N-4 — the documented most-desirable archetypes (Part 8.1) — so temp staff aren't excluded from the best schedule; (2) route the remaining temp quota into the single largest shifted and largest non-shifted archetype, to minimize how many distinct pools carry turnover while still mixing fixed-weekend and rotation exposure; (3) everything else stays fully permanent for continuity.</div>
+<div class="controls"><label>Target temp share: <input type="number" id="tempPct" value="25" min="0" max="100" style="width:60px">%</label></div>
+<div class="bigstat" style="grid-template-columns:repeat(3,1fr)">
+<div class="bs newm"><div class="v" id="tenTotalPerm">—</div><div class="l">Permanent seats</div></div>
+<div class="bs newm"><div class="v" id="tenTotalTemp">—</div><div class="l">Temp seats</div></div>
+<div class="bs newm"><div class="v" id="tenActualPct">—</div><div class="l">Actual temp share (target %)</div></div>
+</div>
+</div>
+<div class="card"><h2>Archetype-Level Allocation</h2>
+<table id="tenureTbl"></table>
+</div>
+<div class="card"><h2>Weekend-Exposure Balance Check</h2>
+<p class="note">Neither group should end up all-shifted (fixed weekly weekend) or all-rotation (weekday base + 1-in-4-week weekend) — that's the actual equity risk in any segregation scheme, not the headline percentage.</p>
+<table id="tenureBalanceTbl"></table>
 </div>
 </div>
 </div>
@@ -312,14 +327,40 @@ const SAT_WINDOW=["Wed","Thu","Fri"];
 const SUN_WINDOW=["Mon","Tue","Wed"];
 const RESIDUAL_DAY="Mon";
 const SAT_RESIDUAL_DAY="Fri";
-const ARCH={
+// LEGACY8: the original 8-archetype model, retired to a single reference
+// tab now that the 10-archetype model (below) is primary.
+const LEGACY8_ARCH={
 "S-Sat-A":["Tue","Wed","Fri","Sat"],"S-Sat-B":["Tue","Thu","Fri","Sat"],
 "S-Sun-A":["Sun","Mon","Wed","Thu"],"S-Sun-B":["Sun","Mon","Tue","Wed"],
 "N-1":["Mon","Tue","Wed","Thu"],"N-2":["Mon","Tue","Thu","Fri"],
 "N-3":["Mon","Wed","Thu","Fri"],"N-5":["Mon","Tue","Wed","Thu","Fri"]
 };
-const ARCH_CAT={"S-Sat-A":"Shifted (Sat) 4d","S-Sat-B":"Shifted (Sat) 4d","S-Sun-A":"Shifted (Sun) 4d","S-Sun-B":"Shifted (Sun) 4d","N-1":"Non-shifted 4d","N-2":"Non-shifted 4d (Mon+Fri)","N-3":"Non-shifted 4d (Mon+Fri)","N-5":"Non-shifted 5d"};
-const REQUIRED={"S-Sat-A":5,"S-Sat-B":4,"S-Sun-A":6,"S-Sun-B":4,"N-1":3,"N-2":6,"N-3":5,"N-5":2};
+const LEGACY8_ARCH_CAT={"S-Sat-A":"Shifted (Sat) 4d","S-Sat-B":"Shifted (Sat) 4d","S-Sun-A":"Shifted (Sun) 4d","S-Sun-B":"Shifted (Sun) 4d","N-1":"Non-shifted 4d","N-2":"Non-shifted 4d (Mon+Fri)","N-3":"Non-shifted 4d (Mon+Fri)","N-5":"Non-shifted 5d"};
+const LEGACY8_REQUIRED={"S-Sat-A":5,"S-Sat-B":4,"S-Sun-A":6,"S-Sun-B":4,"N-1":3,"N-2":6,"N-3":5,"N-5":2};
+const LEGACY8_STAFF=[
+{n:"Mackay",a:"S-Sat-A",rot:false},{n:"Ibrahim",a:"S-Sat-A",rot:false},{n:"Liu",a:"S-Sat-A",rot:false},{n:"Del Priore",a:"S-Sat-A",rot:false},{n:"Sopchak",a:"S-Sat-A",rot:false},
+{n:"Javed",a:"S-Sat-B",rot:false},{n:"Parker",a:"S-Sat-B",rot:false},{n:"Tan",a:"S-Sat-B",rot:false},{n:"Castro",a:"S-Sat-B",rot:false},
+{n:"Britton",a:"S-Sun-A",rot:false},{n:"Chan",a:"S-Sun-A",rot:false},{n:"Paternite",a:"S-Sun-A",rot:false},{n:"Silberstein",a:"S-Sun-A",rot:false},{n:"Pardo",a:"S-Sun-A",rot:false},{n:"Waters",a:"S-Sun-A",rot:false},
+{n:"DiLapo",a:"S-Sun-B",rot:false},{n:"Belani",a:"S-Sun-B",rot:false},{n:"Lebrun",a:"S-Sun-B",rot:false},{n:"Cooper",a:"S-Sun-B",rot:false},
+{n:"Dinneny",a:"N-1",rot:true},{n:"Taylor",a:"N-3",rot:true},{n:"Berkman",a:"N-3",rot:true},{n:"Riley",a:"N-3",rot:true},
+{n:"Seyffert",a:"N-2",rot:true},{n:"Conn",a:"N-2",rot:true},{n:"Hiedacavage",a:"N-2",rot:true},{n:"Costello",a:"N-2",rot:true},
+{n:"Ahluwalia",a:"N-3",rot:true},{n:"Petersen",a:"N-2",rot:true},{n:"Snell",a:"N-3",rot:true},{n:"Rodgers",a:"N-2",rot:true},
+{n:"Lauda",a:"N-1",rot:true},{n:"Abraham",a:"N-1",rot:true},
+{n:"Bronfeld",a:"N-5",rot:true},{n:"Wu",a:"N-5",rot:true}
+];
+// PRIMARY MODEL — 10 archetypes (8 original + N-4 + S-Sat-C), 44 staff
+// (40 existing + 4 new hires). Allocation tested and verified: closes the
+// full coverage gap, launches N-4/S-Sat-C, and is the best-found balance
+// across Thu/Fri and Sat/Sun (multiple alternatives tested, none improved
+// one axis without regressing another).
+const ARCH={
+"S-Sat-A":["Tue","Wed","Fri","Sat"],"S-Sat-B":["Tue","Thu","Fri","Sat"],"S-Sat-C":["Wed","Thu","Fri","Sat"],
+"S-Sun-A":["Sun","Mon","Wed","Thu"],"S-Sun-B":["Sun","Mon","Tue","Wed"],
+"N-1":["Mon","Tue","Wed","Thu"],"N-2":["Mon","Tue","Thu","Fri"],
+"N-3":["Mon","Wed","Thu","Fri"],"N-4":["Tue","Wed","Thu","Fri"],"N-5":["Mon","Tue","Wed","Thu","Fri"]
+};
+const ARCH_CAT={"S-Sat-A":"Shifted (Sat) 4d","S-Sat-B":"Shifted (Sat) 4d","S-Sat-C":"Shifted (Sat) 4d","S-Sun-A":"Shifted (Sun) 4d","S-Sun-B":"Shifted (Sun) 4d","N-1":"Non-shifted 4d","N-2":"Non-shifted 4d (Mon+Fri)","N-3":"Non-shifted 4d (Mon+Fri)","N-4":"Non-shifted 4d","N-5":"Non-shifted 5d"};
+const REQUIRED={"S-Sat-A":6,"S-Sat-B":4,"S-Sat-C":1,"S-Sun-A":7,"S-Sun-B":4,"N-1":3,"N-2":6,"N-3":5,"N-4":1,"N-5":2};
 const ATTR={
 "N-1":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Fri off",rot:true},
 "N-2":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Wed off",rot:true},
@@ -328,6 +369,7 @@ const ATTR={
 "N-4":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Mon off",rot:true},
 "S-Sat-A":{days:"4d",hrs:"~10h/day",wknd:"fixed Sat",wkndcls:"tag-wknd-fix",off:"Mon/Thu off",rot:false},
 "S-Sat-B":{days:"4d",hrs:"~10h/day",wknd:"fixed Sat",wkndcls:"tag-wknd-fix",off:"Mon/Wed off",rot:false},
+"S-Sat-C":{days:"4d",hrs:"~10h/day",wknd:"fixed Sat",wkndcls:"tag-wknd-fix",off:"Sun/Mon/Tue off",rot:false},
 "S-Sun-A":{days:"4d",hrs:"~10h/day",wknd:"fixed Sun",wkndcls:"tag-wknd-fix",off:"Tue/Fri off",rot:false},
 "S-Sun-B":{days:"4d",hrs:"~10h/day",wknd:"fixed Sun",wkndcls:"tag-wknd-fix",off:"Thu/Fri off",rot:false}
 };
@@ -340,7 +382,8 @@ const STAFF=[
 {n:"Seyffert",a:"N-2",rot:true},{n:"Conn",a:"N-2",rot:true},{n:"Hiedacavage",a:"N-2",rot:true},{n:"Costello",a:"N-2",rot:true},
 {n:"Ahluwalia",a:"N-3",rot:true},{n:"Petersen",a:"N-2",rot:true},{n:"Snell",a:"N-3",rot:true},{n:"Rodgers",a:"N-2",rot:true},
 {n:"Lauda",a:"N-1",rot:true},{n:"Abraham",a:"N-1",rot:true},
-{n:"Bronfeld",a:"N-5",rot:true},{n:"Wu",a:"N-5",rot:true}
+{n:"Bronfeld",a:"N-5",rot:true},{n:"Wu",a:"N-5",rot:true},
+{n:"New Hire 1",a:"S-Sat-A",rot:false},{n:"New Hire 2",a:"N-4",rot:true},{n:"New Hire 3",a:"S-Sat-C",rot:false},{n:"New Hire 4",a:"S-Sun-A",rot:false}
 ];
 const PT={
 "Milko":[["Thu","Fri"],["Thu","Fri"],["Fri","Sat"],["Thu","Fri"]],
@@ -414,7 +457,7 @@ return {total:Object.keys(LEGACY_SLOTS).length, staticCount, permCount};
 const ROTATORS=STAFF.filter(s=>s.rot).map(s=>s.n);
 const ROT_ARCH={};STAFF.forEach(s=>{if(s.rot)ROT_ARCH[s.n]=s.a;});
 const ROT_WEEK={};
-const ROT_WEEK_PLAN=[0,1,2,3,0,1,2,3,0,1,2,3,1,3,0,2];
+const ROT_WEEK_PLAN=[0,1,2,3,0,1,2,3,0,1,2,3,1,3,0,2,0];
 ROTATORS.forEach((n,i)=>ROT_WEEK[n]=ROT_WEEK_PLAN[i%ROT_WEEK_PLAN.length]);
 const weekOf=n=>ROT_WEEK[n];
 const nextWk=w=>(w+1)%4;
@@ -480,7 +523,7 @@ const safe=margin[d]>0;let score=0;
 score+=safe?1000:0;
 if(!safe&&!spilling){if(t.kind==="Sat"&&d===SAT_RESIDUAL_DAY)score+=60;else if(t.kind==="Sun"&&d===RESIDUAL_DAY)score+=60;}
 score+=margin[d]*10;score-=compTally[d]*8;
-if(d==="Thu")score-=30+compTally["Thu"]*40;
+if(d==="Thu")score-=0; // Thursday comp-avoidance penalty removed — at 44-person scale Thursday's raw surplus (5-6) is large enough that the old protection was actively causing the Thu/Fri imbalance rather than preventing one
 if(score>bestScore){bestScore=score;best=d;}
 });
 m[t.n][best]="comp";margin[best]--;compTally[best]++;compInfo[t.n]={day:best,src:t.src,spill:spilling};t.placed=best;
@@ -531,6 +574,7 @@ html+=`<tr><td>${k}</td><td>${ARCH[k].join(", ")}</td><td>${ARCH_CAT[k]}</td><td
 });
 document.getElementById("bidTbl").innerHTML=html;
 document.getElementById("bSlots").textContent=totSlots;document.getElementById("bShift").textContent=shiftSlots;document.getElementById("bWeekday").textContent=wdaySlots;
+document.getElementById("bTotal").textContent=`${ALLNAMES.length} (${totSlots} FT + ${Object.keys(PT).length} PT)`;
 }
 function renderAllWeeksGrid(){
 let html="<tr><th>Day</th><th>Floor</th>";
@@ -664,8 +708,8 @@ document.getElementById("compReconLine").innerHTML = recOk
 ? `<span style="color:#065f46;font-weight:600">✓ ${rec.placed}/${rec.expected} comp days placed cleanly</span>`
 : `<span style="color:#b91c1c;font-weight:600">⚠ Comp placement issue</span> — ${rec.placed}/${rec.expected} placed${rec.unplaced?`, ${rec.unplaced} unplaced`:''}${rec.spills?`, ${rec.spills} spill`:''}`;
 }
-const ARCH_ORDER=["N-1","N-2","N-3","N-5","S-Sat-A","S-Sat-B","S-Sun-A","S-Sun-B"];
-const ARCH_LABEL={"N-1":"N-1 (Mon–Thu)","N-2":"N-2 (Mon,Tue,Thu,Fri)","N-3":"N-3 (Mon,Wed,Thu,Fri)","N-5":"N-5 (Mon–Fri)","S-Sat-A":"S-Sat-A (Tue,Wed,Fri,Sat)","S-Sat-B":"S-Sat-B (Tue,Thu,Fri,Sat)","S-Sun-A":"S-Sun-A (Sun,Mon,Wed,Thu)","S-Sun-B":"S-Sun-B (Sun,Mon,Tue,Wed)"};
+const ARCH_ORDER=["N-1","N-2","N-3","N-4","N-5","S-Sat-A","S-Sat-B","S-Sat-C","S-Sun-A","S-Sun-B"];
+const ARCH_LABEL={"N-1":"N-1 (Mon–Thu)","N-2":"N-2 (Mon,Tue,Thu,Fri)","N-3":"N-3 (Mon,Wed,Thu,Fri)","N-4":"N-4 (Tue,Wed,Thu,Fri)","N-5":"N-5 (Mon–Fri)","S-Sat-A":"S-Sat-A (Tue,Wed,Fri,Sat)","S-Sat-B":"S-Sat-B (Tue,Thu,Fri,Sat)","S-Sat-C":"S-Sat-C (Wed,Thu,Fri,Sat)","S-Sun-A":"S-Sun-A (Sun,Mon,Wed,Thu)","S-Sun-B":"S-Sun-B (Sun,Mon,Tue,Wed)"};
 function newModelRosterDays(w){
 const mm=buildMatrix(w);const r={};
 ALLNAMES.forEach(n=>{r[n]=DAYS.filter(d=>mm[n][d]==="on");});
@@ -730,11 +774,17 @@ document.getElementById("hmTable").innerHTML=html;
 }
 function renderLegacyStats(){
 const s=legacySlotStats();
+const newCount=Object.keys(ARCH).length;
 document.getElementById("pcLegacyTotal").textContent=s.total;
 document.getElementById("pcLegacySub").innerHTML=`<b>${s.total} schedule slots = ${s.permCount} permuting + ${s.staticCount} static</b><br><br>• <b>${s.permCount} permuting</b> (×4 weekly versions each) → 60–80 unique weekly patterns<br>• <b>${s.staticCount} static</b> — three Tue–Sat, one Sun–Thu`;
 document.getElementById("tblLegacySlots").textContent=`${s.total} (23 non-shifted + 15 shifted)`;
 document.getElementById("tblLegacyPerm").textContent=`${s.permCount} (×4 weekly versions each)`;
 document.getElementById("tblLegacyStatic").textContent=`${s.staticCount} (3 identical Tue–Sat + 1 Sun–Thu)`;
+document.getElementById("pcNewModelCount").textContent=newCount;
+document.getElementById("pcNewModelSub").textContent=`${newCount} fixed archetypes`;
+document.getElementById("tblNewArchCount").textContent=`${newCount} archetypes`;
+document.getElementById("tblNewArchCount2").textContent=`${newCount} (all fixed)`;
+document.getElementById("ccArchCount").textContent=newCount;
 }
 function renderContinuity(){renderLegacyStats();renderW2W();renderHeatmap();}
 function countPTweekend(arr){let c=0;arr.forEach(wk=>wk.forEach(d=>{if(d==="Sat"||d==="Sun")c++;}));return c;}
@@ -780,12 +830,10 @@ html+=`<div class="ptcard">
 });
 document.getElementById("ptCards").innerHTML=html;
 }
-// --- Growth Planner: candidate archetype set includes N-4 (Tue,Wed,Thu,Fri).
-// N-4 has no current occupant (Part 6.3) but a NEW hire can seed it cleanly —
-// unlike an internal swap, a new hire adds capacity with no opportunity cost,
-// so it's a legitimate growth candidate even though it's excluded from the
-// live 8-archetype menu.
-const GROWTH_ARCH=Object.assign({},ARCH,{"N-4":["Tue","Wed","Thu","Fri"]});
+// --- Growth Planner: candidate archetype set is now the full primary
+// 10-archetype menu (N-4 and S-Sat-C were growth-only add-ons before being
+// promoted to primary — no augmentation needed anymore).
+const GROWTH_ARCH=ARCH;
 
 function leastPopulatedWeek(rotWeekMap){
 const counts=[0,0,0,0];
@@ -825,7 +873,7 @@ const safe=margin[d]>0;let score=0;
 score+=safe?1000:0;
 if(!safe&&!spilling){if(t.kind==="Sat"&&d===SAT_RESIDUAL_DAY)score+=60;else if(t.kind==="Sun"&&d===RESIDUAL_DAY)score+=60;}
 score+=margin[d]*10;score-=compTally[d]*8;
-if(d==="Thu")score-=30+compTally["Thu"]*40;
+if(d==="Thu")score-=0; // matches the fix in placeCompsGlobal — see that comment
 if(score>bestScore){bestScore=score;best=d;}
 });
 m[t.n][best]="comp";margin[best]--;compTally[best]++;
@@ -833,67 +881,106 @@ m[t.n][best]="comp";margin[best]--;compTally[best]++;
 return m;
 }
 function dayCountCand(mm,d){let c=0;Object.keys(mm).forEach(n=>{if(mm[n][d]==="on")c++;});return c;}
-// --- Growth Preview (mock tab): both N-4 (Tue,Wed,Thu,Fri) and S-Sat-C
-// (Wed,Thu,Fri,Sat) launched with the 4 new FTEs — 1x S-Sat-A (closes the
-// current gap on its own), 1x N-4, 1x S-Sat-C (both new archetypes seeded
-// fresh), 1x N-1 (further desirability). Tested: this fully clears the
-// gap without a dedicated buffer hire, since N-4/S-Sat-C carry real
-// coverage weight themselves — the 4th hire is free to go to more
-// desirability rather than being needed for coverage.
-// Entirely separate data from the live model — additive only, nothing here
-// touches STAFF/ARCH/REQUIRED, so the rest of the tool is unaffected.
-const MOCK_ARCH=Object.assign({},ARCH,{"N-4":["Tue","Wed","Thu","Fri"],"S-Sat-C":["Wed","Thu","Fri","Sat"]});
-const MOCK_NEW_HIRES=[
-{n:"New Hire 1",a:"S-Sat-A",rot:false},
-{n:"New Hire 2",a:"N-4",rot:true},
-{n:"New Hire 3",a:"S-Sat-C",rot:false},
-{n:"New Hire 4",a:"N-1",rot:true}
-];
-const MOCK_STAFF=STAFF.concat(MOCK_NEW_HIRES);
-const MOCK_REQUIRED=Object.assign({},REQUIRED,{"S-Sat-A":REQUIRED["S-Sat-A"]+1,"N-4":1,"S-Sat-C":1,"N-1":REQUIRED["N-1"]+1});
-const __mockRotWeek={...ROT_WEEK};
-__mockRotWeek["New Hire 2"]=leastPopulatedWeek(__mockRotWeek);
-__mockRotWeek["New Hire 4"]=leastPopulatedWeek(__mockRotWeek);
-const MOCK_ROT_WEEK=__mockRotWeek;
-function renderMockSummary(){
-document.getElementById("mockArch").textContent=Object.keys(MOCK_ARCH).length;
-let mFail=0,worst=0;
-for(let w=0;w<4;w++){
-const mm=buildMatrixCand(MOCK_STAFF,MOCK_ROT_WEEK,w,MOCK_ARCH);
-WEEKDAYS.forEach(d=>{const m2=dayCountCand(mm,d)-FLOOR[d];if(m2<0)mFail++;if(m2<worst)worst=m2;});
+// --- Legacy 8-Archetype Model (retired reference tab): same buildMatrixCand
+// engine, applied to the frozen LEGACY8_* snapshot instead of the live
+// (now 10-archetype) STAFF/ARCH/REQUIRED. Needs its own rotation-week map
+// since LEGACY8_STAFF's 16 rotators don't include the 17th (N-4) rotator
+// now in the primary model.
+const LEGACY8_ROT_WEEK_PLAN=[0,1,2,3,0,1,2,3,0,1,2,3,1,3,0,2];
+const LEGACY8_ROTATORS=LEGACY8_STAFF.filter(s=>s.rot).map(s=>s.n);
+const LEGACY8_ROT_WEEK={};
+LEGACY8_ROTATORS.forEach((n,i)=>LEGACY8_ROT_WEEK[n]=LEGACY8_ROT_WEEK_PLAN[i%LEGACY8_ROT_WEEK_PLAN.length]);
+function renderLegacy8Menu(){
+const asg={};
+LEGACY8_STAFF.forEach(s=>{asg[s.a]=(asg[s.a]||0)+1;});
+let html="<tr><th>Schedule</th><th>Days</th><th>Type</th><th>Weekend?</th><th>Seats (Required / Assigned)</th><th>Status</th></tr>";
+Object.keys(LEGACY8_ARCH).forEach(k=>{
+const req=LEGACY8_REQUIRED[k],got=asg[k]||0;
+const isShift=k.startsWith("S-");
+let cls,lbl;if(got<req){cls='under';lbl='Understaffed (−'+(req-got)+')';}else if(got>req){cls='over';lbl='Cushion (+'+(got-req)+')';}else{cls='ok';lbl='OK';}
+html+=`<tr><td>${k}</td><td>${LEGACY8_ARCH[k].join(", ")}</td><td>${LEGACY8_ARCH_CAT[k]}</td><td>${isShift?'Fixed '+(k.includes('Sat')?'Sat':'Sun'):'Rotation'}</td><td><b>${req} / ${got}</b></td><td class="${cls}">${lbl}</td></tr>`;
+});
+document.getElementById("legacy8Menu").innerHTML=html;
 }
-document.getElementById("mockFail").textContent=mFail;
-document.getElementById("mockWorst").textContent=worst;
-}
-function renderMockGrid(){
+function renderLegacy8Grid(){
 let html="<tr><th>Day</th><th>Floor</th>";
 for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
 html+="</tr>";
 DAYS.forEach(d=>{
 html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
 for(let w=0;w<4;w++){
-const mm=buildMatrixCand(MOCK_STAFF,MOCK_ROT_WEEK,w,MOCK_ARCH);
+const mm=buildMatrixCand(LEGACY8_STAFF,LEGACY8_ROT_WEEK,w,LEGACY8_ARCH);
 const c=dayCountCand(mm,d);const m2=c-FLOOR[d];
 const cls=m2>0?'pass':(m2===0?'atfloor':(m2===-1?'residual':'spill'));
 html+=`<td class="${cls}">${c}</td>`;
 }
 html+="</tr>";
 });
-document.getElementById("mockGrid").innerHTML=html;
+document.getElementById("legacy8Grid").innerHTML=html;
 }
-function renderMockMenu(){
-const asg={};
-MOCK_STAFF.forEach(s=>{asg[s.a]=(asg[s.a]||0)+1;});
-let html="<tr><th>Schedule</th><th>Days</th><th>Weekend?</th><th>Seats (Required / Assigned)</th><th>Status</th></tr>";
-Object.keys(MOCK_ARCH).forEach(k=>{
-const req=MOCK_REQUIRED[k]||0,got=asg[k]||0;
-const isShift=k.startsWith("S-");
-let cls,lbl;if(got<req){cls='under';lbl='Understaffed (−'+(req-got)+')';}else if(got>req){cls='over';lbl='Cushion (+'+(got-req)+')';}else{cls='ok';lbl='OK';}
-html+=`<tr><td>${k}</td><td>${MOCK_ARCH[k].join(", ")}</td><td>${isShift?'Fixed '+(k.includes('Sat')?'Sat':'Sun'):'Rotation'}</td><td><b>${req} / ${got}</b></td><td class="${cls}">${lbl}</td></tr>`;
+function renderLegacy8(){renderLegacy8Menu();renderLegacy8Grid();}
+// --- Tenure Segregation: proposal only, seat-level not person-level (no
+// real per-person tenure data exists). Based on the live 8-archetype model.
+// Algorithm: (1) proportional carve-out in N-1/N-4 (documented most-desirable,
+// Part 8.1) so temp staff always have some access to the best schedule;
+// (2) remaining temp quota routed into the single largest shifted and
+// largest non-shifted archetype (minimizes # of distinct temp-track pools
+// while still mixing fixed-weekend and rotation exposure); (3) everything
+// else stays fully permanent. Rounding means the actual % may land close
+// to, not exactly on, the target — reported transparently, not forced.
+function computeSegregationPlan(tempFraction){
+const archKeys=Object.keys(ARCH);
+const totalSeats=archKeys.reduce((sum,k)=>sum+REQUIRED[k],0);
+const targetTemp=Math.round(tempFraction*totalSeats);
+const plan={};
+archKeys.forEach(k=>{plan[k]={total:REQUIRED[k],temp:0,permanent:REQUIRED[k],reason:"Fully permanent — continuity"};});
+let assignedTemp=0;
+["N-1","N-4"].forEach(k=>{
+if(plan[k]){
+const carve=Math.min(Math.round(tempFraction*plan[k].total),plan[k].total);
+plan[k].temp=carve;plan[k].permanent=plan[k].total-carve;
+plan[k].reason=carve>0?"Proportional carve-out — most-desirable archetype (Part 8.1)":"Too small to carve a proportional seat at this target";
+assignedTemp+=carve;
+}
 });
-document.getElementById("mockMenu").innerHTML=html;
+const remaining=Math.max(0,targetTemp-assignedTemp);
+const remainingKeys=archKeys.filter(k=>k!=="N-1"&&k!=="N-4");
+const shiftedKeys=remainingKeys.filter(k=>k.startsWith("S-"));
+const nonshiftedKeys=remainingKeys.filter(k=>!k.startsWith("S-"));
+function largest(keys){return keys.length?keys.reduce((best,k)=>REQUIRED[k]>REQUIRED[best]?k:best,keys[0]):null;}
+const tracks=[largest(shiftedKeys),largest(nonshiftedKeys)].filter(Boolean);
+const trackCapacity=tracks.reduce((s,k)=>s+plan[k].total,0);
+tracks.forEach(k=>{
+const share=trackCapacity>0?Math.round(remaining*(plan[k].total/trackCapacity)):0;
+const temp=Math.min(share,plan[k].total);
+plan[k].temp=temp;plan[k].permanent=plan[k].total-temp;
+plan[k].reason=`Operational temp track — largest ${k.startsWith("S-")?"shifted":"non-shifted"} archetype`;
+});
+return {plan,totalSeats,targetTemp,archKeys};
 }
-function renderMock(){renderMockSummary();renderMockGrid();renderMockMenu();}
+function renderTenure(){
+const frac=(parseFloat(document.getElementById("tempPct").value)||0)/100;
+const {plan,totalSeats,archKeys}=computeSegregationPlan(frac);
+let actualTemp=0,actualPerm=0;
+let html="<tr><th>Archetype</th><th>Days</th><th>Total</th><th>Permanent</th><th>Temp</th><th>Rationale</th></tr>";
+archKeys.forEach(k=>{
+const p=plan[k];actualTemp+=p.temp;actualPerm+=p.permanent;
+html+=`<tr><td>${k}</td><td>${ARCH[k].join(", ")}</td><td>${p.total}</td><td>${p.permanent}</td><td>${p.temp}</td><td style="text-align:left;font-size:12px">${p.reason}</td></tr>`;
+});
+document.getElementById("tenureTbl").innerHTML=html;
+document.getElementById("tenTotalPerm").textContent=actualPerm;
+document.getElementById("tenTotalTemp").textContent=actualTemp;
+document.getElementById("tenActualPct").textContent=(totalSeats?Math.round(100*actualTemp/totalSeats):0)+"% ("+Math.round(frac*100)+"%)";
+const shiftedKeys=archKeys.filter(k=>k.startsWith("S-"));
+const nonshiftedKeys=archKeys.filter(k=>!k.startsWith("S-"));
+function sumField(keys,field){return keys.reduce((s,k)=>s+plan[k][field],0);}
+const permShifted=sumField(shiftedKeys,"permanent"),permNon=sumField(nonshiftedKeys,"permanent");
+const tempShifted=sumField(shiftedKeys,"temp"),tempNon=sumField(nonshiftedKeys,"temp");
+let bal="<tr><th></th><th>Shifted (fixed weekly weekend)</th><th>Non-shifted (weekday + rotation)</th></tr>";
+bal+=`<tr><td class="rowlabel">Permanent</td><td>${permShifted} (${actualPerm?Math.round(100*permShifted/actualPerm):0}%)</td><td>${permNon} (${actualPerm?Math.round(100*permNon/actualPerm):0}%)</td></tr>`;
+bal+=`<tr><td class="rowlabel">Temp</td><td>${tempShifted} (${actualTemp?Math.round(100*tempShifted/actualTemp):0}%)</td><td>${tempNon} (${actualTemp?Math.round(100*tempNon/actualTemp):0}%)</td></tr>`;
+document.getElementById("tenureBalanceTbl").innerHTML=bal;
+}
 function evalRosterCand(staffList, rotWeekMap, archSet){
 let mFail=0, worst=0, totalDeficit=0, minMargin=Infinity;
 for(let w=0;w<4;w++){
@@ -912,12 +999,16 @@ return {mFail, worst, totalDeficit, minMargin};
 // a documented, defensible stopping point for "comfortably scaled" rather
 // than an arbitrary buffer number.
 const BUFFER_TARGET=1;
-// Phase 3 pool: Part 8.1 explicitly names N-1 and N-4 — and only these two —
-// as "the most desirable weekday-only patterns" because each sheds a
-// "bookend" day. Desirability growth is restricted to this documented pair,
-// not a list I'm inventing; weekend-resilience archetypes (S-Sun/S-Sat) are
-// a separate concern and only get chosen in Phase 1/2 when the math favors them.
-const DESIRABLE_ARCHETYPES=["N-1","N-4"];
+// Phase 3 pool: Part 8.1 explicitly names N-1 and N-4 as "the most desirable
+// weekday-only patterns" because each sheds a "bookend" day — that claim is
+// documented in the source brief. S-Sat-C is different: it has no such
+// documented claim, but it was explicitly requested and justified in this
+// conversation (mirrors S-Sun-B's 4-in-a-row block, for staff satisfaction)
+// and promoted to primary at the user's direction — included here on that
+// basis, not invented unprompted. Weekend-resilience archetypes (S-Sun-A/B,
+// S-Sat-A/B) remain a separate concern, chosen only in Phase 1/2 when the
+// math favors them.
+const DESIRABLE_ARCHETYPES=["N-1","N-4","S-Sat-C"];
 function computeGrowthPlan(nSlots){
 let staffList=STAFF.map(s=>({...s}));
 let rotWeekMap={...ROT_WEEK};
@@ -973,14 +1064,14 @@ const PHASE_LABEL={1:"Fill deficits",2:"Scale logically",3:"Desirability"};
 const PHASE_CLASS={1:"under",2:"ok",3:"over"};
 function renderDesirableCallout(){
 const asg=assignedCounts();
-let html=`<div class="illus" style="margin-bottom:10px"><b>Most-desirable archetypes (Part 8.1)</b> — each sheds one tight "bookend" day.</div><div class="weekgrid" style="grid-template-columns:repeat(2,1fr)">`;
-["N-1","N-4"].forEach(k=>{
+let html=`<div class="illus" style="margin-bottom:10px"><b>Desirable archetypes</b> — N-1/N-4 shed a tight "bookend" day (Part 8.1); S-Sat-C mirrors S-Sun-B's 4-in-a-row block (added at user direction, not in the original brief).</div><div class="weekgrid" style="grid-template-columns:repeat(3,1fr)">`;
+["N-1","N-4","S-Sat-C"].forEach(k=>{
 const a=ATTR[k];
 const seats=(k in ARCH)?(asg[k]||0):0;
 const hidden = !(k in ARCH);
 html+=`<div class="weekcol"><div class="weekhead">${k} (${GROWTH_ARCH[k].join(", ")})</div><div class="dayblock" style="padding:10px 12px">`;
 html+=`<div style="margin-bottom:8px">${hidden?'<span class="tag tag-wknd-fix">Hidden — 0 seats</span>':`<span class="tag tag-wknd-none">Active — ${seats} seats</span>`}</div>`;
-html+=`<span class="tag tag-days">${a.days}</span> <span class="tag tag-hrs">${a.hrs}</span> <span class="tag ${a.wkndcls}">${a.wknd} (occasional rot.)</span> <span class="tag tag-off">${a.off}</span>`;
+html+=`<span class="tag tag-days">${a.days}</span> <span class="tag tag-hrs">${a.hrs}</span> <span class="tag ${a.wkndcls}">${a.wknd}${a.rot&&a.wknd==='none'?' (occasional rot.)':''}</span> <span class="tag tag-off">${a.off}</span>`;
 html+=`</div></div>`;
 });
 html+="</div>";
@@ -1025,7 +1116,8 @@ document.getElementById("weekSelB").addEventListener("change",renderBidGrid);
 document.getElementById("weekSelC").addEventListener("change",e=>{MATRIX=buildMatrix(parseInt(e.target.value));renderCal();});
 document.getElementById("weekSelCont").addEventListener("change",renderHeatmap);
 document.getElementById("growN").addEventListener("input",renderGrowth);
-renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderMock();
+document.getElementById("tempPct").addEventListener("input",renderTenure);
+renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderTenure();
 renderExecSummary();
 </script>
 </body>
