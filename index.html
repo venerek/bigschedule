@@ -146,7 +146,7 @@ select,input{padding:8px 10px}
 <div class="tab" data-page="cmp">Comparison</div>
 <div class="tab" data-page="grow">Growth Planner</div>
 <div class="tab" data-page="legacy8">Legacy 8-Archetype Model</div>
-<div class="tab" data-page="tenure">Tenure Segregation</div>
+<div class="tab" data-page="sandbox">Live Sandbox</div>
 </div>
 <div class="wrap">
 <div class="page active" id="bid">
@@ -300,22 +300,20 @@ select,input{padding:8px 10px}
 <table id="legacy8Grid"></table>
 </div>
 </div>
-<div class="page" id="tenure">
-<div class="card"><h2>Permanent vs. Temp (2-Year) Schedule Segregation</h2>
-<div class="illus">Nothing in the model currently tracks employment tenure — Part 1.4 explicitly separates it from weekend rotation ("both types can hold any schedule"). This is a proposal, not live data: real per-person tenure isn't in the roster, so this allocates <b>seats per archetype</b>, not named individuals. Logic: (1) reserve a proportional share of N-1/N-4 — the documented most-desirable archetypes (Part 8.1) — so temp staff aren't excluded from the best schedule; (2) route the remaining temp quota into the single largest shifted and largest non-shifted archetype, to minimize how many distinct pools carry turnover while still mixing fixed-weekend and rotation exposure; (3) everything else stays fully permanent for continuity.</div>
-<div class="controls"><label>Target temp share: <input type="number" id="tempPct" value="25" min="0" max="100" style="width:60px">%</label></div>
-<div class="bigstat" style="grid-template-columns:repeat(3,1fr)">
-<div class="bs newm"><div class="v" id="tenTotalPerm">—</div><div class="l">Permanent seats</div></div>
-<div class="bs newm"><div class="v" id="tenTotalTemp">—</div><div class="l">Temp seats</div></div>
-<div class="bs newm"><div class="v" id="tenActualPct">—</div><div class="l">Actual temp share (target %)</div></div>
+<div class="page" id="sandbox">
+<div class="card"><h2>Live Staffing Sandbox — Adjust Archetype Seat Counts</h2>
+<div class="illus">Type a seat count for any archetype and the coverage grid recomputes instantly — full comp-day and weekend-rotation math included, same engine as the rest of this tool. Part-time staff stay fixed as currently scheduled; this only varies full-time archetype seats.</div>
+<div id="sbInputs" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px"></div>
+<div class="controls"><button id="sbReset" style="padding:6px 14px;border-radius:5px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-size:13px">Reset to current</button></div>
+<div class="bigstat" style="grid-template-columns:repeat(3,1fr);margin-top:14px">
+<div class="bs newm"><div class="v" id="sbTotal">—</div><div class="l">Total staff (FT + PT)</div></div>
+<div class="bs newm"><div class="v" id="sbFail">—</div><div class="l">Below-floor cells</div></div>
+<div class="bs newm"><div class="v" id="sbWorst">—</div><div class="l">Worst deficit</div></div>
 </div>
 </div>
-<div class="card"><h2>Archetype-Level Allocation</h2>
-<table id="tenureTbl"></table>
-</div>
-<div class="card"><h2>Weekend-Exposure Balance Check</h2>
-<p class="note">Neither group should end up all-shifted (fixed weekly weekend) or all-rotation (weekday base + 1-in-4-week weekend) — that's the actual equity risk in any segregation scheme, not the headline percentage.</p>
-<table id="tenureBalanceTbl"></table>
+<div class="card"><h2>Coverage Verification — All 4 Weeks (Live)</h2>
+<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1</span><span class="spill">−2 spill</span></div>
+<table id="sbGrid"></table>
 </div>
 </div>
 </div>
@@ -919,67 +917,66 @@ html+="</tr>";
 document.getElementById("legacy8Grid").innerHTML=html;
 }
 function renderLegacy8(){renderLegacy8Menu();renderLegacy8Grid();}
-// --- Tenure Segregation: proposal only, seat-level not person-level (no
-// real per-person tenure data exists). Based on the live 8-archetype model.
-// Algorithm: (1) proportional carve-out in N-1/N-4 (documented most-desirable,
-// Part 8.1) so temp staff always have some access to the best schedule;
-// (2) remaining temp quota routed into the single largest shifted and
-// largest non-shifted archetype (minimizes # of distinct temp-track pools
-// while still mixing fixed-weekend and rotation exposure); (3) everything
-// else stays fully permanent. Rounding means the actual % may land close
-// to, not exactly on, the target — reported transparently, not forced.
-function computeSegregationPlan(tempFraction){
-const archKeys=Object.keys(ARCH);
-const totalSeats=archKeys.reduce((sum,k)=>sum+REQUIRED[k],0);
-const targetTemp=Math.round(tempFraction*totalSeats);
-const plan={};
-archKeys.forEach(k=>{plan[k]={total:REQUIRED[k],temp:0,permanent:REQUIRED[k],reason:"Fully permanent — continuity"};});
-let assignedTemp=0;
-["N-1","N-4"].forEach(k=>{
-if(plan[k]){
-const carve=Math.min(Math.round(tempFraction*plan[k].total),plan[k].total);
-plan[k].temp=carve;plan[k].permanent=plan[k].total-carve;
-plan[k].reason=carve>0?"Proportional carve-out — most-desirable archetype (Part 8.1)":"Too small to carve a proportional seat at this target";
-assignedTemp+=carve;
+// --- Live Sandbox: anonymous "what-if" staff counts per archetype, fully
+// separate from the live STAFF array (nothing here touches it). Reuses
+// buildMatrixCand/dayCountCand/leastPopulatedWeek — the same simulation
+// engine already used by Growth Planner and the Legacy8 tab — so this
+// isn't a new/unverified calculation path, just a new input surface on
+// the existing one. PT stays fixed; only FT archetype seats are variable.
+function renderSandboxInputs(){
+const asg=assignedCounts();
+let html="";
+Object.keys(ARCH).forEach(k=>{
+html+=`<div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:2px;color:#475569">${k} <span style="font-weight:400;color:#94a3b8">(${ARCH[k].join(",")})</span></label><input type="number" id="sb_${k}" value="${asg[k]||0}" min="0" max="30" style="width:100%"></div>`;
+});
+document.getElementById("sbInputs").innerHTML=html;
+Object.keys(ARCH).forEach(k=>{
+document.getElementById("sb_"+k).addEventListener("input",renderSandbox);
+});
 }
+function buildSandboxStaff(){
+const staffList=[];
+Object.keys(ARCH).forEach(k=>{
+const n=parseInt(document.getElementById("sb_"+k).value)||0;
+const isShift=k.startsWith("S-");
+for(let i=1;i<=n;i++) staffList.push({n:`${k}-${i}`,a:k,rot:!isShift});
 });
-const remaining=Math.max(0,targetTemp-assignedTemp);
-const remainingKeys=archKeys.filter(k=>k!=="N-1"&&k!=="N-4");
-const shiftedKeys=remainingKeys.filter(k=>k.startsWith("S-"));
-const nonshiftedKeys=remainingKeys.filter(k=>!k.startsWith("S-"));
-function largest(keys){return keys.length?keys.reduce((best,k)=>REQUIRED[k]>REQUIRED[best]?k:best,keys[0]):null;}
-const tracks=[largest(shiftedKeys),largest(nonshiftedKeys)].filter(Boolean);
-const trackCapacity=tracks.reduce((s,k)=>s+plan[k].total,0);
-tracks.forEach(k=>{
-const share=trackCapacity>0?Math.round(remaining*(plan[k].total/trackCapacity)):0;
-const temp=Math.min(share,plan[k].total);
-plan[k].temp=temp;plan[k].permanent=plan[k].total-temp;
-plan[k].reason=`Operational temp track — largest ${k.startsWith("S-")?"shifted":"non-shifted"} archetype`;
-});
-return {plan,totalSeats,targetTemp,archKeys};
+return staffList;
 }
-function renderTenure(){
-const frac=(parseFloat(document.getElementById("tempPct").value)||0)/100;
-const {plan,totalSeats,archKeys}=computeSegregationPlan(frac);
-let actualTemp=0,actualPerm=0;
-let html="<tr><th>Archetype</th><th>Days</th><th>Total</th><th>Permanent</th><th>Temp</th><th>Rationale</th></tr>";
-archKeys.forEach(k=>{
-const p=plan[k];actualTemp+=p.temp;actualPerm+=p.permanent;
-html+=`<tr><td>${k}</td><td>${ARCH[k].join(", ")}</td><td>${p.total}</td><td>${p.permanent}</td><td>${p.temp}</td><td style="text-align:left;font-size:12px">${p.reason}</td></tr>`;
+function buildSandboxRotWeek(staffList){
+const rotators=staffList.filter(s=>s.rot).map(s=>s.n);
+const rotWeekMap={};
+rotators.forEach(n=>{
+rotWeekMap[n]=leastPopulatedWeek(rotWeekMap);
 });
-document.getElementById("tenureTbl").innerHTML=html;
-document.getElementById("tenTotalPerm").textContent=actualPerm;
-document.getElementById("tenTotalTemp").textContent=actualTemp;
-document.getElementById("tenActualPct").textContent=(totalSeats?Math.round(100*actualTemp/totalSeats):0)+"% ("+Math.round(frac*100)+"%)";
-const shiftedKeys=archKeys.filter(k=>k.startsWith("S-"));
-const nonshiftedKeys=archKeys.filter(k=>!k.startsWith("S-"));
-function sumField(keys,field){return keys.reduce((s,k)=>s+plan[k][field],0);}
-const permShifted=sumField(shiftedKeys,"permanent"),permNon=sumField(nonshiftedKeys,"permanent");
-const tempShifted=sumField(shiftedKeys,"temp"),tempNon=sumField(nonshiftedKeys,"temp");
-let bal="<tr><th></th><th>Shifted (fixed weekly weekend)</th><th>Non-shifted (weekday + rotation)</th></tr>";
-bal+=`<tr><td class="rowlabel">Permanent</td><td>${permShifted} (${actualPerm?Math.round(100*permShifted/actualPerm):0}%)</td><td>${permNon} (${actualPerm?Math.round(100*permNon/actualPerm):0}%)</td></tr>`;
-bal+=`<tr><td class="rowlabel">Temp</td><td>${tempShifted} (${actualTemp?Math.round(100*tempShifted/actualTemp):0}%)</td><td>${tempNon} (${actualTemp?Math.round(100*tempNon/actualTemp):0}%)</td></tr>`;
-document.getElementById("tenureBalanceTbl").innerHTML=bal;
+return rotWeekMap;
+}
+function renderSandbox(){
+const staffList=buildSandboxStaff();
+const rotWeekMap=buildSandboxRotWeek(staffList);
+let html="<tr><th>Day</th><th>Floor</th>";
+for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
+html+="</tr>";
+let mFail=0,worst=0;
+DAYS.forEach(d=>{
+html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
+for(let w=0;w<4;w++){
+const mm=buildMatrixCand(staffList,rotWeekMap,w,ARCH);
+const c=dayCountCand(mm,d);const m2=c-FLOOR[d];
+if(WEEKDAYS.includes(d)){if(m2<0)mFail++;if(m2<worst)worst=m2;}
+const cls=m2>0?'pass':(m2===0?'atfloor':(m2===-1?'residual':'spill'));
+html+=`<td class="${cls}">${c}</td>`;
+}
+html+="</tr>";
+});
+document.getElementById("sbGrid").innerHTML=html;
+document.getElementById("sbTotal").textContent=staffList.length+Object.keys(PT).length+" ("+staffList.length+" FT + "+Object.keys(PT).length+" PT)";
+document.getElementById("sbFail").textContent=mFail;
+document.getElementById("sbWorst").textContent=worst;
+}
+function resetSandbox(){
+renderSandboxInputs();
+renderSandbox();
 }
 function evalRosterCand(staffList, rotWeekMap, archSet){
 let mFail=0, worst=0, totalDeficit=0, minMargin=Infinity;
@@ -1116,8 +1113,8 @@ document.getElementById("weekSelB").addEventListener("change",renderBidGrid);
 document.getElementById("weekSelC").addEventListener("change",e=>{MATRIX=buildMatrix(parseInt(e.target.value));renderCal();});
 document.getElementById("weekSelCont").addEventListener("change",renderHeatmap);
 document.getElementById("growN").addEventListener("input",renderGrowth);
-document.getElementById("tempPct").addEventListener("input",renderTenure);
-renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderTenure();
+document.getElementById("sbReset").addEventListener("click",resetSandbox);
+renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderSandboxInputs();renderSandbox();
 renderExecSummary();
 </script>
 </body>
