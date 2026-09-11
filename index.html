@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Staffing Model</title>
+<title>Staffing Model — Full Tool</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#f4f6f9;color:#1a2332;}
 header{background:#1a2332;color:#fff;padding:18px 24px;}header h1{margin:0;font-size:20px;}header p{margin:4px 0 0;font-size:13px;opacity:.85;}
@@ -316,8 +316,9 @@ select,input{padding:8px 10px}
 </div>
 <div id="sbSliderRow" style="font-size:13px;display:none">Additional staff beyond 39: <input type="range" id="sbSlider" min="0" max="20" value="0" style="width:220px;vertical-align:middle"> <b id="sbSliderVal">0</b> → target <b id="sbTargetTotal">39</b></div>
 <div id="sbAssignedLine" style="font-size:14px;font-weight:700">—</div>
+<div id="sbGuardNote" class="note" style="margin:0;display:block">No automated recommendation in Guardrails mode — your current 39-person allocation already reflects everything balanced across this project (coverage gaps, Thu/Fri, Sat/Sun, N-4/S-Sat-C). Use the inputs above to test reallocations manually, or "Reset to current" for the known-good baseline.</div>
 <div>
-<button id="sbFillRec" style="padding:6px 14px;border-radius:5px;border:1px solid #38bdf8;background:#eff6ff;color:#1e40af;cursor:pointer;font-size:13px;font-weight:600">Fill Recommended</button>
+<button id="sbFillRec" style="display:none;padding:6px 14px;border-radius:5px;border:1px solid #38bdf8;background:#eff6ff;color:#1e40af;cursor:pointer;font-size:13px;font-weight:600">Fill Recommended</button>
 <button id="sbReset" style="padding:6px 14px;border-radius:5px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-size:13px;margin-left:8px">Reset to current</button>
 </div>
 </div>
@@ -1027,6 +1028,8 @@ updateAssignedCounter();
 function updateSandboxMode(){
 const guardrails=document.getElementById("sbModeGuard").checked;
 document.getElementById("sbSliderRow").style.display=guardrails?"none":"block";
+document.getElementById("sbFillRec").style.display=guardrails?"none":"inline-block";
+document.getElementById("sbGuardNote").style.display=guardrails?"block":"none";
 updateAssignedCounter();
 }
 function updateSandboxSliderLabel(){
@@ -1043,22 +1046,29 @@ renderSandboxInputs();
 updateSandboxMode();
 renderSandbox();
 }
-// Fill Recommended reuses computeGrowthPlanFrom — the exact same phased
-// logic (fill deficits -> scale to +1 buffer -> desirability) that drives
-// the Growth Planner tab. Both modes now build the distribution from
-// scratch for a target total, rather than layering on top of today's
-// actual per-archetype counts: Guardrails targets exactly 39 (reallocating
-// today's headcount); Hypothetical targets 39 + the slider value (growth).
-// Uses whatever floor values are currently set in the sandbox, so a
-// recommendation is always consistent with any floor edits already made.
+// Fill Recommended grows FROM the current live 39-person distribution,
+// not from scratch. Tested building from scratch (empty roster): the
+// greedy phase logic has no concept of weekend-coverage reliability or
+// schedule diversity, only weekday efficiency — it dumped 25 of 39 staff
+// (64%) into N-5 alone, since N-5's 5-day span is the most "efficient"
+// single archetype for clearing weekday deficits from zero, leaving
+// weekend coverage thin and dependent on rotation instead of the
+// deliberately-balanced shifted/non-shifted mix this model actually has.
+// The current distribution already reflects everything hand-tuned across
+// this project (closing gaps, Thu/Fri balance, Sat/Sun balance, launching
+// N-4/S-Sat-C) — growing from it (verified: gives N-1/N-4/S-Sat-C, not
+// N-5) preserves that instead of discarding it. Only offered in
+// Hypothetical mode — Guardrails has no safe recommendation to make
+// beyond what "Reset to current" already provides, since a same-total
+// reallocation can't improve on a baseline this algorithm can't even
+// reconstruct from zero.
 function fillRecommended(){
-const guardrails=document.getElementById("sbModeGuard").checked;
-const additional=guardrails?0:(parseInt(document.getElementById("sbSlider").value)||0);
-const targetSlots=39+additional;
+const additional=parseInt(document.getElementById("sbSlider").value)||0;
 const sbFloor=buildSandboxFloor();
-const log=computeGrowthPlanFrom([],{},targetSlots,sbFloor);
+const asg=assignedCounts();
+const log=computeGrowthPlanFrom(STAFF,ROT_WEEK,additional,sbFloor);
 let tally={};
-Object.keys(ARCH).forEach(k=>tally[k]=0);
+Object.keys(ARCH).forEach(k=>tally[k]=asg[k]||0);
 log.forEach(entry=>{tally[entry.archetype]=(tally[entry.archetype]||0)+1;});
 Object.keys(ARCH).forEach(k=>{document.getElementById("sb_"+k).value=tally[k]||0;});
 renderSandbox();
