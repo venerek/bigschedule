@@ -301,8 +301,13 @@ select,input{padding:8px 10px}
 </div>
 </div>
 <div class="page" id="sandbox">
-<div class="card"><h2>Live Staffing Sandbox — Adjust Archetype Seat Counts</h2>
-<div class="illus">Type a seat count for any archetype and the coverage grid recomputes instantly — full comp-day and weekend-rotation math included, same engine as the rest of this tool. Part-time staff stay fixed as currently scheduled and count toward coverage, but aren't part of the totals below — this is about the 39 full-time archetype seats.</div>
+<div class="card"><h2>Live Staffing Sandbox</h2>
+<div class="illus">Two independent levers: daily floor requirements (demand) below, and archetype seat counts (supply) further down. Both recompute the same live coverage grid — full comp-day and weekend-rotation math included, same engine as the rest of this tool.</div>
+<h2 style="font-size:14px;margin-top:16px">Daily Floor Requirements</h2>
+<p class="note" style="margin-top:0">Independent of the staffing mode below — always freely editable.</p>
+<div id="sbFloorInputs" style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:8px"></div>
+<h2 style="font-size:14px;margin-top:20px">Archetype Seat Counts</h2>
+<div class="illus">Part-time staff stay fixed as currently scheduled and count toward coverage, but aren't part of the totals below — this is about the 39 full-time archetype seats.</div>
 <div id="sbInputs" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px"></div>
 <div class="controls" style="flex-direction:column;align-items:flex-start;gap:10px">
 <div>
@@ -854,7 +859,8 @@ return best;
 // staff list + rotation-week map instead of reading the live module-level
 // STAFF/ROTATORS, so it can simulate "what if we hired into archetype X"
 // without touching the real model used by every other tab.
-function buildMatrixCand(staffList, rotWeekMap, w, archSet){
+function buildMatrixCand(staffList, rotWeekMap, w, archSet, floorOverride){
+const FLOORS=floorOverride||FLOOR;
 let m={};
 staffList.forEach(s=>{m[s.n]={};DAYS.forEach(d=>m[s.n][d]=archSet[s.a].includes(d)?"on":"off");});
 Object.keys(PT).forEach(p=>{m[p]={};DAYS.forEach(d=>m[p][d]=PT[p][w].includes(d)?"on":"off");});
@@ -863,7 +869,7 @@ const rotArch={};staffList.forEach(s=>{if(s.rot)rotArch[s.n]=s.a;});
 rotators.filter(n=>rotWeekMap[n]===w).forEach(n=>{m[n]["Sat"]="on";});
 rotators.filter(n=>rotWeekMap[n]===prevWk(w)).forEach(n=>{m[n]["Sun"]="on";});
 function countDay(d){let c=0;Object.keys(m).forEach(n=>{if(m[n][d]==="on")c++;});return c;}
-let margin={};WEEKDAYS.forEach(d=>margin[d]=countDay(d)-FLOOR[d]);
+let margin={};WEEKDAYS.forEach(d=>margin[d]=countDay(d)-FLOORS[d]);
 let compTally={};WEEKDAYS.forEach(d=>compTally[d]=0);
 let tasks=[];
 rotators.filter(n=>rotWeekMap[n]===w).forEach(n=>tasks.push({n,window:SAT_WINDOW,kind:"Sat"}));
@@ -944,6 +950,21 @@ Object.keys(ARCH).forEach(k=>{
 document.getElementById("sb_"+k).addEventListener("input",renderSandbox);
 });
 }
+function renderFloorInputs(){
+let html="";
+DAYS.forEach(d=>{
+html+=`<div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:2px;color:#475569">${d}</label><input type="number" id="sbf_${d}" value="${FLOOR[d]}" min="0" max="60" style="width:100%"></div>`;
+});
+document.getElementById("sbFloorInputs").innerHTML=html;
+DAYS.forEach(d=>{
+document.getElementById("sbf_"+d).addEventListener("input",renderSandbox);
+});
+}
+function buildSandboxFloor(){
+const f={};
+DAYS.forEach(d=>{f[d]=parseInt(document.getElementById("sbf_"+d).value);if(isNaN(f[d]))f[d]=FLOOR[d];});
+return f;
+}
 function buildSandboxStaff(){
 const staffList=[];
 Object.keys(ARCH).forEach(k=>{
@@ -982,16 +1003,17 @@ return sum;
 function renderSandbox(){
 const staffList=buildSandboxStaff();
 const rotWeekMap=buildSandboxRotWeek(staffList);
+const sbFloor=buildSandboxFloor();
 let html="<tr><th>Day</th><th>Floor</th>";
 for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
 html+="</tr>";
 let mFail=0,worst=0;
 DAYS.forEach(d=>{
-html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
+html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${sbFloor[d]}</td>`;
 for(let w=0;w<4;w++){
-const mm=buildMatrixCand(staffList,rotWeekMap,w,ARCH);
-const c=dayCountCand(mm,d);const m2=c-FLOOR[d];
-if(WEEKDAYS.includes(d)){if(m2<0)mFail++;if(m2<worst)worst=m2;}
+const mm=buildMatrixCand(staffList,rotWeekMap,w,ARCH,sbFloor);
+const c=dayCountCand(mm,d);const m2=c-sbFloor[d];
+if(m2<0)mFail++;if(m2<worst)worst=m2;
 const cls=m2>0?'pass':(m2===0?'atfloor':(m2===-1?'residual':'spill'));
 html+=`<td class="${cls}">${c}</td>`;
 }
@@ -1016,6 +1038,7 @@ function resetSandbox(){
 document.getElementById("sbModeGuard").checked=true;
 document.getElementById("sbSlider").value=0;
 updateSandboxSliderLabel();
+renderFloorInputs();
 renderSandboxInputs();
 updateSandboxMode();
 renderSandbox();
@@ -1026,23 +1049,27 @@ renderSandbox();
 // scratch for a target total, rather than layering on top of today's
 // actual per-archetype counts: Guardrails targets exactly 39 (reallocating
 // today's headcount); Hypothetical targets 39 + the slider value (growth).
+// Uses whatever floor values are currently set in the sandbox, so a
+// recommendation is always consistent with any floor edits already made.
 function fillRecommended(){
 const guardrails=document.getElementById("sbModeGuard").checked;
 const additional=guardrails?0:(parseInt(document.getElementById("sbSlider").value)||0);
 const targetSlots=39+additional;
-const log=computeGrowthPlanFrom([],{},targetSlots);
+const sbFloor=buildSandboxFloor();
+const log=computeGrowthPlanFrom([],{},targetSlots,sbFloor);
 let tally={};
 Object.keys(ARCH).forEach(k=>tally[k]=0);
 log.forEach(entry=>{tally[entry.archetype]=(tally[entry.archetype]||0)+1;});
 Object.keys(ARCH).forEach(k=>{document.getElementById("sb_"+k).value=tally[k]||0;});
 renderSandbox();
 }
-function evalRosterCand(staffList, rotWeekMap, archSet){
+function evalRosterCand(staffList, rotWeekMap, archSet, floorOverride){
+const FLOORS=floorOverride||FLOOR;
 let mFail=0, worst=0, totalDeficit=0, minMargin=Infinity;
 for(let w=0;w<4;w++){
-const mm=buildMatrixCand(staffList, rotWeekMap, w, archSet);
-WEEKDAYS.forEach(d=>{
-const margin=dayCountCand(mm,d)-FLOOR[d];
+const mm=buildMatrixCand(staffList, rotWeekMap, w, archSet, FLOORS);
+DAYS.forEach(d=>{
+const margin=dayCountCand(mm,d)-FLOORS[d];
 if(margin<0){mFail++;totalDeficit+=(-margin);}
 if(margin<worst)worst=margin;
 if(margin<minMargin)minMargin=margin;
@@ -1065,14 +1092,15 @@ const BUFFER_TARGET=1;
 // S-Sat-A/B) remain a separate concern, chosen only in Phase 1/2 when the
 // math favors them.
 const DESIRABLE_ARCHETYPES=["N-1","N-4","S-Sat-C"];
-function computeGrowthPlanFrom(baseStaffList, baseRotWeekMap, nSlots){
+function computeGrowthPlanFrom(baseStaffList, baseRotWeekMap, nSlots, floorOverride){
+const FLOORS=floorOverride||FLOOR;
 let staffList=baseStaffList.map(s=>({...s}));
 let rotWeekMap={...baseRotWeekMap};
 const log=[];
 const candidates=Object.keys(GROWTH_ARCH);
 let desirIdx=0;
 for(let i=0;i<nSlots;i++){
-const cur=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH);
+const cur=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH, FLOORS);
 let phase, chosen, reason, comparisons=null;
 function evalAll(){
 return candidates.map(arch=>{
@@ -1081,7 +1109,7 @@ const name="__cand__";
 const candStaff=[...staffList, {n:name, a:arch, rot:!isShifted}];
 let candRotMap=rotWeekMap;
 if(!isShifted) candRotMap={...rotWeekMap, [name]: leastPopulatedWeek(rotWeekMap)};
-return {arch, result:evalRosterCand(candStaff, candRotMap, GROWTH_ARCH), isShifted};
+return {arch, result:evalRosterCand(candStaff, candRotMap, GROWTH_ARCH, FLOORS), isShifted};
 });
 }
 if(cur.mFail>0){
@@ -1111,7 +1139,7 @@ const isShifted=chosen.startsWith("S-");
 const realName="Hire#"+(i+1);
 staffList.push({n:realName, a:chosen, rot:!isShifted});
 if(!isShifted) rotWeekMap[realName]=leastPopulatedWeek(rotWeekMap);
-const after=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH);
+const after=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH, FLOORS);
 log.push({slot:i+1, phase, archetype:chosen, mFail:after.mFail, worst:after.worst, minMargin:after.minMargin, reason, comparisons});
 }
 return log;
@@ -1180,7 +1208,7 @@ document.getElementById("sbFillRec").addEventListener("click",fillRecommended);
 document.getElementById("sbSlider").addEventListener("input",updateSandboxSliderLabel);
 document.getElementById("sbModeGuard").addEventListener("change",updateSandboxMode);
 document.getElementById("sbModeHypo").addEventListener("change",updateSandboxMode);
-renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderSandboxInputs();renderSandbox();
+renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderFloorInputs();renderSandboxInputs();renderSandbox();
 updateSandboxSliderLabel();updateSandboxMode();
 renderExecSummary();
 </script>
