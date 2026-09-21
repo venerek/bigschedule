@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Staffing Model</title>
+<title>Staffing Model — Full Tool</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#f4f6f9;color:#1a2332;}
 header{background:#1a2332;color:#fff;padding:18px 24px;}header h1{margin:0;font-size:20px;}header p{margin:4px 0 0;font-size:13px;opacity:.85;}
@@ -137,12 +137,11 @@ select,input{padding:8px 10px}
 </style>
 </head>
 <body>
-<header><h1>Staffing Model</h1></header>
+<header><h1>Clinical Department — Staffing Model</h1><p>4-week fixed-schedule model</p></header>
 <div class="tabs">
 <div class="tab active" data-page="bid">Bidding Model</div>
 <div class="tab" data-page="cal">Weekly Calendar</div>
 <div class="tab" data-page="wknd">Weekend Rotation</div>
-<div class="tab" data-page="pt">Part-Time Suggestion</div>
 <div class="tab" data-page="cmp">Comparison</div>
 <div class="tab" data-page="grow">Growth Planner</div>
 <div class="tab" data-page="legacy8">Legacy 8-Archetype Model</div>
@@ -158,11 +157,17 @@ select,input{padding:8px 10px}
 <div class="bs newm"><div class="v" id="execChanges">—</div><div class="l">Schedule changes/staff/cycle (was up to 3)</div></div>
 </div>
 </div>
-<div class="card"><h2>Coverage Verification — All 4 Weeks</h2>
+<div class="card"><h2>Coverage Verification</h2>
+<p class="note" style="margin-top:0"><b>Note:</b> reflects Woods' (Lionel) manually-adjusted schedule — Sat→Sun (Wk1), Sun→Wed (Wk2), Thu→Sun (Wk4)</p>
+<div class="controls" style="margin-bottom:10px"><label style="font-size:13px">Coverage scenario: <select id="covScenario">
+<option value="none">Current — no PTO assumed</option>
+<option value="max">Max PTO used — current policy (−3/weekday, −1/weekend)</option>
+<option value="hypo">Hypothetical, generous PTO with growth (−4/weekday, −2/weekend)</option>
+</select></label></div>
 <div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1 (per-diem target)</span><span class="spill">−2 spill (needs review)</span></div>
 <table id="allWeeksGrid"></table>
 <div id="allWeeksFlag" style="margin-top:10px"></div>
-<p class="note">Weekend floors (13) already include the reserved PTO slot [1].</p>
+<p class="note">Weekend floors (13) already include the reserved PTO slot [1]. PTO scenarios subtract a flat number of people per day type (Part 3.3: ≤3/weekday, 1 Sat + 1 Sun/week under current policy) — a stress test, not a live schedule change.</p>
 </div>
 <div class="card"><h2>Schedule Menu — Slots Available for Seniority Bidding</h2>
 <p class="note">Bidding by seniority; each row sized to the daily floors [1].</p>
@@ -207,27 +212,7 @@ select,input{padding:8px 10px}
 <div class="card"><h2>Weekend Rotation Calendar — 4-Week Cycle</h2><div class="weekgrid" id="weekgrid"></div></div>
 <div class="card"><h2>Weekend Coverage Summary vs. Floor (13 each) [1]</h2><table id="sumTbl"></table><div id="compReconLine" class="note" style="margin-top:10px"></div></div>
 </div>
-<div class="page" id="pt">
-<div class="card"><h2>Part-Time Reallocation — Illustrative Only</h2>
-<div class="illus"><b>Illustrative — not applied to the live schedule.</b> Moves each part-timer's weekend day(s) onto below-floor weekdays; FTE unchanged [1].</div>
-<div class="deflegend">
-<span class="sd work" style="border-radius:4px">worked day</span>
-<span class="sd wkndmove" style="border-radius:4px">weekend day moving</span>
-<span class="sd fix" style="border-radius:4px">fixes a deficit</span>
-<span class="sd buffer" style="border-radius:4px">buffer (no deficit)</span>
-</div>
-<div id="ptCards" style="margin-top:14px"></div>
-</div>
-<div class="card"><h2>Coverage Verification — All 4 Weeks, Before / After Suggested Changes</h2>
-<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1 (per-diem target)</span><span class="spill">−2 spill (needs review)</span></div>
-<p class="note" style="margin-top:0"><b>Current (live)</b></p>
-<table id="ptGridCurrent"></table>
-<p class="note"><b>With suggested changes applied</b></p>
-<table id="ptGridSuggested"></table>
-<div id="ptGridDelta" style="margin-top:10px"></div>
-<p class="note">Computed live, same method as the Bidding tab grid; comp placement is recomputed for the suggested scenario. Illustrative — not applied to the live model [1].</p>
-</div>
-</div>
+
 <div class="page" id="cmp">
 <div class="card"><h2>Legacy System vs. New Model — Schedule Structure</h2>
 <div class="pcbox">
@@ -401,16 +386,10 @@ const STAFF=[
 ];
 const PT={
 "Milko":[["Thu","Fri"],["Thu","Fri"],["Fri","Sat"],["Thu","Fri"]],
-"Woods":[["Tue","Sat"],["Sun","Tue"],["Tue","Thu"],["Tue","Thu"]],
+"Woods":[["Tue","Sun"],["Tue","Wed"],["Tue","Thu"],["Tue","Sun"]],
 "OHara":[["Thu"],["Thu"],["Thu"],["Thu"]],
 "Hwang":[["Mon","Fri"],["Mon","Sat"],["Sun","Mon"],["Mon","Fri"]],
 "Morrissey":[["Thu","Fri","Sat"],["Thu","Fri","Sat"],["Thu","Fri","Sat"],["Thu","Fri","Sat"]]
-};
-const PT_SUGGEST={
-"Milko":{fte:"0.4",days:[["Thu","Fri"],["Thu","Fri"],["Fri","Mon"],["Thu","Fri"]],note:"Wk3 Sat → Mon — fixes Wk3 Monday −1"},
-"Woods":{fte:"0.5",days:[["Tue","Mon"],["Mon","Tue"],["Tue","Thu"],["Tue","Thu"]],note:"Wk1 Sat → Mon (fixes Wk1 Monday −1); Wk2 Sun → Mon (fixes Wk2 Monday −1)"},
-"OHara":{fte:"0.2",days:[["Thu"],["Thu"],["Thu"],["Thu"]],note:"No change — already optimal on Thursday (tightest floor, 26)"},
-"Hwang":{fte:"0.5",days:[["Mon","Fri"],["Mon","Wed"],["Wed","Mon"],["Mon","Fri"]],note:"Wk2 Sat → Wed (fixes Wk2 Wednesday −1); Wk3 Sun → Wed (fixes Wk3 Wednesday −1)"}
 };
 // LEGACY_SLOTS: the 38 documented schedule patterns from the original brief
 // (22 non-shifted rows + the unlisted Hwang row + 15 shifted rows), keyed by
@@ -499,30 +478,6 @@ placeCompsGlobal(m,tasks,margin,compTally,compInfo);
 m.__compInfo=compInfo;
 return m;
 }
-// Same as buildMatrix, but the part-time layer uses each person's PT_SUGGEST
-// days where one exists (Milko/Woods/OHara/Hwang), live PT otherwise
-// (Morrissey — no longer a reallocation candidate). Reuses placeCompsGlobal
-// so comp-day placement follows the exact same methodology as the real
-// model; only the base PT inputs differ.
-function buildMatrixSuggested(w){
-let m={};let compInfo={};
-STAFF.forEach(s=>{m[s.n]={};DAYS.forEach(d=>m[s.n][d]=ARCH[s.a].includes(d)?"on":"off");});
-Object.keys(PT).forEach(p=>{
-const days = PT_SUGGEST[p] ? PT_SUGGEST[p].days[w] : PT[p][w];
-m[p]={};DAYS.forEach(d=>m[p][d]=days.includes(d)?"on":"off");
-});
-ROTATORS.filter(n=>weekOf(n)===w).forEach(n=>{m[n]["Sat"]="on";});
-ROTATORS.filter(n=>weekOf(n)===prevWk(w)).forEach(n=>{m[n]["Sun"]="on";});
-function countDay(d){let c=0;Object.keys(m).forEach(n=>{if(m[n][d]==="on")c++;});return c;}
-let margin={};WEEKDAYS.forEach(d=>margin[d]=countDay(d)-FLOOR[d]);
-let compTally={};WEEKDAYS.forEach(d=>compTally[d]=0);
-let tasks=[];
-ROTATORS.filter(n=>weekOf(n)===w).forEach(n=>tasks.push({n,window:SAT_WINDOW,kind:"Sat",src:"Sat Wk"+(w+1)}));
-ROTATORS.filter(n=>weekOf(n)===prevWk(w)).forEach(n=>tasks.push({n,window:SUN_WINDOW,kind:"Sun",src:"Sun Wk"+(w+1)}));
-placeCompsGlobal(m,tasks,margin,compTally,compInfo);
-m.__compInfo=compInfo;
-return m;
-}
 function placeCompsGlobal(m,tasks,margin,compTally,compInfo){
 tasks.forEach(t=>{const arch=ROT_ARCH[t.n];const archDays=arch?ARCH[arch]:[];t.elig=t.window.filter(d=>archDays.includes(d)&&m[t.n][d]==="on");});
 tasks.sort((a,b)=>a.elig.length-b.elig.length);
@@ -590,62 +545,48 @@ document.getElementById("bidTbl").innerHTML=html;
 document.getElementById("bSlots").textContent=totSlots;document.getElementById("bShift").textContent=shiftSlots;document.getElementById("bWeekday").textContent=wdaySlots;
 document.getElementById("bTotal").textContent=`${ALLNAMES.length} (${totSlots} FT + ${Object.keys(PT).length} PT)`;
 }
+// PTO scenarios: subtract a flat number of people per day type before
+// checking against floor. "max" matches the documented current policy
+// (Part 3.3: <=3/weekday, 1 Sat + 1 Sun slot/week). "hypo" is a proposed
+// more generous policy, justified by the added headcount from growth.
+function vacationSlotsFor(scenario, isWeekend){
+if(scenario==="max") return isWeekend?1:3;
+if(scenario==="hypo") return isWeekend?2:4;
+return 0;
+}
+function marginClass(m2){if(m2>0)return'pass';if(m2===0)return'atfloor';if(m2===-1)return'residual';return'spill';}
 function renderAllWeeksGrid(){
+const scenario=document.getElementById("covScenario").value;
 let html="<tr><th>Day</th><th>Floor</th>";
 for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
 html+="</tr>";
+let mFail=0, worst=0;
+let resid=[], spill=[];
 DAYS.forEach(d=>{
+const isWeekend=(d==="Sat"||d==="Sun");
+const vac=vacationSlotsFor(scenario,isWeekend);
 html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
 for(let w=0;w<4;w++){
 const mm=buildMatrix(w);
-html+=`<td class="${cellClass(mm,d)}">${dayCount(mm,d)}</td>`;
+const adjusted=dayCount(mm,d)-vac;
+const m2=adjusted-FLOOR[d];
+if(m2<0)mFail++; if(m2<worst)worst=m2;
+if(m2===-1) resid.push(`${d} Wk${w+1}`);
+if(m2<-1) spill.push(`${d} Wk${w+1}`);
+html+=`<td class="${marginClass(m2)}">${adjusted}</td>`;
 }
 html+="</tr>";
 });
 document.getElementById("allWeeksGrid").innerHTML=html;
-const curFail=tallyFails();
 const flagEl=document.getElementById("allWeeksFlag");
-if(curFail===0){
-flagEl.innerHTML=`<div class="flagbox flagok">All floors met ✓</div>`;
+if(mFail===0){
+flagEl.innerHTML=`<div class="flagbox flagok">All floors met ✓${scenario!=="none"?" — even with this PTO scenario applied":""}</div>`;
 }else{
-let resid=[], spill=[];
-for(let w=0;w<4;w++){
-const mm=buildMatrix(w);
-DAYS.forEach(d=>{
-const m2=dayCount(mm,d)-FLOOR[d];
-if(m2===-1) resid.push(`${d} Wk${w+1}`);
-if(m2<-1) spill.push(`${d} Wk${w+1}`);
-});
-}
 let out="";
 if(spill.length) out+=`<div class="flagbox flagspill">−2 spill: ${spill.join(", ")}</div>`;
 if(resid.length) out+=`<div class="flagbox flagresid">Residual −1: ${resid.join(", ")}</div>`;
 flagEl.innerHTML=out;
 }
-}
-function gridRowsHtml(matrixFn){
-let html="<tr><th>Day</th><th>Floor</th>";
-for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
-html+="</tr>";
-DAYS.forEach(d=>{
-html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
-for(let w=0;w<4;w++){
-const mm=matrixFn(w);
-html+=`<td class="${cellClass(mm,d)}">${dayCount(mm,d)}</td>`;
-}
-html+="</tr>";
-});
-return html;
-}
-function tallyFailsFor(matrixFn){let t=0;for(let w=0;w<4;w++){const mm=matrixFn(w);DAYS.forEach(d=>{if(dayCount(mm,d)<FLOOR[d])t++;});}return t;}
-function worstDeficitFor(matrixFn){let worst=0;for(let w=0;w<4;w++){const mm=matrixFn(w);DAYS.forEach(d=>{const m2=dayCount(mm,d)-FLOOR[d];if(m2<worst)worst=m2;});}return worst;}
-function renderPTGrids(){
-document.getElementById("ptGridCurrent").innerHTML=gridRowsHtml(buildMatrix);
-document.getElementById("ptGridSuggested").innerHTML=gridRowsHtml(buildMatrixSuggested);
-const curFail=tallyFailsFor(buildMatrix), curWorst=worstDeficitFor(buildMatrix);
-const sugFail=tallyFailsFor(buildMatrixSuggested), sugWorst=worstDeficitFor(buildMatrixSuggested);
-const cls = sugFail<curFail ? 'flagok' : (sugFail===curFail ? 'flagresid' : 'flagspill');
-document.getElementById("ptGridDelta").innerHTML=`<div class="flagbox ${cls}">Below-floor cells: ${curFail} → ${sugFail}. Worst deficit: ${curWorst} → ${sugWorst}.</div>`;
 }
 function renderExecSummary(){
 const curFail=tallyFails(), curWorst=worstDeficit();
@@ -801,49 +742,6 @@ document.getElementById("tblNewArchCount2").textContent=`${newCount} (all fixed)
 document.getElementById("ccArchCount").textContent=newCount;
 }
 function renderContinuity(){renderLegacyStats();renderW2W();renderHeatmap();}
-function countPTweekend(arr){let c=0;arr.forEach(wk=>wk.forEach(d=>{if(d==="Sat"||d==="Sun")c++;}));return c;}
-function suggClass(name,w,day){
-const curDays=PT[name][w];const sugDays=PT_SUGGEST[name].days[w];
-const isNew=sugDays.includes(day)&&!curDays.includes(day);
-if(!sugDays.includes(day))return"emptyd";
-if(!isNew)return"work";
-const mm=buildMatrix(w);
-return (dayCount(mm,day)<FLOOR[day])?"fix":"buffer";
-}
-function stripRow(name,w,mode){
-let cells="";
-const days=(mode==="current")?PT[name][w]:PT_SUGGEST[name].days[w];
-DAYS.forEach(d=>{
-let cls="emptyd";
-if(days.includes(d)){
-if(mode==="current"){cls=(d==="Sat"||d==="Sun")?"wkndmove":"work";}
-else{cls=suggClass(name,w,d);}
-}
-cells+=`<div class="sd ${cls}">${d.slice(0,3)}<span class="dl">${(d==="Sat"||d==="Sun")?"wknd":""}</span></div>`;
-});
-return `<div class="stripwk"><div class="stripwkhd">Week ${w+1}</div><div class="strip7">${cells}</div></div>`;
-}
-function renderPTCards(){
-const order=["Milko","Woods","OHara","Hwang"];
-const disp={Milko:"Milko",Woods:"Woods",OHara:"O'Hara",Hwang:"Hwang"};
-let html="";
-order.forEach(name=>{
-const cw=countPTweekend(PT[name]);const sw=countPTweekend(PT_SUGGEST[name].days);
-const improved=sw<cw;
-let curStrips="",sugStrips="";
-for(let w=0;w<4;w++){curStrips+=stripRow(name,w,"current");sugStrips+=stripRow(name,w,"suggested");}
-html+=`<div class="ptcard">
-<div class="pthead">
-<div><span class="ptname">${disp[name]}</span><span class="ptfte">${PT_SUGGEST[name].fte} FTE</span></div>
-<div class="ptwknd ${improved?'improved':'same'}">Weekend days: ${cw} → ${sw}${improved?' ✓':''}</div>
-</div>
-<div class="ptrow"><div class="ptrowlbl">Current (live)</div><div class="strip4">${curStrips}</div></div>
-<div class="ptrow"><div class="ptrowlbl">Suggested (illustrative)</div><div class="strip4">${sugStrips}</div></div>
-<div class="ptrat">${PT_SUGGEST[name].note}</div>
-</div>`;
-});
-document.getElementById("ptCards").innerHTML=html;
-}
 // --- Growth Planner: candidate archetype set is now the full primary
 // 10-archetype menu (N-4 and S-Sat-C were growth-only add-ons before being
 // promoted to primary — no augmentation needed anymore).
@@ -1213,12 +1111,13 @@ document.getElementById("weekSelB").addEventListener("change",renderBidGrid);
 document.getElementById("weekSelC").addEventListener("change",e=>{MATRIX=buildMatrix(parseInt(e.target.value));renderCal();});
 document.getElementById("weekSelCont").addEventListener("change",renderHeatmap);
 document.getElementById("growN").addEventListener("input",renderGrowth);
+document.getElementById("covScenario").addEventListener("change",renderAllWeeksGrid);
 document.getElementById("sbReset").addEventListener("click",resetSandbox);
 document.getElementById("sbFillRec").addEventListener("click",fillRecommended);
 document.getElementById("sbSlider").addEventListener("input",updateSandboxSliderLabel);
 document.getElementById("sbModeGuard").addEventListener("change",updateSandboxMode);
 document.getElementById("sbModeHypo").addEventListener("change",updateSandboxMode);
-renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderPTCards();renderPTGrids();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderFloorInputs();renderSandboxInputs();renderSandbox();
+renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderFloorInputs();renderSandboxInputs();renderSandbox();
 updateSandboxSliderLabel();updateSandboxMode();
 renderExecSummary();
 </script>
