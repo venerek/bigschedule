@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Staffing Model — Full Tool</title>
+<title>Staffing Model</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#f4f6f9;color:#1a2332;}
 header{background:#1a2332;color:#fff;padding:18px 24px;}header h1{margin:0;font-size:20px;}header p{margin:4px 0 0;font-size:13px;opacity:.85;}
@@ -18,10 +18,14 @@ select,input{padding:6px 10px;font-size:13px;border-radius:5px;border:1px solid 
 table{border-collapse:collapse;width:100%;font-size:13px;}
 th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:center;}th{background:#f1f5f9;}
 td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
-.pass{background:#d1fae5;font-weight:600;color:#065f46;}.fail{background:#fecaca;font-weight:600;color:#b91c1c;}
+.pass{background:#ecfdf5;color:#047857;}.fail{background:#fecaca;font-weight:600;color:#b91c1c;}
 .atfloor{background:#fff;color:#475569;}
-.residual{background:#fde68a;font-weight:600;color:#92400e;}
-.spill{background:#fca5a5;font-weight:700;color:#7f1d1d;}
+.residual{background:#fef3c7;color:#92400e;}
+.spill{background:#fee2e2;font-weight:600;color:#991b1b;}
+.dip1{background:#f1f5f9;color:#475569;}.dip2{background:#e2e8f0;color:#334155;}.dip3{background:#cbd5e1;color:#1e293b;}
+.mg{font-size:11px;opacity:.7;margin-left:3px;font-weight:400;}
+details.cands{margin:4px 0 12px 0;font-size:12px;}details.cands summary{cursor:pointer;color:#475569;}
+tr.chosen td{background:#eff6ff;font-weight:600;}
 .floor{background:#f8fafc;font-style:italic;}
 .metric{display:inline-block;margin-right:24px;}.metric b{font-size:22px;display:block;}
 .note{font-size:12px;color:#475569;margin-top:10px;}
@@ -56,7 +60,8 @@ td.rowlabel{text-align:left;font-weight:500;background:#fafbfc;}
 .flagbox{background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px 14px;margin-top:12px;font-size:13px;color:#b91c1c;}
 .flagok{background:#f0fdf4;border:1px solid #bbf7d0;color:#065f46;}
 .flagresid{background:#fffbeb;border:1px solid #fde68a;color:#92400e;}
-.flagspill{background:#fee2e2;border:1px solid #fca5a5;color:#7f1d1d;font-weight:600;}
+.flagspill{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;}
+.flagnote{background:#f8fafc;border:1px solid #e2e8f0;color:#334155;}
 .wknddot{color:#b91c1c;font-weight:700;}.wkddot{color:#065f46;}
 .illus{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#1e40af;}
 .ptcard{border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:16px;background:#fff;}
@@ -144,7 +149,6 @@ select,input{padding:8px 10px}
 <div class="tab" data-page="wknd">Weekend Rotation</div>
 <div class="tab" data-page="cmp">Comparison</div>
 <div class="tab" data-page="grow">Growth Planner</div>
-<div class="tab" data-page="legacy8">Legacy 8-Archetype Model</div>
 <div class="tab" data-page="sandbox">Live Sandbox</div>
 </div>
 <div class="wrap">
@@ -157,17 +161,17 @@ select,input{padding:8px 10px}
 <div class="bs newm"><div class="v" id="execChanges">—</div><div class="l">Schedule changes/staff/cycle (was up to 3)</div></div>
 </div>
 </div>
-<div class="card"><h2>Coverage Verification</h2>
-<p class="note" style="margin-top:0"><b>Note:</b> reflects Woods' (Lionel) manually-adjusted schedule — Sat→Sun (Wk1), Sun→Wed (Wk2), Thu→Sun (Wk4)</p>
+<div class="card"><h2>Coverage Verification — All 4 Weeks</h2>
+<p class="note" style="margin-top:0"><b>Note:</b> reflects Woods' (Lionel) manually-adjusted schedule — Sat→Sun (Wk1), Sun→Wed (Wk2), Thu→Sun (Wk4) — applied directly to her live record, not archetype-driven, so it won't show up if you're cross-checking against archetype seat counts alone.</p>
 <div class="controls" style="margin-bottom:10px"><label style="font-size:13px">Coverage scenario: <select id="covScenario">
 <option value="none">Current — no PTO assumed</option>
 <option value="max">Max PTO used — current policy (−3/weekday, −1/weekend)</option>
 <option value="hypo">Hypothetical, generous PTO with growth (−4/weekday, −2/weekend)</option>
 </select></label></div>
-<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1 (per-diem target)</span><span class="spill">−2 spill (needs review)</span></div>
+<div class="legend" id="covLegend"></div>
 <table id="allWeeksGrid"></table>
 <div id="allWeeksFlag" style="margin-top:10px"></div>
-<p class="note">Weekend floors (13) already include the reserved PTO slot [1]. PTO scenarios subtract a flat number of people per day type (Part 3.3: ≤3/weekday, 1 Sat + 1 Sun/week under current policy) — a stress test, not a live schedule change.</p>
+<p class="note">Floors are pre-PTO requirements. When max PTO is used under current policy (Part 3.3: 3/weekday, 1 Sat + 1 Sun/week), dipping below floor is expected and accepted — the PTO scenarios show how far. They subtract a flat number of people per day type and don't change the live schedule.</p>
 </div>
 <div class="card"><h2>Schedule Menu — Slots Available for Seniority Bidding</h2>
 <p class="note">Bidding by seniority; each row sized to the daily floors [1].</p>
@@ -186,7 +190,7 @@ select,input{padding:8px 10px}
 <div class="card"><h2>Detailed Daily Verification (by week)</h2>
 <div class="controls"><label>Cycle week:
 <select id="weekSelB"><option value="0">Week 1</option><option value="1">Week 2</option><option value="2">Week 3</option><option value="3">Week 4</option></select></label></div>
-<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1</span><span class="spill">−2 spill</span></div>
+<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">−1 below floor</span><span class="spill">−2 or worse</span></div>
 <table id="bidGrid"></table>
 <div id="bidFlag"></div>
 </div>
@@ -261,9 +265,9 @@ select,input{padding:8px 10px}
 </div>
 <div class="page" id="grow">
 <div class="card"><h2>Growth Planner — Where to Add Slots as You Scale</h2>
-<p class="note">Computed live, not a fixed list. <b>Phase 1</b> — fill deficits. <b>Phase 2</b> — build a +1 cushion (absorbs the &lt;1/day average call-out). <b>Phase 3</b> — desirability (N-1/N-4 only, per Part 8.1).</p>
+<p class="note">Computed live. Every hire is tested in all 10 schedules against the full coverage simulation, and the best is picked by, in order: <b>1</b> shortfall below floor · <b>2</b> days without a +1 call-out cushion · <b>3</b> depth of PTO dips under max PTO (3/weekday, 1/weekend day) · <b>4</b> avoiding new fixed-weekend (every-Sat / every-Sun) seats · <b>5</b> desirability · <b>6</b> spreading seats across schedules. Fixed-weekend seats are added only when they're operationally better; otherwise growth goes to the rotation pool.</p>
 <div id="growDesirable" style="margin:14px 0"></div>
-<div id="growGap" class="metric" style="margin-top:10px"></div>
+<div id="growGap" style="margin-top:10px"></div>
 <div class="controls" style="margin-top:10px">
 <label>Add staff: <input type="number" id="growN" value="0" min="0" max="20" style="width:70px"></label>
 <span id="growTotal" class="note"></span>
@@ -271,19 +275,7 @@ select,input{padding:8px 10px}
 <div id="growCompare" style="margin-bottom:14px"></div>
 <div id="growPlan"></div>
 </div>
-<div class="card"><h2>Required Headcount per Schedule (Minimums)</h2><table id="growReqTbl"></table></div>
-</div>
-<div class="page" id="legacy8">
-<div class="card"><h2>Legacy 8-Archetype Model (Retired — Reference Only)</h2>
-<div class="illus">Retired now that the 10-archetype model (8 original archetypes + N-4 + S-Sat-C, 44 staff) is primary everywhere else in this tool. Kept here for reference — the original 35-staff/8-archetype state, before N-4 and S-Sat-C were added.</div>
-</div>
-<div class="card"><h2>Schedule Menu (8 Archetypes, 35 Staff)</h2>
-<table id="legacy8Menu"></table>
-</div>
-<div class="card"><h2>Coverage Verification — All 4 Weeks</h2>
-<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1</span><span class="spill">−2 spill</span></div>
-<table id="legacy8Grid"></table>
-</div>
+<div class="card"><h2>Seats per Schedule — Current vs. After Plan</h2><table id="growReqTbl"></table></div>
 </div>
 <div class="page" id="sandbox">
 <div class="card"><h2>Live Staffing Sandbox</h2>
@@ -292,16 +284,16 @@ select,input{padding:8px 10px}
 <p class="note" style="margin-top:0">Independent of the staffing mode below — always freely editable.</p>
 <div id="sbFloorInputs" style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:8px"></div>
 <h2 style="font-size:14px;margin-top:20px">Archetype Seat Counts</h2>
-<div class="illus">Part-time staff stay fixed as currently scheduled and count toward coverage, but aren't part of the totals below — this is about the 39 full-time archetype seats.</div>
+<div class="illus">Part-time staff stay fixed as currently scheduled and count toward coverage, but aren't part of the totals below — this is about the <span id="sbFtLabel1">—</span> full-time archetype seats.</div>
 <div id="sbInputs" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px"></div>
 <div class="controls" style="flex-direction:column;align-items:flex-start;gap:10px">
 <div>
-<label style="margin-right:20px;font-size:13px"><input type="radio" name="sbMode" value="guardrails" id="sbModeGuard" checked> <b>Guardrails</b> — cap total at 39 (reallocate current full-time staff only)</label><br>
-<label style="font-size:13px"><input type="radio" name="sbMode" value="hypothetical" id="sbModeHypo"> <b>Hypothetical</b> — allow growth beyond 39</label>
+<label style="margin-right:20px;font-size:13px"><input type="radio" name="sbMode" value="guardrails" id="sbModeGuard" checked> <b>Guardrails</b> — cap total at <span id="sbFtLabel2">—</span> (reallocate current full-time staff only)</label><br>
+<label style="font-size:13px"><input type="radio" name="sbMode" value="hypothetical" id="sbModeHypo"> <b>Hypothetical</b> — allow growth beyond <span id="sbFtLabel3">—</span></label>
 </div>
-<div id="sbSliderRow" style="font-size:13px;display:none">Additional staff beyond 39: <input type="range" id="sbSlider" min="0" max="20" value="0" style="width:220px;vertical-align:middle"> <b id="sbSliderVal">0</b> → target <b id="sbTargetTotal">39</b></div>
+<div id="sbSliderRow" style="font-size:13px;display:none">Additional staff beyond <span id="sbFtLabel4">—</span>: <input type="range" id="sbSlider" min="0" max="20" value="0" style="width:220px;vertical-align:middle"> <b id="sbSliderVal">0</b> → target <b id="sbTargetTotal">—</b></div>
 <div id="sbAssignedLine" style="font-size:14px;font-weight:700">—</div>
-<div id="sbGuardNote" class="note" style="margin:0;display:block">No automated recommendation in Guardrails mode — your current 39-person allocation already reflects everything balanced across this project (coverage gaps, Thu/Fri, Sat/Sun, N-4/S-Sat-C). Use the inputs above to test reallocations manually, or "Reset to current" for the known-good baseline.</div>
+<div id="sbGuardNote" class="note" style="margin:0;display:block">No automated recommendation in Guardrails mode — your current <span id="sbFtLabel5">—</span>-person allocation already reflects everything balanced across this project (coverage gaps, Thu/Fri, Sat/Sun, N-4/S-Sat-C). Use the inputs above to test reallocations manually, or "Reset to current" for the known-good baseline.</div>
 <div>
 <button id="sbFillRec" style="display:none;padding:6px 14px;border-radius:5px;border:1px solid #38bdf8;background:#eff6ff;color:#1e40af;cursor:pointer;font-size:13px;font-weight:600">Fill Recommended</button>
 <button id="sbReset" style="padding:6px 14px;border-radius:5px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-size:13px;margin-left:8px">Reset to current</button>
@@ -313,7 +305,7 @@ select,input{padding:8px 10px}
 </div>
 </div>
 <div class="card"><h2>Coverage Verification — All 4 Weeks (Live)</h2>
-<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">residual −1</span><span class="spill">−2 spill</span></div>
+<div class="legend"><span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span><span class="residual">−1 below floor</span><span class="spill">−2 or worse</span></div>
 <table id="sbGrid"></table>
 </div>
 </div>
@@ -326,27 +318,6 @@ const SAT_WINDOW=["Wed","Thu","Fri"];
 const SUN_WINDOW=["Mon","Tue","Wed"];
 const RESIDUAL_DAY="Mon";
 const SAT_RESIDUAL_DAY="Fri";
-// LEGACY8: the original 8-archetype model, retired to a single reference
-// tab now that the 10-archetype model (below) is primary.
-const LEGACY8_ARCH={
-"S-Sat-A":["Tue","Wed","Fri","Sat"],"S-Sat-B":["Tue","Thu","Fri","Sat"],
-"S-Sun-A":["Sun","Mon","Wed","Thu"],"S-Sun-B":["Sun","Mon","Tue","Wed"],
-"N-1":["Mon","Tue","Wed","Thu"],"N-2":["Mon","Tue","Thu","Fri"],
-"N-3":["Mon","Wed","Thu","Fri"],"N-5":["Mon","Tue","Wed","Thu","Fri"]
-};
-const LEGACY8_ARCH_CAT={"S-Sat-A":"Shifted (Sat) 4d","S-Sat-B":"Shifted (Sat) 4d","S-Sun-A":"Shifted (Sun) 4d","S-Sun-B":"Shifted (Sun) 4d","N-1":"Non-shifted 4d","N-2":"Non-shifted 4d (Mon+Fri)","N-3":"Non-shifted 4d (Mon+Fri)","N-5":"Non-shifted 5d"};
-const LEGACY8_REQUIRED={"S-Sat-A":5,"S-Sat-B":4,"S-Sun-A":6,"S-Sun-B":4,"N-1":3,"N-2":6,"N-3":5,"N-5":2};
-const LEGACY8_STAFF=[
-{n:"Mackay",a:"S-Sat-A",rot:false},{n:"Ibrahim",a:"S-Sat-A",rot:false},{n:"Liu",a:"S-Sat-A",rot:false},{n:"Del Priore",a:"S-Sat-A",rot:false},{n:"Sopchak",a:"S-Sat-A",rot:false},
-{n:"Javed",a:"S-Sat-B",rot:false},{n:"Parker",a:"S-Sat-B",rot:false},{n:"Tan",a:"S-Sat-B",rot:false},{n:"Castro",a:"S-Sat-B",rot:false},
-{n:"Britton",a:"S-Sun-A",rot:false},{n:"Chan",a:"S-Sun-A",rot:false},{n:"Paternite",a:"S-Sun-A",rot:false},{n:"Silberstein",a:"S-Sun-A",rot:false},{n:"Pardo",a:"S-Sun-A",rot:false},{n:"Waters",a:"S-Sun-A",rot:false},
-{n:"DiLapo",a:"S-Sun-B",rot:false},{n:"Belani",a:"S-Sun-B",rot:false},{n:"Lebrun",a:"S-Sun-B",rot:false},{n:"Cooper",a:"S-Sun-B",rot:false},
-{n:"Dinneny",a:"N-1",rot:true},{n:"Taylor",a:"N-3",rot:true},{n:"Berkman",a:"N-3",rot:true},{n:"Riley",a:"N-3",rot:true},
-{n:"Seyffert",a:"N-2",rot:true},{n:"Conn",a:"N-2",rot:true},{n:"Hiedacavage",a:"N-2",rot:true},{n:"Costello",a:"N-2",rot:true},
-{n:"Ahluwalia",a:"N-3",rot:true},{n:"Petersen",a:"N-2",rot:true},{n:"Snell",a:"N-3",rot:true},{n:"Rodgers",a:"N-2",rot:true},
-{n:"Lauda",a:"N-1",rot:true},{n:"Abraham",a:"N-1",rot:true},
-{n:"Bronfeld",a:"N-5",rot:true},{n:"Wu",a:"N-5",rot:true}
-];
 // PRIMARY MODEL — 10 archetypes (8 original + N-4 + S-Sat-C), 44 staff
 // (40 existing + 4 new hires). Allocation tested and verified: closes the
 // full coverage gap, launches N-4/S-Sat-C, and is the best-found balance
@@ -359,7 +330,7 @@ const ARCH={
 "N-3":["Mon","Wed","Thu","Fri"],"N-4":["Tue","Wed","Thu","Fri"],"N-5":["Mon","Tue","Wed","Thu","Fri"]
 };
 const ARCH_CAT={"S-Sat-A":"Shifted (Sat) 4d","S-Sat-B":"Shifted (Sat) 4d","S-Sat-C":"Shifted (Sat) 4d","S-Sun-A":"Shifted (Sun) 4d","S-Sun-B":"Shifted (Sun) 4d","N-1":"Non-shifted 4d","N-2":"Non-shifted 4d (Mon+Fri)","N-3":"Non-shifted 4d (Mon+Fri)","N-4":"Non-shifted 4d","N-5":"Non-shifted 5d"};
-const REQUIRED={"S-Sat-A":6,"S-Sat-B":4,"S-Sat-C":1,"S-Sun-A":7,"S-Sun-B":4,"N-1":3,"N-2":6,"N-3":5,"N-4":1,"N-5":2};
+const REQUIRED={"S-Sat-A":6,"S-Sat-B":4,"S-Sat-C":1,"S-Sun-A":6,"S-Sun-B":4,"N-1":3,"N-2":6,"N-3":5,"N-4":1,"N-5":2};
 const ATTR={
 "N-1":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Fri off",rot:true},
 "N-2":{days:"4d",hrs:"~10h/day",wknd:"none",wkndcls:"tag-wknd-rot",off:"Wed off",rot:true},
@@ -382,7 +353,7 @@ const STAFF=[
 {n:"Ahluwalia",a:"N-3",rot:true},{n:"Petersen",a:"N-2",rot:true},{n:"Snell",a:"N-3",rot:true},{n:"Rodgers",a:"N-2",rot:true},
 {n:"Lauda",a:"N-1",rot:true},{n:"Abraham",a:"N-1",rot:true},
 {n:"Bronfeld",a:"N-5",rot:true},{n:"Wu",a:"N-5",rot:true},
-{n:"New Hire 1",a:"S-Sat-A",rot:false},{n:"New Hire 2",a:"N-4",rot:true},{n:"New Hire 3",a:"S-Sat-C",rot:false},{n:"New Hire 4",a:"S-Sun-A",rot:false}
+{n:"New Hire 1",a:"S-Sat-A",rot:false},{n:"New Hire 2",a:"N-4",rot:true},{n:"New Hire 3",a:"S-Sat-C",rot:false}
 ];
 const PT={
 "Milko":[["Thu","Fri"],["Thu","Fri"],["Fri","Sat"],["Thu","Fri"]],
@@ -516,8 +487,8 @@ const resid=DAYS.filter(d=>dayCount(mm,d)===FLOOR[d]-1).map(d=>`${d} (${dayCount
 const spill=DAYS.filter(d=>dayCount(mm,d)<FLOOR[d]-1).map(d=>`${d} (${dayCount(mm,d)}/${FLOOR[d]})`);
 if(resid.length===0&&spill.length===0)return `<div class="flagbox flagok">Week ${w+1}: all floors met ✓</div>`;
 let out="";
-if(spill.length)out+=`<div class="flagbox flagspill">Week ${w+1} −2 spill: ${spill.join(", ")}</div>`;
-if(resid.length)out+=`<div class="flagbox flagresid">Week ${w+1} residual −1: ${resid.join(", ")}</div>`;
+if(spill.length)out+=`<div class="flagbox flagspill">Week ${w+1} −2 or worse: ${spill.join(", ")}</div>`;
+if(resid.length)out+=`<div class="flagbox flagresid">Week ${w+1} −1 below floor: ${resid.join(", ")}</div>`;
 return out;
 }
 function renderBidGrid(){const w=parseInt(document.getElementById("weekSelB").value);document.getElementById("bidGrid").innerHTML=gridHtml(w);document.getElementById("bidFlag").innerHTML=flagHtml(w);}
@@ -525,12 +496,6 @@ function tallyFails(){let t=0;for(let w=0;w<4;w++){const mm=buildMatrix(w);DAYS.
 function worstDeficit(){let worst=0;for(let w=0;w<4;w++){const mm=buildMatrix(w);DAYS.forEach(d=>{const m2=dayCount(mm,d)-FLOOR[d];if(m2<worst)worst=m2;});}return worst;}
 function compReconcile(){let placed=0,unplaced=0,spills=0;for(let w=0;w<4;w++){const mm=buildMatrix(w);const ci=mm.__compInfo;Object.keys(ci).forEach(n=>{if(ci[n].day){placed++;if(ci[n].spill)spills++;}else unplaced++;});}return {placed,expected:ROTATORS.length*2,unplaced,spills};}
 function assignedCounts(){let a={};Object.keys(ARCH).forEach(k=>a[k]=0);STAFF.forEach(s=>{if(a[s.a]!==undefined)a[s.a]++;});return a;}
-function renderReq(tblId){
-const asg=assignedCounts();
-let html="<tr><th>Archetype</th><th>Days</th><th>Required</th><th>Assigned</th><th>Status</th></tr>";
-Object.keys(ARCH).forEach(k=>{const req=REQUIRED[k],got=asg[k];let cls,lbl;if(got<req){cls='under';lbl='Understaffed (−'+(req-got)+')';}else if(got>req){cls='over';lbl='Cushion (+'+(got-req)+')';}else{cls='ok';lbl='OK';}html+=`<tr><td>${k}</td><td>${ARCH[k].join(", ")}</td><td>${req}</td><td>${got}</td><td class="${cls}">${lbl}</td></tr>`;});
-document.getElementById(tblId).innerHTML=html;
-}
 function renderScheduleMenu(){
 const asg=assignedCounts();
 let html="<tr><th>Schedule</th><th>Days</th><th>Type</th><th>Weekend?</th><th>Seats (Required / Assigned)</th><th>Status</th></tr>";
@@ -555,38 +520,53 @@ if(scenario==="hypo") return isWeekend?2:4;
 return 0;
 }
 function marginClass(m2){if(m2>0)return'pass';if(m2===0)return'atfloor';if(m2===-1)return'residual';return'spill';}
+// Coverage cells show headcount plus margin. Floors are pre-PTO; under a PTO
+// scenario, dipping below floor is expected and accepted, so those dips get a
+// neutral gray scale rather than warning colors. Amber/red are reserved for a
+// day that misses its floor BEFORE PTO is taken out (a real miss).
+function marginText(m){return m>0?'+'+m:(m<0?'−'+(-m):'0');}
+function cellInner(c,m){return `${c}<span class="mg">(${marginText(m)})</span>`;}
+function dipClass(m){return m===-1?'dip1':(m===-2?'dip2':'dip3');}
+function renderCovLegend(pto){
+const base='<span class="pass">above floor</span><span class="atfloor" style="border:1px solid #cbd5e1">at floor</span>';
+document.getElementById("covLegend").innerHTML = pto
+? base+'<span class="dip1">PTO dip −1</span><span class="dip2">PTO dip −2</span><span class="dip3">PTO dip −3+</span><span class="spill">below floor before PTO</span>'
+: base+'<span class="residual">−1 below floor</span><span class="spill">−2 or worse</span>';
+}
 function renderAllWeeksGrid(){
 const scenario=document.getElementById("covScenario").value;
+const pto=scenario!=="none";
+renderCovLegend(pto);
 let html="<tr><th>Day</th><th>Floor</th>";
 for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
 html+="</tr>";
-let mFail=0, worst=0;
-let resid=[], spill=[];
+const mats=[0,1,2,3].map(w=>buildMatrix(w));
+const realMiss=[]; const dipByDay={}; let dipCells=0, deepest=0;
 DAYS.forEach(d=>{
-const isWeekend=(d==="Sat"||d==="Sun");
-const vac=vacationSlotsFor(scenario,isWeekend);
+const vac=vacationSlotsFor(scenario,d==="Sat"||d==="Sun");
 html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
-for(let w=0;w<4;w++){
-const mm=buildMatrix(w);
-const adjusted=dayCount(mm,d)-vac;
-const m2=adjusted-FLOOR[d];
-if(m2<0)mFail++; if(m2<worst)worst=m2;
-if(m2===-1) resid.push(`${d} Wk${w+1}`);
-if(m2<-1) spill.push(`${d} Wk${w+1}`);
-html+=`<td class="${marginClass(m2)}">${adjusted}</td>`;
-}
+mats.forEach((mm,w)=>{
+const c=dayCount(mm,d), pre=c-FLOOR[d], adj=c-vac, m2=adj-FLOOR[d];
+let cls;
+if(pre<0){cls=marginClass(pre);realMiss.push({lbl:`${d} Wk${w+1} (${marginText(pre)})`,m:pre});}
+else if(m2<0){cls=dipClass(m2);dipCells++;if(m2<deepest)deepest=m2;(dipByDay[d]=dipByDay[d]||[]).push({w,m:m2});}
+else cls=marginClass(m2);
+html+=`<td class="${cls}">${cellInner(adj,m2)}</td>`;
+});
 html+="</tr>";
 });
 document.getElementById("allWeeksGrid").innerHTML=html;
-const flagEl=document.getElementById("allWeeksFlag");
-if(mFail===0){
-flagEl.innerHTML=`<div class="flagbox flagok">All floors met ✓${scenario!=="none"?" — even with this PTO scenario applied":""}</div>`;
-}else{
 let out="";
-if(spill.length) out+=`<div class="flagbox flagspill">−2 spill: ${spill.join(", ")}</div>`;
-if(resid.length) out+=`<div class="flagbox flagresid">Residual −1: ${resid.join(", ")}</div>`;
-flagEl.innerHTML=out;
+if(realMiss.length){
+const worse=realMiss.some(x=>x.m<-1);
+out+=`<div class="flagbox ${worse?'flagspill':'flagresid'}">Below floor before PTO: ${realMiss.map(x=>x.lbl).join(", ")}</div>`;
 }
+if(pto&&dipCells){
+const deepDays=Object.keys(dipByDay).filter(d=>dipByDay[d].some(x=>x.m===deepest)).map(d=>{const wks=dipByDay[d].filter(x=>x.m===deepest).map(x=>x.w+1);return wks.length===4?`${d} (all weeks)`:`${d} (Wk${wks.join(", ")})`;});
+out+=`<div class="flagbox flagnote">Under this PTO scenario, ${dipCells} of 28 days dip below floor — deepest ${marginText(deepest)}: ${deepDays.join(", ")}. Expected: floors are pre-PTO.</div>`;
+}
+if(!out) out=`<div class="flagbox flagok">All floors met ✓${pto?" — even with this PTO scenario applied":""}</div>`;
+document.getElementById("allWeeksFlag").innerHTML=out;
 }
 function renderExecSummary(){
 const curFail=tallyFails(), curWorst=worstDeficit();
@@ -794,60 +774,29 @@ m[t.n][best]="comp";margin[best]--;compTally[best]++;
 return m;
 }
 function dayCountCand(mm,d){let c=0;Object.keys(mm).forEach(n=>{if(mm[n][d]==="on")c++;});return c;}
-// --- Legacy 8-Archetype Model (retired reference tab): same buildMatrixCand
-// engine, applied to the frozen LEGACY8_* snapshot instead of the live
-// (now 10-archetype) STAFF/ARCH/REQUIRED. Needs its own rotation-week map
-// since LEGACY8_STAFF's 16 rotators don't include the 17th (N-4) rotator
-// now in the primary model.
-const LEGACY8_ROT_WEEK_PLAN=[0,1,2,3,0,1,2,3,0,1,2,3,1,3,0,2];
-const LEGACY8_ROTATORS=LEGACY8_STAFF.filter(s=>s.rot).map(s=>s.n);
-const LEGACY8_ROT_WEEK={};
-LEGACY8_ROTATORS.forEach((n,i)=>LEGACY8_ROT_WEEK[n]=LEGACY8_ROT_WEEK_PLAN[i%LEGACY8_ROT_WEEK_PLAN.length]);
-function renderLegacy8Menu(){
-const asg={};
-LEGACY8_STAFF.forEach(s=>{asg[s.a]=(asg[s.a]||0)+1;});
-let html="<tr><th>Schedule</th><th>Days</th><th>Type</th><th>Weekend?</th><th>Seats (Required / Assigned)</th><th>Status</th></tr>";
-Object.keys(LEGACY8_ARCH).forEach(k=>{
-const req=LEGACY8_REQUIRED[k],got=asg[k]||0;
-const isShift=k.startsWith("S-");
-let cls,lbl;if(got<req){cls='under';lbl='Understaffed (−'+(req-got)+')';}else if(got>req){cls='over';lbl='Cushion (+'+(got-req)+')';}else{cls='ok';lbl='OK';}
-html+=`<tr><td>${k}</td><td>${LEGACY8_ARCH[k].join(", ")}</td><td>${LEGACY8_ARCH_CAT[k]}</td><td>${isShift?'Fixed '+(k.includes('Sat')?'Sat':'Sun'):'Rotation'}</td><td><b>${req} / ${got}</b></td><td class="${cls}">${lbl}</td></tr>`;
-});
-document.getElementById("legacy8Menu").innerHTML=html;
-}
-function renderLegacy8Grid(){
-let html="<tr><th>Day</th><th>Floor</th>";
-for(let w=0;w<4;w++) html+=`<th>Week ${w+1}</th>`;
-html+="</tr>";
-DAYS.forEach(d=>{
-html+=`<tr><td class="rowlabel">${d}</td><td class="floor">${FLOOR[d]}</td>`;
-for(let w=0;w<4;w++){
-const mm=buildMatrixCand(LEGACY8_STAFF,LEGACY8_ROT_WEEK,w,LEGACY8_ARCH);
-const c=dayCountCand(mm,d);const m2=c-FLOOR[d];
-const cls=m2>0?'pass':(m2===0?'atfloor':(m2===-1?'residual':'spill'));
-html+=`<td class="${cls}">${c}</td>`;
-}
-html+="</tr>";
-});
-document.getElementById("legacy8Grid").innerHTML=html;
-}
-function renderLegacy8(){renderLegacy8Menu();renderLegacy8Grid();}
 // --- Live Sandbox: anonymous "what-if" staff counts per archetype, fully
 // separate from the live STAFF array (nothing here touches it). Reuses
 // buildMatrixCand/dayCountCand/leastPopulatedWeek — the same simulation
-// engine already used by Growth Planner and the Legacy8 tab — so this
+// engine already used by Growth Planner — so this
 // isn't a new/unverified calculation path, just a new input surface on
 // the existing one. PT stays fixed; only FT archetype seats are variable.
+function updateSandboxFtLabels(){
+const n=STAFF.length;
+["sbFtLabel1","sbFtLabel2","sbFtLabel3","sbFtLabel4","sbFtLabel5"].forEach(id=>{
+document.getElementById(id).textContent=n;
+});
+}
 function renderSandboxInputs(){
 const asg=assignedCounts();
 let html="";
 Object.keys(ARCH).forEach(k=>{
-html+=`<div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:2px;color:#475569">${k} <span style="font-weight:400;color:#94a3b8">(${ARCH[k].join(",")})</span></label><input type="number" id="sb_${k}" value="${asg[k]||0}" min="0" max="39" style="width:100%"></div>`;
+html+=`<div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:2px;color:#475569">${k} <span style="font-weight:400;color:#94a3b8">(${ARCH[k].join(",")})</span></label><input type="number" id="sb_${k}" value="${asg[k]||0}" min="0" max="${STAFF.length}" style="width:100%"></div>`;
 });
 document.getElementById("sbInputs").innerHTML=html;
 Object.keys(ARCH).forEach(k=>{
 document.getElementById("sb_"+k).addEventListener("input",renderSandbox);
 });
+updateSandboxFtLabels();
 }
 function renderFloorInputs(){
 let html="";
@@ -881,21 +830,22 @@ rotWeekMap[n]=leastPopulatedWeek(rotWeekMap);
 });
 return rotWeekMap;
 }
-// The 39-total cap in Guardrails mode is enforced visually (a clear
+// The total-staff cap in Guardrails mode is enforced visually (a clear
 // over/under readout), not by fighting the input mid-keystroke — auto-
 // clamping a number input on every keystroke makes for a frustrating typing
 // experience and isn't necessary to make the constraint unmistakable.
 function updateAssignedCounter(){
+const total=STAFF.length;
 const sum=Object.keys(ARCH).reduce((s,k)=>s+(parseInt(document.getElementById("sb_"+k).value)||0),0);
 const guardrails=document.getElementById("sbModeGuard").checked;
 const el=document.getElementById("sbAssignedLine");
 if(guardrails){
-const remaining=39-sum;
+const remaining=total-sum;
 const over=remaining<0;
-el.innerHTML=`Assigned: <span style="color:${over?'#b91c1c':'#1a2332'}">${sum}</span> / 39 &nbsp;·&nbsp; Unassigned: <span style="color:${over?'#b91c1c':'#065f46'}">${remaining}</span>${over?' &nbsp;<span style="color:#b91c1c">⚠ over the 39-staff cap</span>':''}`;
+el.innerHTML=`Assigned: <span style="color:${over?'#b91c1c':'#1a2332'}">${sum}</span> / ${total} &nbsp;·&nbsp; Unassigned: <span style="color:${over?'#b91c1c':'#065f46'}">${remaining}</span>${over?` &nbsp;<span style="color:#b91c1c">⚠ over the ${total}-staff cap</span>`:''}`;
 } else {
-const beyond=sum-39;
-el.innerHTML=`Assigned: <span style="color:#1a2332">${sum}</span> FT &nbsp;·&nbsp; ${beyond>=0?beyond+' beyond current (39)':(-beyond)+' below current (39)'}`;
+const beyond=sum-total;
+el.innerHTML=`Assigned: <span style="color:#1a2332">${sum}</span> FT &nbsp;·&nbsp; ${beyond>=0?beyond+' beyond current ('+total+')':(-beyond)+' below current ('+total+')'}`;
 }
 return sum;
 }
@@ -913,8 +863,7 @@ for(let w=0;w<4;w++){
 const mm=buildMatrixCand(staffList,rotWeekMap,w,ARCH,sbFloor);
 const c=dayCountCand(mm,d);const m2=c-sbFloor[d];
 if(m2<0)mFail++;if(m2<worst)worst=m2;
-const cls=m2>0?'pass':(m2===0?'atfloor':(m2===-1?'residual':'spill'));
-html+=`<td class="${cls}">${c}</td>`;
+html+=`<td class="${marginClass(m2)}">${cellInner(c,m2)}</td>`;
 }
 html+="</tr>";
 });
@@ -933,7 +882,7 @@ updateAssignedCounter();
 function updateSandboxSliderLabel(){
 const additional=parseInt(document.getElementById("sbSlider").value)||0;
 document.getElementById("sbSliderVal").textContent=additional;
-document.getElementById("sbTargetTotal").textContent=39+additional;
+document.getElementById("sbTargetTotal").textContent=STAFF.length+additional;
 }
 function resetSandbox(){
 document.getElementById("sbModeGuard").checked=true;
@@ -944,10 +893,10 @@ renderSandboxInputs();
 updateSandboxMode();
 renderSandbox();
 }
-// Fill Recommended grows FROM the current live 39-person distribution,
+// Fill Recommended grows FROM the current live distribution (STAFF),
 // not from scratch. Tested building from scratch (empty roster): the
 // greedy phase logic has no concept of weekend-coverage reliability or
-// schedule diversity, only weekday efficiency — it dumped 25 of 39 staff
+// schedule diversity, only weekday efficiency — it dumped 25 of 39 staff (at the time)
 // (64%) into N-5 alone, since N-5's 5-day span is the most "efficient"
 // single archetype for clearing weekday deficits from zero, leaving
 // weekend coverage thin and dependent on rotation instead of the
@@ -971,9 +920,13 @@ log.forEach(entry=>{tally[entry.archetype]=(tally[entry.archetype]||0)+1;});
 Object.keys(ARCH).forEach(k=>{document.getElementById("sb_"+k).value=tally[k]||0;});
 renderSandbox();
 }
-function evalRosterCand(staffList, rotWeekMap, archSet, floorOverride){
+// Scores a candidate roster. Pre-PTO metrics (mFail/worst/totalDeficit/
+// minMargin) are unchanged from before; the optional ptoScenario adds the
+// call-out-cushion count (thin) and PTO-dip metrics. Comp placement always
+// uses the pre-PTO floors — PTO is an overlay, same as Coverage Verification.
+function evalRosterCand(staffList, rotWeekMap, archSet, floorOverride, ptoScenario){
 const FLOORS=floorOverride||FLOOR;
-let mFail=0, worst=0, totalDeficit=0, minMargin=Infinity;
+let mFail=0, worst=0, totalDeficit=0, minMargin=Infinity, thin=0, ptoDip=0, ptoDays=0;
 for(let w=0;w<4;w++){
 const mm=buildMatrixCand(staffList, rotWeekMap, w, archSet, FLOORS);
 DAYS.forEach(d=>{
@@ -981,127 +934,122 @@ const margin=dayCountCand(mm,d)-FLOORS[d];
 if(margin<0){mFail++;totalDeficit+=(-margin);}
 if(margin<worst)worst=margin;
 if(margin<minMargin)minMargin=margin;
+if(margin<BUFFER_TARGET)thin++;
+if(ptoScenario){const pm=margin-vacationSlotsFor(ptoScenario,d==="Sat"||d==="Sun");if(pm<0){ptoDip+=(-pm);ptoDays++;}}
 });
 }
-return {mFail, worst, totalDeficit, minMargin};
+return {mFail, worst, totalDeficit, minMargin, thin, ptoDip, ptoDays};
 }
-// Phase 2 target: Part 3.3 states average daily call-out is <1. A minMargin
-// of +1 means a single call-out still leaves the day AT floor, not under it —
-// a documented, defensible stopping point for "comfortably scaled" rather
-// than an arbitrary buffer number.
+// Call-out cushion: Part 3.3 states average daily call-out is <1, so a day at
+// +1 or better still sits at floor after one unplanned absence.
 const BUFFER_TARGET=1;
-// Phase 3 pool: Part 8.1 explicitly names N-1 and N-4 as "the most desirable
-// weekday-only patterns" because each sheds a "bookend" day — that claim is
-// documented in the source brief. S-Sat-C is different: it has no such
-// documented claim, but it was explicitly requested and justified in this
-// conversation (mirrors S-Sun-B's 4-in-a-row block, for staff satisfaction)
-// and promoted to primary at the user's direction — included here on that
-// basis, not invented unprompted. Weekend-resilience archetypes (S-Sun-A/B,
-// S-Sat-A/B) remain a separate concern, chosen only in Phase 1/2 when the
-// math favors them.
+// Desirable schedules: N-1/N-4 shed a "bookend" day (Part 8.1); S-Sat-C
+// mirrors S-Sun-B's 4-in-a-row block (added at user direction).
 const DESIRABLE_ARCHETYPES=["N-1","N-4","S-Sat-C"];
+// Growth ranks against the documented current PTO policy.
+const GROWTH_PTO="max";
+// Ranking order, agreed with the user: operational soundness first (shortfall,
+// call-out cushion, PTO-dip depth), then avoid adding fixed-weekend (every-Sat/
+// every-Sun) seats, then desirability, then spread. Fixed-weekend seats still
+// win whenever they're operationally better — they just never win on
+// desirability alone. (A cap at today's fixed-weekend share was also tested;
+// it never binds, since early N-5 hires already lower the share.) Every hire
+// re-runs all 10 candidates through the full simulation — no fixed lists.
+const GROWTH_KEYS=[
+{k:"totalDeficit",label:"shortfall below floor"},
+{k:"thin",label:"call-out cushion"},
+{k:"ptoDip",label:"PTO dip depth"},
+{k:"fixedWknd",label:"avoiding fixed-weekend seats"},
+{k:"undesirable",label:"desirability"},
+{k:"seats",label:"spread across schedules"}
+];
+const STAGE_LABEL={1:"Fill shortfall",2:"Build call-out cushion",3:"Shallower PTO dips",4:"Desirability"};
+const STAGE_TAG={1:"tag-wknd-fix",2:"tag-wknd-rot",3:"tag-days",4:"tag-wknd-none"};
+function growthStage(r){if(r.totalDeficit>0)return 1;if(r.thin>0)return 2;if(r.ptoDip>0)return 3;return 4;}
 function computeGrowthPlanFrom(baseStaffList, baseRotWeekMap, nSlots, floorOverride){
 const FLOORS=floorOverride||FLOOR;
 let staffList=baseStaffList.map(s=>({...s}));
 let rotWeekMap={...baseRotWeekMap};
+const archs=Object.keys(GROWTH_ARCH);
 const log=[];
-const candidates=Object.keys(GROWTH_ARCH);
-let desirIdx=0;
 for(let i=0;i<nSlots;i++){
-const cur=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH, FLOORS);
-let phase, chosen, reason, comparisons=null;
-function evalAll(){
-return candidates.map(arch=>{
+const before=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH, FLOORS, GROWTH_PTO);
+const seats={};archs.forEach(a=>seats[a]=0);staffList.forEach(s=>{if(seats[s.a]!==undefined)seats[s.a]++;});
+const name="Hire#"+(i+1);
+const evals=archs.map((arch,order)=>{
 const isShifted=arch.startsWith("S-");
-const name="__cand__";
-const candStaff=[...staffList, {n:name, a:arch, rot:!isShifted}];
-let candRotMap=rotWeekMap;
-if(!isShifted) candRotMap={...rotWeekMap, [name]: leastPopulatedWeek(rotWeekMap)};
-return {arch, result:evalRosterCand(candStaff, candRotMap, GROWTH_ARCH, FLOORS), isShifted};
+const candStaff=[...staffList,{n:name,a:arch,rot:!isShifted}];
+const candRot=isShifted?rotWeekMap:{...rotWeekMap,[name]:leastPopulatedWeek(rotWeekMap)};
+const r=evalRosterCand(candStaff, candRot, GROWTH_ARCH, FLOORS, GROWTH_PTO);
+return {arch,order,candStaff,candRot,result:r,totalDeficit:r.totalDeficit,thin:r.thin,ptoDip:r.ptoDip,fixedWknd:isShifted?1:0,undesirable:DESIRABLE_ARCHETYPES.includes(arch)?0:1,seats:seats[arch]};
 });
-}
-if(cur.mFail>0){
-phase=1;
-let evals=evalAll();
-evals.sort((a,b)=> a.result.mFail-b.result.mFail || b.result.worst-a.result.worst || a.result.totalDeficit-b.result.totalDeficit || (a.isShifted===b.isShifted?0:(a.isShifted?-1:1)));
-chosen=evals[0].arch;
-if(evals[0].result.mFail===0){
-const tied=evals.filter(e=>e.result.mFail===0).map(e=>e.arch).filter(a=>a!==chosen);
-reason = tied.length ? `Clears all remaining below-floor cells (tied with ${tied.join(", ")}).` : `Clears all remaining below-floor cells.`;
-comparisons = evals.slice(0,6);
-} else {
-reason = `Reduces below-floor cells to ${evals[0].result.mFail} (worst ${evals[0].result.worst}).`;
-}
-} else if(cur.minMargin<BUFFER_TARGET){
-phase=2;
-let evals=evalAll();
-evals.sort((a,b)=> b.result.minMargin-a.result.minMargin || (a.isShifted===b.isShifted?0:(a.isShifted?-1:1)));
-chosen=evals[0].arch;
-reason=`Raises the tightest day to minMargin ${evals[0].result.minMargin}.`;
-} else {
-phase=3;
-chosen=DESIRABLE_ARCHETYPES[desirIdx % DESIRABLE_ARCHETYPES.length]; desirIdx++;
-reason=`Most-desirable archetype (Part 8.1).`;
-}
-const isShifted=chosen.startsWith("S-");
-const realName="Hire#"+(i+1);
-staffList.push({n:realName, a:chosen, rot:!isShifted});
-if(!isShifted) rotWeekMap[realName]=leastPopulatedWeek(rotWeekMap);
-const after=evalRosterCand(staffList, rotWeekMap, GROWTH_ARCH, FLOORS);
-log.push({slot:i+1, phase, archetype:chosen, mFail:after.mFail, worst:after.worst, minMargin:after.minMargin, reason, comparisons});
+evals.sort((a,b)=>{for(const g of GROWTH_KEYS){if(a[g.k]!==b[g.k])return a[g.k]-b[g.k];}return a.order-b.order;});
+const best=evals[0], runner=evals[1];
+let decidedBy="exact tie — first in menu order";
+for(const g of GROWTH_KEYS){if(best[g.k]!==runner[g.k]){decidedBy=g.label;break;}}
+staffList=best.candStaff; rotWeekMap=best.candRot;
+log.push({slot:i+1, phase:growthStage(before), archetype:best.arch, decidedBy, runnerUp:runner.arch, before, after:best.result,
+mFail:best.result.mFail, worst:best.result.worst, minMargin:best.result.minMargin,
+comparisons:evals.map(e=>({arch:e.arch,result:e.result,desirable:!e.undesirable,seats:e.seats}))});
 }
 return log;
 }
 function computeGrowthPlan(nSlots){
 return computeGrowthPlanFrom(STAFF, ROT_WEEK, nSlots);
 }
-const PHASE_LABEL={1:"Fill deficits",2:"Scale logically",3:"Desirability"};
-const PHASE_CLASS={1:"under",2:"ok",3:"over"};
 function renderDesirableCallout(){
 const asg=assignedCounts();
-let html=`<div class="illus" style="margin-bottom:10px"><b>Desirable archetypes</b> — N-1/N-4 shed a tight "bookend" day (Part 8.1); S-Sat-C mirrors S-Sun-B's 4-in-a-row block (added at user direction, not in the original brief).</div><div class="weekgrid" style="grid-template-columns:repeat(3,1fr)">`;
-["N-1","N-4","S-Sat-C"].forEach(k=>{
+let html=`<div class="illus" style="margin-bottom:10px"><b>Desirable schedules</b> — N-1/N-4 shed a tight "bookend" day (Part 8.1); S-Sat-C mirrors S-Sun-B's 4-in-a-row block (added at user direction, not in the original brief). Desirability decides only once no choice improves coverage — and since S-Sat-C is a fixed-weekend schedule, growth adds it only when coverage calls for it.</div><div class="weekgrid" style="grid-template-columns:repeat(3,1fr)">`;
+DESIRABLE_ARCHETYPES.forEach(k=>{
 const a=ATTR[k];
-const seats=(k in ARCH)?(asg[k]||0):0;
-const hidden = !(k in ARCH);
 html+=`<div class="weekcol"><div class="weekhead">${k} (${GROWTH_ARCH[k].join(", ")})</div><div class="dayblock" style="padding:10px 12px">`;
-html+=`<div style="margin-bottom:8px">${hidden?'<span class="tag tag-wknd-fix">Hidden — 0 seats</span>':`<span class="tag tag-wknd-none">Active — ${seats} seats</span>`}</div>`;
+html+=`<div style="margin-bottom:8px"><span class="tag tag-wknd-none">${asg[k]||0} seats today</span></div>`;
 html+=`<span class="tag tag-days">${a.days}</span> <span class="tag tag-hrs">${a.hrs}</span> <span class="tag ${a.wkndcls}">${a.wknd}${a.rot&&a.wknd==='none'?' (occasional rot.)':''}</span> <span class="tag tag-off">${a.off}</span>`;
 html+=`</div></div>`;
 });
 html+="</div>";
 document.getElementById("growDesirable").innerHTML=html;
 }
+function growthMetricsHtml(r){
+return `<span class="metric"><b>${r.totalDeficit}</b>Shortfall below floor (person-days / 4 wks)</span>`
++`<span class="metric"><b>${r.thin}</b>Days without +1 call-out cushion</span>`
++`<span class="metric"><b>${r.ptoDip}</b>PTO dip depth (person-days / 4 wks, max PTO)</span>`;
+}
+function renderGrowthSeatTable(plan){
+const asg=assignedCounts();const added={};(plan||[]).forEach(r=>{added[r.archetype]=(added[r.archetype]||0)+1;});
+let html="<tr><th>Schedule</th><th>Days</th><th>Current</th><th>Added</th><th>After plan</th></tr>";
+Object.keys(ARCH).forEach(k=>{const a=added[k]||0;html+=`<tr${a?' class="chosen"':''}><td>${k}</td><td>${ARCH[k].join(", ")}</td><td>${asg[k]||0}</td><td>${a?'+'+a:'—'}</td><td>${(asg[k]||0)+a}</td></tr>`;});
+document.getElementById("growReqTbl").innerHTML=html;
+}
 function renderGrowth(){
 renderDesirableCallout();
-const n=parseInt(document.getElementById("growN").value)||0;const base=ALLNAMES.length;
-document.getElementById("growTotal").textContent=`Current: ${base} staff → Target: ${base+n} staff`;
-const curFail=tallyFails(), curWorst=worstDeficit();
-document.getElementById("growGap").innerHTML=`<b>${curFail}</b>Below-floor cells right now (worst ${curWorst})`;
-let compareHtml="", planHtml="";
+const n=parseInt(document.getElementById("growN").value)||0;
+const ft=STAFF.length, pt=PT_NAMES.length;
+document.getElementById("growTotal").textContent=`Current: ${ft} full-time (+${pt} part-time) → Target: ${ft+n} full-time`;
+const cur=evalRosterCand(STAFF, ROT_WEEK, GROWTH_ARCH, FLOOR, GROWTH_PTO);
+document.getElementById("growGap").innerHTML=`<div class="note" style="margin:0 0 4px;font-weight:700;color:#1a2332">Today</div>`+growthMetricsHtml(cur);
+let compareHtml="", planHtml="", plan=null;
 if(n===0){
-planHtml="<div class='step'>Set a number above to see the computed plan: Phase 1 fills deficits, Phase 2 builds a call-out-safe buffer, Phase 3 grows the most-desirable schedules. Each slot is simulated against the live floor math — not a fixed list.</div>";
+planHtml="<div class='step'>Set a number above to see the computed plan. Each hire is simulated in all 10 schedules; expand any step to see how every option scored.</div>";
 } else {
-const plan=computeGrowthPlan(n);
-let lastPhase=null;
+plan=computeGrowthPlan(n);
+let lastStage=null;
 plan.forEach(r=>{
-const total=base+r.slot;
-const days=(GROWTH_ARCH[r.archetype]||[]).join(", ");
-if(r.phase!==lastPhase){
-planHtml+=`<div class="note" style="margin:14px 0 4px;font-weight:700;color:#1a2332">Phase ${r.phase} — ${PHASE_LABEL[r.phase]}</div>`;
-lastPhase=r.phase;
-}
-planHtml+=`<div class="step"><span class="tag ${PHASE_CLASS[r.phase]==='under'?'tag-wknd-fix':(PHASE_CLASS[r.phase]==='ok'?'tag-wknd-rot':'tag-wknd-none')}">P${r.phase}</span> <b>Slot ${r.slot} (staff #${total}):</b> Add to <b>${r.archetype}</b> (${days}). ${r.reason} <span style="color:#64748b">[below-floor: ${r.mFail}, worst: ${r.worst}, min margin: ${r.minMargin}]</span></div>`;
-if(r.comparisons){
-let t="<table style='margin:8px 0 16px'><tr><th>Archetype</th><th>Days</th><th>Below-floor cells if added here</th><th>Worst deficit</th></tr>";
-r.comparisons.forEach(c=>{t+=`<tr><td>${c.arch}</td><td>${(GROWTH_ARCH[c.arch]||[]).join(", ")}</td><td>${c.result.mFail}</td><td>${c.result.worst}</td></tr>`;});
+if(r.phase!==lastStage){planHtml+=`<div class="note" style="margin:14px 0 4px;font-weight:700;color:#1a2332">${STAGE_LABEL[r.phase]}</div>`;lastStage=r.phase;}
+const b=r.before,a=r.after;
+const deltas=[["shortfall",b.totalDeficit,a.totalDeficit],["cushion gaps",b.thin,a.thin],["PTO dip",b.ptoDip,a.ptoDip]].filter(x=>x[1]!==x[2]).map(x=>`${x[0]} ${x[1]}→${x[2]}`);
+planHtml+=`<div class="step"><span class="tag ${STAGE_TAG[r.phase]}">${STAGE_LABEL[r.phase]}</span> <b>Hire ${r.slot} (full-time #${ft+r.slot}):</b> add to <b>${r.archetype}</b> (${GROWTH_ARCH[r.archetype].join(", ")}). <span style="color:#64748b">${deltas.length?deltas.join(" · ")+". ":"No change to coverage measures. "}Decided on ${r.decidedBy} (runner-up: ${r.runnerUp}).</span></div>`;
+let t="<table style='margin:6px 0'><tr><th>Schedule</th><th>Days</th><th>Shortfall</th><th>Cushion gaps</th><th>PTO dip</th><th>Fixed weekend</th><th>Desirable</th><th>Seats before</th></tr>";
+r.comparisons.forEach((c,idx)=>{t+=`<tr${idx===0?' class="chosen"':''}><td>${c.arch}</td><td>${GROWTH_ARCH[c.arch].join(", ")}</td><td>${c.result.totalDeficit}</td><td>${c.result.thin}</td><td>${c.result.ptoDip}</td><td>${c.arch.startsWith("S-")?'yes':'—'}</td><td>${c.desirable?'yes':'—'}</td><td>${c.seats}</td></tr>`;});
 t+="</table>";
-compareHtml+=`<p class="note" style="margin-top:0">All 9 candidates for Slot ${r.slot}:</p>`+t;
-}
+planHtml+=`<details class="cands"><summary>All ${r.comparisons.length} options for hire ${r.slot}, ranked</summary>${t}</details>`;
 });
+const end=plan[plan.length-1].after;
+compareHtml=`<div class="note" style="margin:0 0 4px;font-weight:700;color:#1a2332">After ${n} hire${n>1?'s':''}</div>`+growthMetricsHtml(end);
 }
 document.getElementById("growCompare").innerHTML=compareHtml;
 document.getElementById("growPlan").innerHTML=planHtml;
+renderGrowthSeatTable(plan);
 }
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
 document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
@@ -1117,7 +1065,7 @@ document.getElementById("sbFillRec").addEventListener("click",fillRecommended);
 document.getElementById("sbSlider").addEventListener("input",updateSandboxSliderLabel);
 document.getElementById("sbModeGuard").addEventListener("change",updateSandboxMode);
 document.getElementById("sbModeHypo").addEventListener("change",updateSandboxMode);
-renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderReq("growReqTbl");renderGrowth();renderLegacy8();renderFloorInputs();renderSandboxInputs();renderSandbox();
+renderScheduleMenu();renderAttr();renderAllWeeksGrid();renderBidGrid();renderCal();renderWeekend();renderContinuity();renderGrowth();renderFloorInputs();renderSandboxInputs();renderSandbox();
 updateSandboxSliderLabel();updateSandboxMode();
 renderExecSummary();
 </script>
